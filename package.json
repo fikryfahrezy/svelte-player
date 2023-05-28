@@ -1,0 +1,28 @@
+{
+  "name": "svelte-player",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "check": "svelte-check --tsconfig ./tsconfig.json",
+    "test": "cross-env NODE_ENV=test ava"
+  },
+  "devDependencies": {
+    "@sveltejs/vite-plugin-svelte": "^2.4.1",
+    "@tsconfig/svelte": "^4.0.1",
+    "ava": "^5.3.0",
+    "cross-env": "^7.0.3",
+    "svelte": "^3.59.1",
+    "svelte-check": "^2.10.3",
+    "tslib": "^2.5.2",
+    "tsx": "^3.12.7",
+    "typescript": "^5.0.4",
+    "vite": "^4.3.9"
+  },
+  "dependencies": {
+    "load-script": "^2.0.0"
+  }
+}
