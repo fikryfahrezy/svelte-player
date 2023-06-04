@@ -12,6 +12,7 @@ type YTListType = 'playlist' | 'user_uploads';
 type YTPlaybackQualityValue = 'small' | 'medium' | 'large' | 'hd720' | 'hd1080' | 'highres';
 
 type YTPlayerState = {
+	UNSTARTED: -1;
 	ENDED: 0;
 	PLAYING: 1;
 	PAUSED: 2;
@@ -19,13 +20,7 @@ type YTPlayerState = {
 	CUED: 5;
 };
 
-type YTPlayerStateValue =
-	| -1
-	| YTPlayerState['ENDED']
-	| YTPlayerState['PLAYING']
-	| YTPlayerState['PAUSED']
-	| YTPlayerState['BUFFERING']
-	| YTPlayerState['CUED'];
+type YTPlayerStateValue = YTPlayerState[keyof YTPlayerState];
 
 type YTPlayerPlayerVars = {
 	autoplay: BooleanNumber;
@@ -81,7 +76,7 @@ type YTPlayerEvents = {
 	onPlaybackQualityChange(event: YTPlayerOnPlaybackQualityChangeEvent): void;
 	onPlaybackRateChange(event: YTPlayerOnPlaybackRateChangeEvent): void;
 	onError(event: YTPlayerOnErrorEvent): void;
-	onApiChange(events: unknown): void;
+	onApiChange(events: unknown): void; // TODO: to implement corrent type
 };
 
 type YTPlayerOptions = {
@@ -157,7 +152,7 @@ interface YTPlayer {
 	playVideo(): void;
 	pauseVideo(): void;
 	stopVideo(): void;
-	seekTo(seconds: number, allowSeekAhead: boolean): void;
+	seekTo(seconds: number, allowSeekAhead?: boolean): void;
 	getSphericalProperties(): Record<string, never> | SphericalObject;
 	setSphericalProperties(properties: Partial<SetSphericalPropertiesParams>): void;
 	nextVideo(): void;

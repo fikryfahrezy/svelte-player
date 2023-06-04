@@ -1,7 +1,7 @@
 // The codes in this file, is just copy-paste from https://github.com/cookpete/react-player
 // See original: https://github.com/cookpete/react-player/blob/master/src/utils.js
 
-import type { GetSDKParams, GlobalSDK, GlobalSDKType } from './types';
+import type { GetSDKParams, GlobalSDK, GlobalSDKType, PlayerUrl, GlobalSDKObject } from './types';
 import loadScript from 'load-script';
 
 declare global {
@@ -9,6 +9,51 @@ declare global {
 		YT: YT;
 		onYouTubeIframeAPIReady: () => void;
 	}
+}
+
+const MATCH_START_QUERY = /[?&#](?:start|t)=([0-9hms]+)/;
+const MATCH_END_QUERY = /[?&#]end=([0-9hms]+)/;
+const MATCH_START_STAMP = /(\d+)(h|m|s)/g;
+const MATCH_NUMERIC = /^\d+$/;
+
+// Parse YouTube URL for a start time param, ie ?t=1h14m30s
+// and return the start time in seconds
+function parseTimeParam(url: PlayerUrl, pattern: RegExp) {
+	if (url instanceof Array) {
+		return undefined;
+	}
+	const match = url.match(pattern);
+	if (match) {
+		const stamp = match[1];
+		if (stamp.match(MATCH_START_STAMP)) {
+			return parseTimeString(stamp);
+		}
+		if (MATCH_NUMERIC.test(stamp)) {
+			return parseInt(stamp);
+		}
+	}
+	return undefined;
+}
+
+function parseTimeString(stamp: string) {
+	let seconds = 0;
+	let array = MATCH_START_STAMP.exec(stamp);
+	while (array !== null) {
+		const [, count, period] = array;
+		if (period === 'h') seconds += parseInt(count, 10) * 60 * 60;
+		if (period === 'm') seconds += parseInt(count, 10) * 60;
+		if (period === 's') seconds += parseInt(count, 10);
+		array = MATCH_START_STAMP.exec(stamp);
+	}
+	return seconds;
+}
+
+export function parseStartTime(url: PlayerUrl) {
+	return parseTimeParam(url, MATCH_START_QUERY);
+}
+
+export function parseEndTime(url: PlayerUrl) {
+	return parseTimeParam(url, MATCH_END_QUERY);
 }
 
 function getGlobal(key: GlobalSDKType) {
@@ -62,9 +107,38 @@ export function getSDK<T extends GlobalSDKType>({
 				// reset the array of requests for this SDK
 				requests[url]?.forEach((request) => request.reject(err));
 				requests[url] = null;
-			} else {
-				console.log(window.YT);
+			} else if (!sdkReady) {
+				onLoaded(getGlobal(sdkGlobal));
 			}
 		});
 	});
+}
+
+export function callPlayer(player: GlobalSDKObject, checkIsReady?: () => boolean) {
+	return function <T extends keyof typeof player>(
+		method: T,
+		...args: Parameters<(typeof player)[T]>
+	) {
+		const isReady = checkIsReady?.() ?? true;
+		if (!isReady) {
+			return;
+		}
+
+		// Util method for calling a method on this.player
+		// but guard against errors and console.warn instead
+		if (!player || !player[method]) {
+			let message = `SveltePlayer: player could not call %c${method}%c – `;
+			if (!player) {
+				message += 'The player was not available';
+			} else if (!player[method]) {
+				message += 'The method was not available';
+			}
+			console.warn(message, 'font-weight: bold', '');
+			return null;
+		}
+
+		return (player[method] as (...args: Parameters<(typeof player)[T]>) => (typeof player)[T])(
+			...args
+		);
+	};
 }
