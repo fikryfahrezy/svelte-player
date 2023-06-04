@@ -168,7 +168,7 @@ interface YTPlayer {
 	isMuted(): boolean;
 	setVolume(volume: number): void;
 	getVolume(): number;
-	setSize(width: number, height: number): object;
+	setSize(width: number, height: number): object; // TODO: to implement corrent type
 	getPlaybackRate(): YTPlaybackRate;
 	setPlaybackRate(suggestedRate: number): void;
 	getAvailablePlaybackRates(): YTPlaybackRate[];
@@ -196,4 +196,11 @@ interface YTPlayerConstructor {
 type YT = {
 	Player: YTPlayerConstructor;
 	PlayerState: YTPlayerState;
+	loaded: BooleanNumber;
+	loading: BooleanNumber;
+	ready: function; // TODO: to impelment corrent type
+	scan: function; // TODO: to impelment corrent type
+	setConfig: function; // TODO: to impelment corrent type
+	subscribe: function; // TODO: to impelment corrent type
+	unsubscribe: function; // TODO: to impelment corrent type
 };
