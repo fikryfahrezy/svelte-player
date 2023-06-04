@@ -1,3 +1,6 @@
+// The codes in this file, is just copy-paste from https://github.com/cookpete/react-player
+// See original: https://github.com/cookpete/react-player/blob/master/src/utils.js
+
 import type { GetSDKParams, GlobalSDK, GlobalSDKType } from './types';
 import loadScript from 'load-script';
 
