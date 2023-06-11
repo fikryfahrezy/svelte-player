@@ -32,7 +32,7 @@
 
 {#each players as player}
 	{#if player.canPlay(url)}
-		{#await player.loadComponent then { default: Player }}
+		{#await player.loadComponent() then { default: Player }}
 			<svelte:component
 				this={Player}
 				{url}

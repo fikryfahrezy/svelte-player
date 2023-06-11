@@ -23,7 +23,7 @@ export type PlayerUrl = string | string[];
 
 export type Player = {
 	canPlay: (url: PlayerUrl) => boolean;
-	loadComponent: Promise<{ default: typeof SvelteComponent }>;
+	loadComponent: () => Promise<{ default: typeof SvelteComponent }>;
 };
 
 export type GetSDKParams<T extends keyof GlobalSDK = GlobalSDKType> = SDKBase<T> & {
@@ -38,8 +38,10 @@ export type PlayerProps = {
 	loop?: boolean;
 };
 
-export type YouTubePlayerMedia = PlayerProps & {
-	playerVars: YTPlayerPlayerVars;
+export type YouTubePlayerMedia = {
+	playerVars?: Partial<YTPlayerPlayerVars>;
+	embedOptions?: Partial<YTPlayerOptions>;
+	onUnstarted?: () => void;
 };
 
 export type PlayerMedia = {
@@ -47,12 +49,40 @@ export type PlayerMedia = {
 	unmute(): void;
 };
 
+export type OnProgressProps = {
+	played: number;
+	playedSeconds: number;
+	loaded: number;
+	loadedSeconds: number;
+};
+
+// TODO: to implement corrent type
+export type OnErrorProps = {
+	error: unknown;
+	data?: unknown;
+	hlsInstance?: unknown;
+	hlsGlobal?: unknown;
+};
+
 export type Dispatcher = {
 	mount: PlayerMedia;
-	onPlay: undefined;
-	onBufferEnd: undefined;
-	onPause: undefined;
-	onBuffer: undefined;
-	onEnded: undefined;
-	onReady: undefined;
+	onReady: (player: PlayerMedia) => void;
+	onStart: void;
+	onPlay: void;
+	onProgress: OnProgressProps;
+	onDuration: number;
+	onPause: void;
+	onBuffer: void;
+	onBufferEnd: void;
+	onSeek: number;
+	onEnded: void;
+	onError: OnErrorProps;
+	onClickPreview: unknown; // TODO: to implement corrent type
+	onEnablePIP: void;
+	onDisablePIP: void;
+};
+
+export type YouTubeDispatcher = Dispatcher & {
+	onPlaybackRateChange: number;
+	onPlaybackQualityChange: YTPlayerOnPlaybackQualityChangeEvent;
 };

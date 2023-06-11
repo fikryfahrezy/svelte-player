@@ -1,5 +1,6 @@
 <script lang="ts">
-	import type { PlayerMedia, Dispatcher } from './types';
+	import type { PlayerMedia, YouTubeDispatcher, YouTubePlayerMedia } from './types';
+	import type { ParsePlaylistFn } from './youtube-types';
 	import { onMount, createEventDispatcher } from 'svelte';
 	import { MATCH_URL_YOUTUBE } from './patterns';
 	import { getSDK, parseEndTime, parseStartTime, callPlayer } from './utils';
@@ -9,14 +10,18 @@
 	export let controls: boolean | undefined = undefined;
 	export let playsinline: boolean | undefined = undefined;
 	export let loop: boolean | undefined = undefined;
-	export let playerVars: Partial<YTPlayerPlayerVars> | undefined = undefined;
+	export let config: YouTubePlayerMedia | undefined = undefined;
+
+	const playerVars = config?.playerVars;
+	const embedOptions = config?.embedOptions;
 
 	const SDK_URL = 'https://www.youtube.com/iframe_api';
 	const SDK_GLOBAL = 'YT';
 	const SDK_GLOBAL_READY = 'onYouTubeIframeAPIReady';
 	const MATCH_PLAYLIST = /[?&](?:list|channel)=([a-zA-Z0-9_-]+)/;
+	const MATCH_USER_UPLOADS = /user\/([a-zA-Z0-9_-]+)\/?/;
 
-	const dispatch = createEventDispatcher<Dispatcher>();
+	const dispatch = createEventDispatcher<YouTubeDispatcher>();
 
 	let isPlayerReady = false;
 	let container: HTMLDivElement;
@@ -90,6 +95,40 @@
 		}
 	}
 
+	function parsePlaylist(url: string | string[]): ReturnType<ParsePlaylistFn> {
+		if (url instanceof Array) {
+			return {
+				listType: 'playlist',
+				playlist: url.map(getID).join(',')
+			};
+		}
+		if (MATCH_PLAYLIST.test(url)) {
+			const mathedUrl = url.match(MATCH_PLAYLIST);
+			if (mathedUrl === null) {
+				return {};
+			}
+
+			const [, playlistId] = mathedUrl;
+			return {
+				listType: 'playlist',
+				list: playlistId.replace(/^UC/, 'UU')
+			};
+		}
+		if (MATCH_USER_UPLOADS.test(url)) {
+			const matchedUrl = url.match(MATCH_USER_UPLOADS);
+			if (matchedUrl === null) {
+				return {};
+			}
+
+			const [, username] = matchedUrl;
+			return {
+				listType: 'user_uploads',
+				list: username
+			};
+		}
+		return {};
+	}
+
 	onMount(() => {
 		getSDK({
 			url: SDK_URL,
@@ -113,15 +152,32 @@
 					start: parseStartTime(url),
 					end: parseEndTime(url),
 					origin: window.location.origin,
-					playsinline: playsinline ? 1 : 0
+					playsinline: playsinline ? 1 : 0,
+					...parsePlaylist(url),
+					...playerVars
 				},
 				events: {
-					onStateChange,
 					onReady: () => {
 						isPlayerReady = true;
+						if (loop) {
+							player('setLoop', true);
+						}
 						dispatch('onReady');
+					},
+					onPlaybackRateChange: (event) => {
+						dispatch('onPlaybackRateChange', event.data);
+					},
+					onPlaybackQualityChange: (event) => {
+						dispatch('onPlaybackQualityChange', event);
+					},
+					onStateChange,
+					onError: (event) => {
+						dispatch('onError', {
+							error: event.data
+						});
 					}
-				}
+				},
+				...embedOptions
 			});
 			dispatch('mount', playerMedia);
 		});

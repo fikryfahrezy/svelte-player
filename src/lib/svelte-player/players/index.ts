@@ -4,7 +4,9 @@ import { youtube } from './patterns';
 const players = [
 	{
 		canPlay: youtube,
-		loadComponent: import('./YouTube.svelte')
+		loadComponent: () => {
+			return import('./YouTube.svelte');
+		}
 	}
 ] satisfies Player[];
 

@@ -7,7 +7,11 @@ type YTPlayerOnErrorValue = 2 | 5 | 100 | 101 | 150;
 
 type YTPlaybackRate = 0.25 | 0.5 | 1 | 1.5 | 2;
 
-type YTListType = 'playlist' | 'user_uploads';
+type YTListPlaylistType = 'playlist';
+
+type YTListUserUploadsType = 'user_uploads';
+
+type YTListType = YTListPlaylistType | YTListUserUploadsType;
 
 type YTPlaybackQualityValue = 'small' | 'medium' | 'large' | 'hd720' | 'hd1080' | 'highres';
 
