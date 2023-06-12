@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { PlayerMedia, YouTubeDispatcher, YouTubePlayerMedia } from './types';
+	import type { PlayerMedia, Dispatcher, YouTubeConfig } from './types';
 	import type { ParsePlaylistFn } from './youtube-types';
 	import { onMount, createEventDispatcher } from 'svelte';
 	import { MATCH_URL_YOUTUBE } from './patterns';
@@ -10,10 +10,11 @@
 	export let controls: boolean | undefined = undefined;
 	export let playsinline: boolean | undefined = undefined;
 	export let loop: boolean | undefined = undefined;
-	export let config: YouTubePlayerMedia | undefined = undefined;
+	export let config: YouTubeConfig | undefined = undefined;
 
 	const playerVars = config?.playerVars;
 	const embedOptions = config?.embedOptions;
+	const onUnstarted = config?.onUnstarted;
 
 	const SDK_URL = 'https://www.youtube.com/iframe_api';
 	const SDK_GLOBAL = 'YT';
@@ -21,7 +22,7 @@
 	const MATCH_PLAYLIST = /[?&](?:list|channel)=([a-zA-Z0-9_-]+)/;
 	const MATCH_USER_UPLOADS = /user\/([a-zA-Z0-9_-]+)\/?/;
 
-	const dispatch = createEventDispatcher<YouTubeDispatcher>();
+	const dispatch = createEventDispatcher<Dispatcher>();
 
 	let isPlayerReady = false;
 	let container: HTMLDivElement;
@@ -31,11 +32,48 @@
 	});
 
 	const playerMedia: PlayerMedia = {
+		play() {
+			player('playVideo');
+		},
+		pause() {
+			player('pauseVideo');
+		},
+		stop() {
+			const youtubeIframe = player('getIframe');
+			if (youtubeIframe !== null && !document.body.contains(youtubeIframe)) {
+				return;
+			}
+			player('pauseVideo');
+		},
+		seekTo(amount, keepPlaying) {
+			player('seekTo', amount);
+			if (!keepPlaying && !playing) {
+				this.pause();
+			}
+		},
+		setVolume(fraction) {
+			player('setVolume', fraction * 100);
+		},
 		mute() {
 			player('mute');
 		},
 		unmute() {
 			player('unMute');
+		},
+		setPlaybackRate(rate) {
+			player('setPlaybackRate', rate);
+		},
+		setLoop(loop) {
+			player('setLoop', loop);
+		},
+		getDuration() {
+			return player('getDuration') ?? 0;
+		},
+		getCurrentTime() {
+			return player('getCurrentTime') ?? 0;
+		},
+		getSecondsLoaded() {
+			return (player('getVideoLoadedFraction') ?? 0) * this.getDuration();
 		}
 	};
 
@@ -66,17 +104,17 @@
 
 		const { UNSTARTED, PLAYING, PAUSED, BUFFERING, ENDED, CUED } = window[SDK_GLOBAL].PlayerState;
 		if (data === UNSTARTED) {
-			// onUnstarted();
+			onUnstarted?.();
 		}
 		if (data === PLAYING) {
-			dispatch('onPlay');
-			dispatch('onBufferEnd');
+			dispatch('play');
+			dispatch('bufferEnd');
 		}
 		if (data === PAUSED) {
-			dispatch('onPause');
+			dispatch('pause');
 		}
 		if (data === BUFFERING) {
-			dispatch('onBuffer');
+			dispatch('buffer');
 		}
 		if (data === ENDED) {
 			const isPlaylist = !!player('getPlaylist');
@@ -88,10 +126,10 @@
 					play();
 				}
 			}
-			dispatch('onEnded');
+			dispatch('ended');
 		}
 		if (data === CUED) {
-			dispatch('onReady');
+			dispatch('ready');
 		}
 	}
 
@@ -162,23 +200,28 @@
 						if (loop) {
 							player('setLoop', true);
 						}
-						dispatch('onReady');
+						dispatch('ready');
 					},
 					onPlaybackRateChange: (event) => {
-						dispatch('onPlaybackRateChange', event.data);
+						dispatch('playbackRateChange', event.data);
 					},
 					onPlaybackQualityChange: (event) => {
-						dispatch('onPlaybackQualityChange', event);
+						dispatch('playbackQualityChange', event);
 					},
 					onStateChange,
 					onError: (event) => {
-						dispatch('onError', {
+						dispatch('error', {
 							error: event.data
 						});
 					}
 				},
 				...embedOptions
 			});
+			if (!!embedOptions?.events) {
+				console.warn(
+					"Using `embedOptions.events` will likely break things. Use ReactPlayer's callback props instead, eg onReady, onPlay, onPause"
+				);
+			}
 			dispatch('mount', playerMedia);
 		});
 	});

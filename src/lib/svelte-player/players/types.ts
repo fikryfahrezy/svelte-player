@@ -38,15 +38,27 @@ export type PlayerProps = {
 	loop?: boolean;
 };
 
-export type YouTubePlayerMedia = {
+export type YouTubeConfig = {
 	playerVars?: Partial<YTPlayerPlayerVars>;
 	embedOptions?: Partial<YTPlayerOptions>;
 	onUnstarted?: () => void;
 };
 
 export type PlayerMedia = {
+	stop(): void;
+	play(): void;
+	pause(): void;
+	setVolume(fraction: number): void;
 	mute(): void;
 	unmute(): void;
+	getDuration(): number;
+	getCurrentTime(): number;
+	getSecondsLoaded(): number;
+	seekTo(amount: number, keepPlaying?: boolean): void;
+	setPlaybackRate?(rate: number): void;
+	setLoop?(loop: boolean): void;
+	enablePIP?(): void;
+	disablePIP?(): void;
 };
 
 export type OnProgressProps = {
@@ -66,23 +78,20 @@ export type OnErrorProps = {
 
 export type Dispatcher = {
 	mount: PlayerMedia;
-	onReady: (player: PlayerMedia) => void;
-	onStart: void;
-	onPlay: void;
-	onProgress: OnProgressProps;
-	onDuration: number;
-	onPause: void;
-	onBuffer: void;
-	onBufferEnd: void;
-	onSeek: number;
-	onEnded: void;
-	onError: OnErrorProps;
-	onClickPreview: unknown; // TODO: to implement corrent type
-	onEnablePIP: void;
-	onDisablePIP: void;
-};
-
-export type YouTubeDispatcher = Dispatcher & {
-	onPlaybackRateChange: number;
-	onPlaybackQualityChange: YTPlayerOnPlaybackQualityChangeEvent;
+	ready: (player: PlayerMedia) => void;
+	start: void;
+	play: void;
+	progress: OnProgressProps;
+	duration: number;
+	pause: void;
+	buffer: void;
+	bufferEnd: void;
+	seek: number;
+	ended: void;
+	error: OnErrorProps;
+	clickPreview: unknown; // TODO: to implement corrent type
+	enablePIP: void;
+	disablePIP: void;
+	playbackRateChange?: number;
+	playbackQualityChange?: YTPlayerOnPlaybackQualityChangeEvent;
 };

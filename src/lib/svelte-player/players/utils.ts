@@ -121,7 +121,7 @@ export function callPlayer(player: GlobalSDKObject, checkIsReady?: () => boolean
 	) {
 		const isReady = checkIsReady?.() ?? true;
 		if (!isReady) {
-			return;
+			return null;
 		}
 
 		// Util method for calling a method on this.player
@@ -137,8 +137,8 @@ export function callPlayer(player: GlobalSDKObject, checkIsReady?: () => boolean
 			return null;
 		}
 
-		return (player[method] as (...args: Parameters<(typeof player)[T]>) => (typeof player)[T])(
-			...args
-		);
+		return (
+			player[method] as (...args: Parameters<(typeof player)[T]>) => ReturnType<(typeof player)[T]>
+		)(...args);
 	};
 }
