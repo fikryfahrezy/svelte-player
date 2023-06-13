@@ -1,7 +1,7 @@
 <script>
 	import YouTube from '~/lib/svelte-player/SveltePlayer.svelte';
 	let muted = false;
-	let playing = false;
+	let playing = true;
 </script>
 
 <YouTube
@@ -19,9 +19,11 @@
 	}}
 	on:pause={() => {
 		console.log('onPause');
+		playing = false;
 	}}
 	on:play={() => {
 		console.log('onPlay');
+		playing = true;
 	}}
 	on:ready={() => {
 		console.log('onReady');

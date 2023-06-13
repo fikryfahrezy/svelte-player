@@ -24,6 +24,8 @@ export type PlayerUrl = string | string[];
 export type Player = {
 	canPlay: (url: PlayerUrl) => boolean;
 	loadComponent: () => Promise<{ default: typeof SvelteComponent }>;
+	loopOnEnded?: boolean;
+	forceLoad?: boolean;
 };
 
 export type GetSDKParams<T extends keyof GlobalSDK = GlobalSDKType> = SDKBase<T> & {
@@ -45,6 +47,7 @@ export type YouTubeConfig = {
 };
 
 export type PlayerMedia = {
+	load(url: string | string[], isReady?: boolean): void;
 	stop(): void;
 	play(): void;
 	pause(): void;
@@ -64,8 +67,8 @@ export type PlayerMedia = {
 export type OnProgressProps = {
 	played: number;
 	playedSeconds: number;
-	loaded: number;
-	loadedSeconds: number;
+	loaded?: number;
+	loadedSeconds?: number;
 };
 
 // TODO: to implement corrent type
@@ -92,6 +95,7 @@ export type Dispatcher = {
 	clickPreview: unknown; // TODO: to implement corrent type
 	enablePIP: void;
 	disablePIP: void;
-	playbackRateChange?: number;
-	playbackQualityChange?: YTPlayerOnPlaybackQualityChangeEvent;
+	playbackRateChange: number;
+	playbackQualityChange: YTPlayerOnPlaybackQualityChangeEvent;
+	loaded: void;
 };

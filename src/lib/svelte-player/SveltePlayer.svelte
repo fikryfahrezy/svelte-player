@@ -6,6 +6,10 @@
 	export let muted = false;
 	export let playing = false;
 	export let stopOnUnmount = true;
+	export let loop = false;
+	export let progressInterval = 1000;
+	export let playbackRate = 1;
+	export let progressFrequency: number | undefined = undefined;
 </script>
 
 {#each players as player}
@@ -15,6 +19,10 @@
 			{muted}
 			{playing}
 			{stopOnUnmount}
+			{loop}
+			{progressInterval}
+			{progressFrequency}
+			{playbackRate}
 			activePlayer={player.loadComponent}
 			on:buffer
 			on:bufferEnd
