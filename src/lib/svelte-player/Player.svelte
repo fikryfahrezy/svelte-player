@@ -19,7 +19,6 @@
 
 	let mounted = false;
 	let isReady = false;
-	let isPlaying = false; // Track playing state internally to prevent bugs
 	let isLoading = true; // Use isLoading to prevent onPause when switching URL
 	let loadOnReady: string | null = null;
 	let seekOnPlay: number | null = null;
@@ -154,7 +153,6 @@
 	}
 
 	function handlePlay() {
-		isPlaying = true;
 		isLoading = false;
 		if (startOnPlay) {
 			if (player !== undefined && player.setPlaybackRate && playbackRate !== 1) {
@@ -172,7 +170,6 @@
 	}
 
 	function handlePause() {
-		isPlaying = false;
 		if (!isLoading) {
 			dispatch('pause');
 		}
@@ -183,7 +180,6 @@
 			seekTo(0);
 		}
 		if (!loop) {
-			isPlaying = false;
 			dispatch('ended');
 		}
 	}
@@ -209,10 +205,10 @@
 
 	$: {
 		if (player !== undefined && isReady) {
-			if (playing && !isPlaying) {
+			if (playing) {
 				player.play();
 			}
-			if (!playing && isPlaying) {
+			if (!playing) {
 				player.pause();
 			}
 		}

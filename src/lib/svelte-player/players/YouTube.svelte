@@ -206,7 +206,7 @@
 				if (youtubeIframe !== null && !document.body.contains(youtubeIframe)) {
 					return;
 				}
-				player.pauseVideo();
+				player.stopVideo();
 			}
 		},
 		seekTo(amount, keepPlaying) {
