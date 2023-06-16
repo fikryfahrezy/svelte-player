@@ -4,7 +4,7 @@
 	import type { SeekToType } from './types';
 	import { onMount, createEventDispatcher } from 'svelte';
 
-	export let url: string;
+	export let url: string | string[];
 	export let muted: boolean;
 	export let playing: boolean;
 	export let stopOnUnmount: boolean;

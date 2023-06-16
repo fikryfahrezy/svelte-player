@@ -2,7 +2,7 @@
 	import Player from './Player.svelte';
 	import players from './players';
 
-	export let url: string;
+	export let url: string | string[];
 	export let muted = false;
 	export let playing = false;
 	export let stopOnUnmount = true;
