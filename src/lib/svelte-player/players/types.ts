@@ -62,6 +62,7 @@ export type PlayerMedia = {
 	setLoop?(loop: boolean): void;
 	enablePIP?(): void;
 	disablePIP?(): void;
+	getPlayer?(): GlobalSDKObject | null;
 };
 
 export type OnProgressProps = {
@@ -80,8 +81,6 @@ export type OnErrorProps = {
 };
 
 export type Dispatcher = {
-	mount: PlayerMedia;
-	ready: (player: PlayerMedia) => void;
 	start: void;
 	play: void;
 	progress: OnProgressProps;
@@ -99,3 +98,7 @@ export type Dispatcher = {
 	playbackQualityChange: YTPlayerOnPlaybackQualityChangeEvent;
 	loaded: void;
 };
+
+export type PlayerMediaRef = PlayerMedia & PlayerProps;
+
+export type InternalPlayerKey = 'player' | 'hls' | 'dash';

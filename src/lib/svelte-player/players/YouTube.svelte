@@ -1,11 +1,15 @@
 <script lang="ts">
-	import type { PlayerMedia, Dispatcher, YouTubeConfig } from './types';
-	import type { ParsePlaylistFn } from './youtube-types';
-	import { onMount, createEventDispatcher } from 'svelte';
+	import type { YouTubeConfig } from './types';
+	import type {
+		ParsePlaylistFn,
+		YouTubeDispatcher,
+		YouTubeMediaPlayer,
+		YouTubeMediaPlayerOnStateChangeEvent
+	} from './youtube-types';
+	import { createEventDispatcher } from 'svelte';
 	import { MATCH_URL_YOUTUBE } from './patterns';
-	import { getSDK, parseEndTime, parseStartTime, callPlayer } from './utils';
+	import { getSDK, parseEndTime, parseStartTime } from './utils';
 
-	export let url: string;
 	export let playing: boolean | undefined = undefined;
 	export let controls: boolean | undefined = undefined;
 	export let playsinline: boolean | undefined = undefined;
@@ -22,11 +26,11 @@
 	const MATCH_PLAYLIST = /[?&](?:list|channel)=([a-zA-Z0-9_-]+)/;
 	const MATCH_USER_UPLOADS = /user\/([a-zA-Z0-9_-]+)\/?/;
 
-	const dispatch = createEventDispatcher<Dispatcher>();
+	const dispatch = createEventDispatcher<YouTubeDispatcher>();
 
 	let isPlayerReady = false;
 	let container: HTMLDivElement | undefined;
-	let player: YTPlayer | undefined;
+	let player: YouTubeMediaPlayer | undefined;
 
 	function getID(url: string | string[]) {
 		if (!url || url instanceof Array || MATCH_PLAYLIST.test(url)) {
@@ -69,7 +73,7 @@
 		return {};
 	}
 
-	function onStateChange(event: YTPlayerOnStateChangeEvent) {
+	function onStateChange(event: YouTubeMediaPlayerOnStateChangeEvent) {
 		const { data } = event;
 
 		const { UNSTARTED, PLAYING, PAUSED, BUFFERING, ENDED, CUED } = window[SDK_GLOBAL].PlayerState;
@@ -103,169 +107,177 @@
 		}
 	}
 
-	const playerMedia: PlayerMedia = {
-		load(url, isReady) {
-			const id = getID(url);
-			if (id === null) {
-				return;
-			}
-			if (isReady) {
-				if (
-					(typeof url === 'string' && (MATCH_PLAYLIST.test(url) || MATCH_USER_UPLOADS.test(url))) ||
-					url instanceof Array
-				) {
-					const { list, listType } = parsePlaylist(url);
-					if (
-						player !== undefined &&
-						isPlayerReady &&
-						list !== undefined &&
-						listType !== undefined
-					) {
-						player.loadPlaylist({ list, listType });
-						return;
-					}
-				}
-
-				if (player !== undefined && isPlayerReady) {
-					player.cueVideoById({
-						videoId: id,
-						startSeconds: parseStartTime(url) || playerVars?.start,
-						endSeconds: parseEndTime(url) || playerVars?.end
-					});
-				}
-				return;
-			}
-			getSDK({
-				url: SDK_URL,
-				sdkGlobal: SDK_GLOBAL,
-				sdkReady: SDK_GLOBAL_READY,
-				isLoaded(sdk) {
-					return sdk.loaded === 1;
-				}
-			}).then((YT) => {
-				if (!container) {
-					return;
-				}
-				player = new YT.Player(container, {
-					width: '100%',
-					height: '100%',
-					videoId: id,
-					playerVars: {
-						autoplay: playing ? 1 : 0,
-						controls: controls ? 1 : 0,
-						start: parseStartTime(url),
-						end: parseEndTime(url),
-						origin: window.location.origin,
-						playsinline: playsinline ? 1 : 0,
-						...parsePlaylist(url),
-						...playerVars
-					},
-					events: {
-						onReady: () => {
-							isPlayerReady = true;
-							if (player !== undefined && isPlayerReady && loop) {
-								player.setLoop(true);
-							}
-							dispatch('ready');
-						},
-						onPlaybackRateChange: (event) => {
-							dispatch('playbackRateChange', event.data);
-						},
-						onPlaybackQualityChange: (event) => {
-							dispatch('playbackQualityChange', event);
-						},
-						onStateChange,
-						onError: (event) => {
-							dispatch('error', {
-								error: event.data
-							});
-						}
-					},
-					...embedOptions
-				});
-				if (!!embedOptions?.events) {
-					console.warn(
-						"Using `embedOptions.events` will likely break things. Use SveltePlayer's callback props instead, eg onReady, onPlay, onPause"
-					);
-				}
-			});
-		},
-		play() {
-			if (player !== undefined && isPlayerReady) {
-				player.playVideo();
-			}
-		},
-		pause() {
-			if (player !== undefined && isPlayerReady) {
-				player.pauseVideo();
-			}
-		},
-		stop() {
-			if (player !== undefined && isPlayerReady) {
-				const youtubeIframe = player.getIframe();
-				if (youtubeIframe !== null && !document.body.contains(youtubeIframe)) {
-					return;
-				}
-				player.stopVideo();
-			}
-		},
-		seekTo(amount, keepPlaying) {
-			if (player !== undefined && isPlayerReady) {
-				player.seekTo(amount);
-				if (!keepPlaying && !playing) {
-					this.pause();
-				}
-			}
-		},
-		setVolume(fraction) {
-			if (player !== undefined && isPlayerReady) {
-				player.setVolume(fraction * 100);
-			}
-		},
-		mute() {
-			if (player !== undefined && isPlayerReady) {
-				player.mute();
-			}
-		},
-		unmute() {
-			if (player !== undefined && isPlayerReady) {
-				player.unMute();
-			}
-		},
-		setPlaybackRate(rate) {
-			if (player !== undefined && isPlayerReady) {
-				player.setPlaybackRate(rate);
-			}
-		},
-		setLoop(loop) {
-			if (player !== undefined && isPlayerReady) {
-				player.setLoop(loop);
-			}
-		},
-		getDuration() {
-			if (player !== undefined && isPlayerReady) {
-				return player.getDuration();
-			}
-			return 0;
-		},
-		getCurrentTime() {
-			if (player !== undefined && isPlayerReady) {
-				return player.getCurrentTime();
-			}
-			return 0;
-		},
-		getSecondsLoaded() {
-			let loadedFraction = 0;
-			if (player !== undefined && isPlayerReady) {
-				loadedFraction = player.getVideoLoadedFraction();
-			}
-			return loadedFraction * this.getDuration();
+	export function load(url: string | string[], isReady?: boolean) {
+		const id = getID(url);
+		if (id === null) {
+			return;
 		}
-	};
+		if (isReady) {
+			if (
+				(typeof url === 'string' && (MATCH_PLAYLIST.test(url) || MATCH_USER_UPLOADS.test(url))) ||
+				url instanceof Array
+			) {
+				const { list, listType } = parsePlaylist(url);
+				if (player !== undefined && isPlayerReady && list !== undefined && listType !== undefined) {
+					player.loadPlaylist({ list, listType });
+					return;
+				}
+			}
 
-	onMount(() => {
-		dispatch('mount', playerMedia);
-	});
+			if (player !== undefined && isPlayerReady) {
+				player.cueVideoById({
+					videoId: id,
+					startSeconds: parseStartTime(url) || playerVars?.start,
+					endSeconds: parseEndTime(url) || playerVars?.end
+				});
+			}
+			return;
+		}
+		getSDK({
+			url: SDK_URL,
+			sdkGlobal: SDK_GLOBAL,
+			sdkReady: SDK_GLOBAL_READY,
+			isLoaded(sdk) {
+				return sdk.loaded === 1;
+			}
+		}).then((YT) => {
+			if (!container) {
+				return;
+			}
+			player = new YT.Player(container, {
+				width: '100%',
+				height: '100%',
+				videoId: id,
+				playerVars: {
+					autoplay: playing ? 1 : 0,
+					controls: controls ? 1 : 0,
+					start: parseStartTime(url),
+					end: parseEndTime(url),
+					origin: window.location.origin,
+					playsinline: playsinline ? 1 : 0,
+					...parsePlaylist(url),
+					...playerVars
+				},
+				events: {
+					onReady: () => {
+						isPlayerReady = true;
+						if (player !== undefined && isPlayerReady && loop) {
+							player.setLoop(true);
+						}
+						dispatch('ready');
+					},
+					onPlaybackRateChange: (event) => {
+						dispatch('playbackRateChange', event.data);
+					},
+					onPlaybackQualityChange: (event) => {
+						dispatch('playbackQualityChange', event);
+					},
+					onStateChange,
+					onError: (event) => {
+						dispatch('error', {
+							error: event.data
+						});
+					}
+				},
+				...embedOptions
+			});
+			if (embedOptions?.events) {
+				console.warn(
+					"Using `embedOptions.events` will likely break things. Use SveltePlayer's callback props instead, eg onReady, onPlay, onPause"
+				);
+			}
+		});
+	}
+
+	export function play() {
+		if (player !== undefined && isPlayerReady) {
+			player.playVideo();
+		}
+	}
+
+	export function pause() {
+		if (player !== undefined && isPlayerReady) {
+			player.pauseVideo();
+		}
+	}
+
+	export function stop() {
+		if (player !== undefined && isPlayerReady) {
+			const youtubeIframe = player.getIframe();
+			if (youtubeIframe !== null && !document.body.contains(youtubeIframe)) {
+				return;
+			}
+			player.stopVideo();
+		}
+	}
+
+	export function seekTo(amount: number, keepPlaying?: boolean) {
+		if (player !== undefined && isPlayerReady) {
+			player.seekTo(amount);
+			if (!keepPlaying && !playing) {
+				pause();
+			}
+		}
+	}
+
+	export function setVolume(fraction: number) {
+		if (player !== undefined && isPlayerReady) {
+			player.setVolume(fraction * 100);
+		}
+	}
+
+	export function mute() {
+		if (player !== undefined && isPlayerReady) {
+			player.mute();
+		}
+	}
+
+	export function unmute() {
+		if (player !== undefined && isPlayerReady) {
+			player.unMute();
+		}
+	}
+
+	export function setPlaybackRate(rate: number) {
+		if (player !== undefined && isPlayerReady) {
+			player.setPlaybackRate(rate);
+		}
+	}
+
+	export function setLoop(loop: boolean) {
+		if (player !== undefined && isPlayerReady) {
+			player.setLoop(loop);
+		}
+	}
+
+	export function getDuration() {
+		if (player !== undefined && isPlayerReady) {
+			return player.getDuration();
+		}
+		return 0;
+	}
+
+	export function getCurrentTime() {
+		if (player !== undefined && isPlayerReady) {
+			return player.getCurrentTime();
+		}
+		return 0;
+	}
+	export function getSecondsLoaded() {
+		let loadedFraction = 0;
+		if (player !== undefined && isPlayerReady) {
+			loadedFraction = player.getVideoLoadedFraction();
+		}
+		return loadedFraction * getDuration();
+	}
+
+	export function getPlayer() {
+		if (player !== undefined) {
+			return player;
+		}
+
+		return null;
+	}
 </script>
 
 <div>

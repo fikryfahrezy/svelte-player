@@ -1,4 +1,4 @@
-import type { Player } from './types';
+// import type { Player } from './types';
 import { youtube } from './patterns';
 
 const players = [
@@ -8,6 +8,8 @@ const players = [
 			return import('./YouTube.svelte');
 		}
 	}
-] satisfies Player[];
+];
+
+export type Player = (typeof players)[number];
 
 export default players;

@@ -1,4 +1,6 @@
 <script lang="ts">
+	import type { PlayerRef } from '~/lib/svelte-player/types';
+	import type { OnProgressProps } from '~/lib/svelte-player/players/types';
 	import YouTube from '~/lib/svelte-player/SveltePlayer.svelte';
 	import LoadButton from './LoadButton.svelte';
 	import Duration from './Duration.svelte';
@@ -15,10 +17,46 @@
 	let duration = 0;
 	let playbackRate = 1.0;
 	let loop = false;
-	let urlInput: string = '';
+	let urlInput = '';
+
+	let playerRef: PlayerRef | undefined = undefined;
 
 	function handlePlayPause() {
 		playing = !playing;
+	}
+
+	function handleOnPlaybackRateChange(event: CustomEvent<number>) {
+		console.log(event.detail);
+		// playbackRate = parseFloat(event.detail);
+	}
+
+	function handlePlay() {
+		console.log('onPlay');
+		playing = true;
+	}
+
+	function handlePause() {
+		console.log('onPause');
+		playing = false;
+	}
+
+	function handleProgress(event: CustomEvent<OnProgressProps>) {
+		const state = event.detail;
+		console.log('onProgress', state);
+		// We only want to update time slider if we are not currently seeking
+		// if (!state.seeking) {
+		// 	setState(state);
+		// }
+	}
+
+	function handleEnded() {
+		console.log('onEnded');
+		playing = loop;
+	}
+
+	function handleDuration(event: CustomEvent<number>) {
+		console.log('onDuration', event.detail);
+		duration = event.detail;
 	}
 </script>
 
@@ -30,25 +68,30 @@
 				{url}
 				{muted}
 				{playing}
+				bind:this={playerRef}
+				on:ready={() => {
+					console.log('onReady');
+				}}
+				on:start={() => {
+					console.log('onStart');
+				}}
+				on:play={handlePlay}
+				on:pause={handlePause}
 				on:buffer={() => {
 					console.log('onBuffer');
 				}}
-				on:bufferEnd={() => {
-					console.log('onBufferEnd');
+				on:playbackRateChange={handleOnPlaybackRateChange}
+				on:seek={(e) => {
+					console.log('onSeek', e);
 				}}
-				on:ended={() => {
-					console.log('onEnded');
+				on:ended={handleEnded}
+				on:error={(e) => {
+					console.log('onError', e);
 				}}
-				on:pause={() => {
-					console.log('onPause');
-					playing = false;
-				}}
-				on:play={() => {
-					console.log('onPlay');
-					playing = true;
-				}}
-				on:ready={() => {
-					console.log('onReady');
+				on:progress={handleProgress}
+				on:duration={handleDuration}
+				on:playbackQualityChange={(e) => {
+					console.log('onPlaybackQualityChange', e);
 				}}
 			/>
 		</div>
@@ -138,23 +181,21 @@
 					<td>
 						<LoadButton
 							on:click={() => {
-								console.log('https://www.youtube.com/watch?v=oUFJJNQGwhk');
+								url = 'https://www.youtube.com/watch?v=oUFJJNQGwhk';
 							}}
 						>
 							Test A
 						</LoadButton>
 						<LoadButton
 							on:click={() => {
-								console.log('https://www.youtube.com/watch?v=jNgP6d9HraI');
+								url = 'https://www.youtube.com/watch?v=jNgP6d9HraI';
 							}}
 						>
 							Test B
 						</LoadButton>
 						<LoadButton
 							on:click={() => {
-								console.log(
-									'https://www.youtube.com/playlist?list=PLogRWNZ498ETeQNYrOlqikEML3bKJcdcx'
-								);
+								url = 'https://www.youtube.com/playlist?list=PLogRWNZ498ETeQNYrOlqikEML3bKJcdcx';
 							}}
 						>
 							Playlist
@@ -166,21 +207,21 @@
 					<td>
 						<LoadButton
 							on:click={() => {
-								console.log('https://soundcloud.com/miami-nights-1984/accelerated');
+								url = 'https://soundcloud.com/miami-nights-1984/accelerated';
 							}}
 						>
 							Test A
 						</LoadButton>
 						<LoadButton
 							on:click={() => {
-								console.log('https://soundcloud.com/tycho/tycho-awake');
+								url = 'https://soundcloud.com/tycho/tycho-awake';
 							}}
 						>
 							Test B
 						</LoadButton>
 						<LoadButton
 							on:click={() => {
-								console.log('https://soundcloud.com/yunghog/sets/doperaptraxxx');
+								url = 'https://soundcloud.com/yunghog/sets/doperaptraxxx';
 							}}
 						>
 							Playlist
@@ -192,16 +233,14 @@
 					<td>
 						<LoadButton
 							on:click={() => {
-								console.log('https://www.facebook.com/facebook/videos/10153231379946729/');
+								url = 'https://www.facebook.com/facebook/videos/10153231379946729/';
 							}}
 						>
 							Test A
 						</LoadButton>
 						<LoadButton
 							on:click={() => {
-								console.log(
-									'https://www.facebook.com/FacebookDevelopers/videos/10152454700553553/'
-								);
+								url = 'https://www.facebook.com/FacebookDevelopers/videos/10152454700553553/';
 							}}
 						>
 							Test B
@@ -213,14 +252,14 @@
 					<td>
 						<LoadButton
 							on:click={() => {
-								console.log('https://vimeo.com/90509568');
+								url = 'https://vimeo.com/90509568';
 							}}
 						>
 							Test A
 						</LoadButton>
 						<LoadButton
 							on:click={() => {
-								console.log('https://vimeo.com/169599296');
+								url = 'https://vimeo.com/169599296';
 							}}
 						>
 							Test B
@@ -232,21 +271,21 @@
 					<td>
 						<LoadButton
 							on:click={() => {
-								console.log('https://www.twitch.tv/videos/106400740');
+								url = 'https://www.twitch.tv/videos/106400740';
 							}}
 						>
 							Test A
 						</LoadButton>
 						<LoadButton
 							on:click={() => {
-								console.log('https://www.twitch.tv/videos/12783852');
+								url = 'https://www.twitch.tv/videos/12783852';
 							}}
 						>
 							Test B
 						</LoadButton>
 						<LoadButton
 							on:click={() => {
-								console.log('https://www.twitch.tv/kronovi');
+								url = 'https://www.twitch.tv/kronovi';
 							}}
 						>
 							Test C
@@ -258,14 +297,14 @@
 					<td>
 						<LoadButton
 							on:click={() => {
-								console.log('https://streamable.com/moo');
+								url = 'https://streamable.com/moo';
 							}}
 						>
 							Test A
 						</LoadButton>
 						<LoadButton
 							on:click={() => {
-								console.log('https://streamable.com/ifjh');
+								url = 'https://streamable.com/ifjh';
 							}}
 						>
 							Test B
@@ -277,21 +316,21 @@
 					<td>
 						<LoadButton
 							on:click={() => {
-								console.log('https://home.wistia.com/medias/e4a27b971d');
+								url = 'https://home.wistia.com/medias/e4a27b971d';
 							}}
 						>
 							Test A
 						</LoadButton>
 						<LoadButton
 							on:click={() => {
-								console.log('https://home.wistia.com/medias/29b0fbf547');
+								url = 'https://home.wistia.com/medias/29b0fbf547';
 							}}
 						>
 							Test B
 						</LoadButton>
 						<LoadButton
 							on:click={() => {
-								console.log('https://home.wistia.com/medias/bq6epni33s');
+								url = 'https://home.wistia.com/medias/bq6epni33s';
 							}}
 						>
 							Test C
@@ -303,14 +342,14 @@
 					<td>
 						<LoadButton
 							on:click={() => {
-								console.log('https://www.dailymotion.com/video/x5e9eog');
+								url = 'https://www.dailymotion.com/video/x5e9eog';
 							}}
 						>
 							Test A
 						</LoadButton>
 						<LoadButton
 							on:click={() => {
-								console.log('https://www.dailymotion.com/video/x61xx3z');
+								url = 'https://www.dailymotion.com/video/x61xx3z';
 							}}
 						>
 							Test B
@@ -322,16 +361,15 @@
 					<td>
 						<LoadButton
 							on:click={() => {
-								console.log('https://www.mixcloud.com/mixcloud/meet-the-curators/');
+								url = 'https://www.mixcloud.com/mixcloud/meet-the-curators/';
 							}}
 						>
 							Test A
 						</LoadButton>
 						<LoadButton
 							on:click={() => {
-								console.log(
-									'https://www.mixcloud.com/mixcloud/mixcloud-curates-4-mary-anne-hobbs-in-conversation-with-dan-deacon/'
-								);
+								url =
+									'https://www.mixcloud.com/mixcloud/mixcloud-curates-4-mary-anne-hobbs-in-conversation-with-dan-deacon/';
 							}}
 						>
 							Test B
@@ -343,14 +381,14 @@
 					<td>
 						<LoadButton
 							on:click={() => {
-								console.log('https://video.vidyard.com/watch/YBvcF2BEfvKdowmfrRwk57');
+								url = 'https://video.vidyard.com/watch/YBvcF2BEfvKdowmfrRwk57';
 							}}
 						>
 							Test A
 						</LoadButton>
 						<LoadButton
 							on:click={() => {
-								console.log('https://video.vidyard.com/watch/BLXgYCDGfwU62vdMWybNVJ');
+								url = 'https://video.vidyard.com/watch/BLXgYCDGfwU62vdMWybNVJ';
 							}}
 						>
 							Test B
@@ -362,18 +400,16 @@
 					<td>
 						<LoadButton
 							on:click={() => {
-								console.log(
-									'https://cdnapisec.kaltura.com/p/2507381/sp/250738100/embedIframeJs/uiconf_id/44372392/partner_id/2507381?iframeembed=true&playerId=kaltura_player_1605622074&entry_id=1_jz404fbl'
-								);
+								url =
+									'https://cdnapisec.kaltura.com/p/2507381/sp/250738100/embedIframeJs/uiconf_id/44372392/partner_id/2507381?iframeembed=true&playerId=kaltura_player_1605622074&entry_id=1_jz404fbl';
 							}}
 						>
 							Test A
 						</LoadButton>
 						<LoadButton
 							on:click={() => {
-								console.log(
-									'https://cdnapisec.kaltura.com/p/2507381/sp/250738100/embedIframeJs/uiconf_id/44372392/partner_id/2507381?iframeembed=true&playerId=kaltura_player_1605622336&entry_id=1_i1jmzcn3'
-								);
+								url =
+									'https://cdnapisec.kaltura.com/p/2507381/sp/250738100/embedIframeJs/uiconf_id/44372392/partner_id/2507381?iframeembed=true&playerId=kaltura_player_1605622336&entry_id=1_i1jmzcn3';
 							}}
 						>
 							Test B
@@ -385,52 +421,45 @@
 					<td>
 						<LoadButton
 							on:click={() => {
-								console.log(
-									'https://test-videos.co.uk/vids/bigbuckbunny/mp4/h264/360/Big_Buck_Bunny_360_10s_1MB.mp4'
-								);
+								url =
+									'https://test-videos.co.uk/vids/bigbuckbunny/mp4/h264/360/Big_Buck_Bunny_360_10s_1MB.mp4';
 							}}
 						>
 							mp4
 						</LoadButton>
 						<LoadButton
 							on:click={() => {
-								console.log(
-									'https://test-videos.co.uk/vids/bigbuckbunny/webm/vp8/360/Big_Buck_Bunny_360_10s_1MB.webm'
-								);
+								url =
+									'https://test-videos.co.uk/vids/bigbuckbunny/webm/vp8/360/Big_Buck_Bunny_360_10s_1MB.webm';
 							}}
 						>
 							webm
 						</LoadButton>
 						<LoadButton
 							on:click={() => {
-								console.log('https://filesamples.com/samples/video/ogv/sample_640x360.ogv');
+								url = 'https://filesamples.com/samples/video/ogv/sample_640x360.ogv';
 							}}
 						>
 							ogv
 						</LoadButton>
 						<LoadButton
 							on:click={() => {
-								console.log(
-									'https://storage.googleapis.com/media-session/elephants-dream/the-wires.mp3'
-								);
+								url = 'https://storage.googleapis.com/media-session/elephants-dream/the-wires.mp3';
 							}}
 						>
 							mp3
 						</LoadButton>
 						<LoadButton
 							on:click={() => {
-								console.log(
-									'https://bitdash-a.akamaihd.net/content/MI201109210084_1/m3u8s/f08e80da-bf1d-4e3d-8899-f0f6155f6efa.m3u8'
-								);
+								url =
+									'https://bitdash-a.akamaihd.net/content/MI201109210084_1/m3u8s/f08e80da-bf1d-4e3d-8899-f0f6155f6efa.m3u8';
 							}}
 						>
 							HLS (m3u8)
 						</LoadButton>
 						<LoadButton
 							on:click={() => {
-								console.log(
-									'https://dash.akamaized.net/akamai/bbb_30fps/bbb_30fps_640x360_800k.mpd'
-								);
+								url = 'https://dash.akamaized.net/akamai/bbb_30fps/bbb_30fps_640x360_800k.mpd';
 							}}
 						>
 							DASH (mpd)
@@ -459,7 +488,7 @@
 			<tbody>
 				<tr>
 					<th>url</th>
-					<td class={!url ? 'faded' : ''}>
+					<td class:faded={!url}>
 						{#if url instanceof Array}
 							Multiple
 						{:else}
@@ -503,8 +532,6 @@
 		</table>
 	</section>
 	<footer class="footer">
-		Version <strong>x</strong>
-		.
 		<a href="https://github.com/fikryfahrezy/svelte-player">GitHub</a>
 	</footer>
 </div>
@@ -522,87 +549,19 @@
  	License: none (public domain)
 	*/
 
-	html,
-	body,
 	div,
-	span,
-	applet,
-	object,
-	iframe,
 	h1,
 	h2,
-	h3,
-	h4,
-	h5,
-	h6,
-	p,
-	blockquote,
-	pre,
 	a,
-	abbr,
-	acronym,
-	address,
-	big,
-	cite,
-	code,
-	del,
-	dfn,
 	em,
-	img,
-	ins,
-	kbd,
-	q,
-	s,
-	samp,
-	small,
-	strike,
-	strong,
-	sub,
-	sup,
-	tt,
-	var,
-	b,
-	u,
-	i,
-	center,
-	dl,
-	dt,
-	dd,
-	ol,
-	ul,
-	li,
-	fieldset,
-	form,
 	label,
-	legend,
 	table,
-	caption,
 	tbody,
-	tfoot,
-	thead,
 	tr,
 	th,
 	td,
-	article,
-	aside,
-	canvas,
-	details,
-	embed,
-	figure,
-	figcaption,
 	footer,
-	header,
-	hgroup,
-	menu,
-	nav,
-	output,
-	ruby,
-	section,
-	summary,
-	time,
-	mark,
-	audio,
-	video {
+	section {
 		margin: 0;
 		padding: 0;
 		border: 0;
@@ -611,53 +570,17 @@
 		vertical-align: baseline;
 	}
 	/* HTML5 display-role reset for older browsers */
-	article,
-	aside,
-	details,
-	figcaption,
-	figure,
 	footer,
-	header,
-	hgroup,
-	menu,
-	nav,
 	section {
 		display: block;
-	}
-	body {
-		line-height: 1;
-	}
-	ol,
-	ul {
-		list-style: none;
-	}
-	blockquote,
-	q {
-		quotes: none;
-	}
-	blockquote:before,
-	blockquote:after,
-	q:before,
-	q:after {
-		content: '';
-		content: none;
-	}
-
-	body {
-		margin-right: 10px;
-		margin-left: 10px;
-		font-size: 14px;
-		line-height: 1.4;
 	}
 
 	em {
 		font-style: italic;
 	}
 
-	body,
 	h1,
-	h2,
-	h3 {
+	h2 {
 		font-weight: 300;
 		margin-bottom: 1em;
 	}
@@ -677,8 +600,7 @@
 
 	th,
 	td,
-	[type='text'],
-	textarea {
+	[type='text'] {
 		margin-right: 5px;
 		padding: 3px 6px;
 	}
@@ -691,8 +613,7 @@
 		vertical-align: middle;
 	}
 
-	[type='text'],
-	textarea {
+	[type='text'] {
 		width: 200px;
 		padding: 5px;
 		border: 1px solid darken(var(--light-grey), 20);
@@ -700,16 +621,9 @@
 		outline: 0;
 	}
 
-	[type='text']:focus,
-	textarea:focus {
+	[type='text']:focus {
 		border-color: darken(var(--light-grey), 30);
 		box-shadow: 0 0 5px var(--light-grey);
-	}
-
-	textarea {
-		height: 100px;
-		font-family: monospace;
-		vertical-align: bottom;
 	}
 
 	button {

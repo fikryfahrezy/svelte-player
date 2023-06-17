@@ -1,4 +1,7 @@
 <script lang="ts">
+	import type { PlayerRef, SeekToType, SveltePlayerDispatcher } from './types';
+	import type { InternalPlayerKey } from './players/types';
+	import { createEventDispatcher } from 'svelte';
 	import Player from './Player.svelte';
 	import players from './players';
 
@@ -10,6 +13,53 @@
 	export let progressInterval = 1000;
 	export let playbackRate = 1;
 	export let progressFrequency: number | undefined = undefined;
+	export let light = false;
+
+	const dispatch = createEventDispatcher<SveltePlayerDispatcher>();
+
+	let showPreviewState = !!light;
+	let playerRef: PlayerRef;
+
+	export function showPreview() {
+		showPreviewState = true;
+	}
+
+	export function getDuration() {
+		if (!playerRef) return null;
+		return playerRef.getDuration();
+	}
+
+	export function getCurrentTime() {
+		if (!playerRef) return null;
+		return playerRef.getCurrentTime();
+	}
+
+	export function getSecondsLoaded() {
+		if (!playerRef) return null;
+		return playerRef.getSecondsLoaded();
+	}
+
+	export function getInternalPlayer(key: InternalPlayerKey = 'player') {
+		if (!playerRef) return null;
+		return playerRef.getInternalPlayer(key);
+	}
+
+	export function seekTo(fraction: number, type?: SeekToType, keepPlaying?: boolean) {
+		if (!playerRef) return null;
+		playerRef.seekTo(fraction, type, keepPlaying);
+	}
+
+	const sveltePlayer: PlayerRef = {
+		getCurrentTime,
+		getDuration,
+		getInternalPlayer,
+		getSecondsLoaded,
+		seekTo
+	};
+
+	function handleReady() {
+		dispatch('ready', sveltePlayer);
+	}
 </script>
 
 {#each players as player}
@@ -24,12 +74,19 @@
 			{progressFrequency}
 			{playbackRate}
 			activePlayer={player.loadComponent}
-			on:buffer
-			on:bufferEnd
-			on:ended
-			on:pause
+			bind:this={playerRef}
+			on:ready={handleReady}
+			on:start
 			on:play
-			on:ready
+			on:pause
+			on:buffer
+			on:playbackRateChange
+			on:seek
+			on:ended
+			on:error
+			on:progress
+			on:duration
+			on:playbackQualityChange
 		/>
 	{/if}
 {/each}

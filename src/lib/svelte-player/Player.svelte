@@ -1,7 +1,7 @@
 <script lang="ts">
-	import type { SvelteComponent } from 'svelte';
-	import type { PlayerMedia, Dispatcher, OnProgressProps } from './players/types';
-	import type { SeekToType } from './types';
+	import type { SeekToType, PlayerDispatcher } from './types';
+	import type { Player } from './players';
+	import type { OnProgressProps, PlayerMediaRef, InternalPlayerKey } from './players/types';
 	import { onMount, createEventDispatcher } from 'svelte';
 
 	export let url: string | string[];
@@ -15,7 +15,7 @@
 	export let progressFrequency: number | undefined = undefined;
 	export let loopOnEnded: boolean | undefined = undefined;
 	// export let forceLoad: boolean | undefined = undefined;
-	export let activePlayer: () => Promise<{ default: typeof SvelteComponent }>;
+	export let activePlayer: Player['loadComponent'];
 
 	let mounted = false;
 	let isReady = false;
@@ -28,10 +28,10 @@
 	let prevLoaded: number | undefined = undefined;
 	let onDurationCalled: boolean | undefined = undefined;
 	let startOnPlay: boolean | undefined = undefined;
-	let player: PlayerMedia | undefined;
+	let player: PlayerMediaRef | undefined;
 
 	const SEEK_ON_PLAY_EXPIRY = 5000;
-	const dispatch = createEventDispatcher<Dispatcher>();
+	const dispatch = createEventDispatcher<PlayerDispatcher>();
 
 	onMount(() => {
 		mounted = true;
@@ -50,35 +50,47 @@
 		};
 	});
 
-	function handlePlayerMount(event: CustomEvent<PlayerMedia>) {
-		if (player) {
-			progress(); // Ensure onProgress is still called in strict mode
-			return; // Return here to prevent loading twice in strict mode
+	$: {
+		if (player !== undefined) {
+			player.load(url);
+			progress();
 		}
-		player = event.detail;
-		player.load(url);
-		progress();
 	}
 
-	function getDuration() {
+	export function getDuration() {
 		if (player === undefined || !isReady) {
 			return null;
 		}
 		return player.getDuration();
 	}
 
-	function getCurrentTime() {
+	export function getCurrentTime() {
 		if (player === undefined || !isReady) {
 			return null;
 		}
 		return player.getCurrentTime();
 	}
 
-	function getSecondsLoaded() {
+	export function getSecondsLoaded() {
 		if (player === undefined || !isReady) {
 			return null;
 		}
 		return player.getSecondsLoaded();
+	}
+
+	export function getInternalPlayer(key: InternalPlayerKey) {
+		if (!player) return null;
+		switch (key) {
+			case 'player':
+				if (player.getPlayer !== undefined) {
+					return player.getPlayer();
+				}
+				return null;
+			case 'hls':
+			case 'dash':
+			default:
+				return null;
+		}
 	}
 
 	function progress() {
@@ -106,7 +118,7 @@
 		progressTimeout = setTimeout(progress, progressFrequency || progressInterval);
 	}
 
-	function seekTo(amount: number, type?: SeekToType, keepPlaying: boolean = false) {
+	export function seekTo(amount: number, type?: SeekToType, keepPlaying = false) {
 		// When seeking before player is ready, store value and seek later
 		if (player === undefined || !isReady) {
 			if (amount !== 0) {
@@ -236,8 +248,7 @@
 {#await activePlayer() then { default: ActivePlayer }}
 	<svelte:component
 		this={ActivePlayer}
-		{url}
-		on:mount={handlePlayerMount}
+		bind:this={player}
 		on:ready={handleReady}
 		on:play={handlePlay}
 		on:pause={handlePause}
