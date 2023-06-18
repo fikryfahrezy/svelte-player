@@ -1,12 +1,13 @@
 <script lang="ts">
-	import type { YouTubeConfig } from './types';
+	import type { PlayerUrl } from './types';
 	import type {
 		ParsePlaylistFn,
 		YouTubeDispatcher,
 		YouTubeMediaPlayer,
-		YouTubeMediaPlayerOnStateChangeEvent
+		YouTubeMediaPlayerOnStateChangeEvent,
+		YouTubeConfig
 	} from './youtube-types';
-	import { createEventDispatcher } from 'svelte';
+	import { createEventDispatcher, onMount } from 'svelte';
 	import { MATCH_URL_YOUTUBE } from './patterns';
 	import { getSDK, parseEndTime, parseStartTime } from './utils';
 
@@ -32,14 +33,18 @@
 	let container: HTMLDivElement | undefined;
 	let player: YouTubeMediaPlayer | undefined;
 
-	function getID(url: string | string[]) {
+	onMount(() => {
+		dispatch('mount');
+	});
+
+	function getID(url: PlayerUrl) {
 		if (!url || url instanceof Array || MATCH_PLAYLIST.test(url)) {
 			return null;
 		}
 		return url.match(MATCH_URL_YOUTUBE)?.[1] ?? null;
 	}
 
-	function parsePlaylist(url: string | string[]): ReturnType<ParsePlaylistFn> {
+	function parsePlaylist(url: PlayerUrl): ReturnType<ParsePlaylistFn> {
 		if (url instanceof Array) {
 			return {
 				listType: 'playlist',
@@ -107,7 +112,7 @@
 		}
 	}
 
-	export function load(url: string | string[], isReady?: boolean) {
+	export function load(url: PlayerUrl, isReady?: boolean) {
 		const id = getID(url);
 		if (id === null) {
 			return;
@@ -280,6 +285,13 @@
 	}
 </script>
 
-<div>
+<div class="youtube-player">
 	<div bind:this={container} />
 </div>
+
+<style>
+	.youtube-player {
+		width: 100%;
+		height: 100%;
+	}
+</style>

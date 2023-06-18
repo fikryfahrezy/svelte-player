@@ -40,14 +40,8 @@ export type PlayerProps = {
 	loop?: boolean;
 };
 
-export type YouTubeConfig = {
-	playerVars?: Partial<YTPlayerPlayerVars>;
-	embedOptions?: Partial<YTPlayerOptions>;
-	onUnstarted?: () => void;
-};
-
 export type PlayerMedia = {
-	load(url: string | string[], isReady?: boolean): void;
+	load(url: PlayerUrl, isReady?: boolean): void;
 	stop(): void;
 	play(): void;
 	pause(): void;
@@ -81,6 +75,7 @@ export type OnErrorProps = {
 };
 
 export type Dispatcher = {
+	mount: void;
 	start: void;
 	play: void;
 	progress: OnProgressProps;

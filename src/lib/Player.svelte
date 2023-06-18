@@ -1,18 +1,29 @@
 <script lang="ts">
 	import type { SeekToType, PlayerDispatcher } from './types';
 	import type { Player } from './players';
-	import type { OnProgressProps, PlayerMediaRef, InternalPlayerKey } from './players/types';
+	import type {
+		OnProgressProps,
+		PlayerMediaRef,
+		InternalPlayerKey,
+		OnErrorProps,
+		PlayerUrl
+	} from './players/types';
 	import { onMount, createEventDispatcher } from 'svelte';
+	import { isMediaStream } from './utils';
 
-	export let url: string | string[];
-	export let muted: boolean;
+	export let url: PlayerUrl;
 	export let playing: boolean;
-	export let stopOnUnmount: boolean;
 	export let loop: boolean;
-	export let progressInterval: number;
-	export let playbackRate: number;
+	export let controls: boolean;
 	export let volume: number | null = null;
+	export let muted: boolean;
+	export let playbackRate: number;
+	export let progressInterval: number;
+	export let playsinline: boolean;
+	export let stopOnUnmount: boolean;
+
 	export let progressFrequency: number | undefined = undefined;
+
 	export let loopOnEnded: boolean | undefined = undefined;
 	// export let forceLoad: boolean | undefined = undefined;
 	export let activePlayer: Player['loadComponent'];
@@ -20,7 +31,7 @@
 	let mounted = false;
 	let isReady = false;
 	let isLoading = true; // Use isLoading to prevent onPause when switching URL
-	let loadOnReady: string | null = null;
+	let loadOnReady: PlayerUrl | null = null;
 	let seekOnPlay: number | null = null;
 	let progressTimeout: number | undefined = undefined;
 	let durationCheckTimeout: number | undefined = undefined;
@@ -50,7 +61,74 @@
 		};
 	});
 
-	$: {
+	function handlePropsUrlChange(propsUrl: typeof url) {
+		if (player !== undefined && isReady) {
+			if (isLoading && !isMediaStream(propsUrl)) {
+				console.warn(
+					`SveltePlayer: the attempt to load ${propsUrl} is being deferred until the player has loaded`
+				);
+				loadOnReady = propsUrl;
+			} else {
+				isLoading = true;
+				startOnPlay = true;
+				onDurationCalled = false;
+				player.load(propsUrl, isReady);
+			}
+		}
+	}
+
+	$: handlePropsUrlChange(url);
+
+	function handlePropsPlayingChange(propsPlaying: typeof playing) {
+		if (player !== undefined && isReady) {
+			if (propsPlaying) {
+				player.play();
+			}
+			if (!propsPlaying) {
+				player.pause();
+			}
+		}
+	}
+
+	$: handlePropsPlayingChange(playing);
+
+	function handlePropsVolumeChange(propsVolume: typeof volume) {
+		if (player !== undefined && isReady && propsVolume !== null) {
+			player.setVolume(propsVolume);
+		}
+	}
+
+	$: handlePropsVolumeChange(volume);
+
+	function handlePropsMutedChange(propsMuted: typeof muted) {
+		if (player !== undefined && isReady) {
+			if (propsMuted) {
+				player.mute();
+			} else {
+				player.unmute();
+				if (volume !== null) {
+					// Set volume next tick to fix a bug with DailyMotion
+					setTimeout(() => {
+						if (player !== undefined && volume !== null) {
+							player.setVolume(volume);
+						}
+					});
+				}
+			}
+		}
+	}
+
+	$: handlePropsMutedChange(muted);
+
+	function handlePropsPlaybackRateChange(propsPlaybackRate: typeof playbackRate) {
+		if (player !== undefined && isReady && player.setPlaybackRate) {
+			player.setPlaybackRate(propsPlaybackRate);
+		}
+	}
+
+	$: handlePropsPlaybackRateChange(playbackRate);
+
+	function handlePlayerMount() {
 		if (player !== undefined) {
 			player.load(url);
 			progress();
@@ -115,7 +193,7 @@
 				prevLoaded = progress.loadedSeconds;
 			}
 		}
-		progressTimeout = setTimeout(progress, progressFrequency || progressInterval);
+		progressTimeout = window.setTimeout(progress, progressFrequency || progressInterval);
 	}
 
 	export function seekTo(amount: number, type?: SeekToType, keepPlaying = false) {
@@ -149,7 +227,7 @@
 		}
 
 		isReady = true;
-		isLoading = true;
+		isLoading = false;
 		dispatch('ready');
 
 		if (player !== undefined && !muted && volume !== null) {
@@ -196,6 +274,11 @@
 		}
 	}
 
+	function handleError(event: CustomEvent<OnErrorProps>) {
+		isLoading = false;
+		dispatch('error', event.detail);
+	}
+
 	function handleDurationCheck() {
 		clearTimeout(durationCheckTimeout);
 		const duration = getDuration();
@@ -205,7 +288,7 @@
 				onDurationCalled = true;
 			}
 		} else {
-			durationCheckTimeout = setTimeout(handleDurationCheck, 100);
+			durationCheckTimeout = window.setTimeout(handleDurationCheck, 100);
 		}
 	}
 
@@ -214,48 +297,28 @@
 		// so this provides a way for players to avoid getting stuck
 		isLoading = false;
 	}
-
-	$: {
-		if (player !== undefined && isReady) {
-			if (playing) {
-				player.play();
-			}
-			if (!playing) {
-				player.pause();
-			}
-		}
-	}
-
-	$: {
-		if (player !== undefined && isReady) {
-			if (muted) {
-				player.mute();
-			} else {
-				player.unmute();
-				if (volume !== null) {
-					// Set volume next tick to fix a bug with DailyMotion
-					setTimeout(() => {
-						if (player !== undefined && volume !== null) {
-							player.setVolume(volume);
-						}
-					});
-				}
-			}
-		}
-	}
 </script>
 
 {#await activePlayer() then { default: ActivePlayer }}
 	<svelte:component
 		this={ActivePlayer}
+		{playing}
+		{controls}
+		{playsinline}
+		{loop}
 		bind:this={player}
+		on:mount={handlePlayerMount}
 		on:ready={handleReady}
 		on:play={handlePlay}
 		on:pause={handlePause}
 		on:ended={handleEnded}
-		on:ended={handleEnded}
 		on:loaded={handleLoaded}
+		on:error={handleError}
 		on:bufferEnd
 		on:buffer
+		on:startxxxxxxxxxxx
+		on:playbackRateChange
+		on:seek
+		on:playbackQualityChange
 	/>
 {/await}

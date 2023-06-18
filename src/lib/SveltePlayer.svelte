@@ -1,19 +1,23 @@
 <script lang="ts">
 	import type { PlayerRef, SeekToType, SveltePlayerDispatcher } from './types';
-	import type { InternalPlayerKey } from './players/types';
+	import type { InternalPlayerKey, PlayerUrl } from './players/types';
 	import { createEventDispatcher } from 'svelte';
 	import Player from './Player.svelte';
 	import players from './players';
 
-	export let url: string | string[];
-	export let muted = false;
+	export let url: PlayerUrl;
 	export let playing = false;
-	export let stopOnUnmount = true;
 	export let loop = false;
-	export let progressInterval = 1000;
-	export let playbackRate = 1;
-	export let progressFrequency: number | undefined = undefined;
+	export let controls = false;
 	export let light = false;
+	export let volume: number | null = null;
+	export let muted = false;
+	export let playbackRate = 1;
+	export let progressInterval = 1000;
+	export let playsinline = false;
+	export let stopOnUnmount = true;
+
+	export let progressFrequency: number | undefined = undefined;
 
 	const dispatch = createEventDispatcher<SveltePlayerDispatcher>();
 
@@ -73,6 +77,9 @@
 			{progressInterval}
 			{progressFrequency}
 			{playbackRate}
+			{volume}
+			{controls}
+			{playsinline}
 			activePlayer={player.loadComponent}
 			bind:this={playerRef}
 			on:ready={handleReady}

@@ -1,11 +1,11 @@
 <script lang="ts">
-	import type { PlayerRef } from '~/lib/svelte-player/types';
-	import type { OnProgressProps } from '~/lib/svelte-player/players/types';
-	import YouTube from '~/lib/svelte-player/SveltePlayer.svelte';
+	import type { PlayerRef } from '~/lib/types';
+	import type { OnProgressProps } from '~/lib/players/types';
+	import YouTube from '~/lib/SveltePlayer.svelte';
 	import LoadButton from './LoadButton.svelte';
 	import Duration from './Duration.svelte';
 
-	let url: string | string[] = 'https://youtu.be/gpA4vP5-DF0';
+	let url: string | string[] = '';
 	let pip = false;
 	let playing = true;
 	let controls = false;
@@ -18,16 +18,29 @@
 	let playbackRate = 1.0;
 	let loop = false;
 	let urlInput = '';
+	let seeking = false;
 
 	let playerRef: PlayerRef | undefined = undefined;
 
-	function handlePlayPause() {
-		playing = !playing;
+	function load(requestUrl: string | string[]) {
+		url = requestUrl;
+		played = 0;
+		loaded = 0;
+		pip = false;
+	}
+
+	function handleStop() {
+		url = '';
+		playing = false;
+	}
+
+	function handleToggleControls() {
+		url = '';
+		load(url);
 	}
 
 	function handleOnPlaybackRateChange(event: CustomEvent<number>) {
-		console.log(event.detail);
-		// playbackRate = parseFloat(event.detail);
+		playbackRate = parseFloat(String(event.detail));
 	}
 
 	function handlePlay() {
@@ -40,13 +53,23 @@
 		playing = false;
 	}
 
+	function handleSeekMouseDown() {
+		seeking = true;
+	}
+
+	function handleSeekMouseUp() {
+		seeking = false;
+		playerRef?.seekTo(parseFloat(String(played)));
+	}
+
 	function handleProgress(event: CustomEvent<OnProgressProps>) {
 		const state = event.detail;
 		console.log('onProgress', state);
 		// We only want to update time slider if we are not currently seeking
-		// if (!state.seeking) {
-		// 	setState(state);
-		// }
+		if (!seeking && state.loaded !== undefined && state.played !== undefined) {
+			loaded = state.loaded;
+			played = state.played;
+		}
 	}
 
 	function handleEnded() {
@@ -58,16 +81,24 @@
 		console.log('onDuration', event.detail);
 		duration = event.detail;
 	}
+
+	function handleClickFullscreen() {
+		alert('TODO: not implemented');
+	}
 </script>
 
 <div class="app">
 	<section class="section">
 		<h1>SveltePlayer Demo</h1>
-		<div class="player-wrapper">
+		<div class="player-wrapper svelte-player">
 			<YouTube
 				{url}
 				{muted}
 				{playing}
+				{playbackRate}
+				{volume}
+				{controls}
+				{loop}
 				bind:this={playerRef}
 				on:ready={() => {
 					console.log('onReady');
@@ -101,32 +132,65 @@
 				<tr>
 					<th>Controls</th>
 					<td>
-						<button>Stop</button>
-						<button on:click={handlePlayPause}>{playing ? 'Pause' : 'Play'}</button>
-						<button>Fullscreen</button>
+						<button on:click={handleStop}>Stop</button>
+						<label>
+							<input type="checkbox" bind:checked={playing} />
+							{!playing ? 'Pause' : 'Play'}
+						</label>
+						<button on:click={handleClickFullscreen}>Fullscreen</button>
 						{#if light}
-							<button>Show preview</button>
+							<button
+								on:click={() => {
+									alert('TODO: not implemented');
+								}}
+							>
+								Show preview
+							</button>
 						{/if}
+						<button
+							on:click={() => {
+								alert('TODO: not implemented');
+							}}
+						>
+							{pip ? 'Disable PiP' : 'Enable PiP'}
+						</button>
 					</td>
 				</tr>
 				<tr>
 					<th>Speed</th>
 					<td>
-						<button value={1}>1x</button>
-						<button value={1.5}>1.5x</button>
-						<button value={2}>2x</button>
+						<label>
+							<input type="radio" bind:group={playbackRate} value={1} />
+							1x
+						</label>
+						<label>
+							<input type="radio" bind:group={playbackRate} value={1.5} />
+							1.5x
+						</label>
+						<label>
+							<input type="radio" bind:group={playbackRate} value={2} />
+							2x
+						</label>
 					</td>
 				</tr>
 				<tr>
 					<th>Seek</th>
 					<td>
-						<input type="range" min={0} max={0.999999} step="any" value={played} />
+						<input
+							type="range"
+							min={0}
+							max={0.999999}
+							step="any"
+							bind:value={played}
+							on:mousedown={handleSeekMouseDown}
+							on:mouseup={handleSeekMouseUp}
+						/>
 					</td>
 				</tr>
 				<tr>
 					<th>Volume</th>
 					<td>
-						<input type="range" min={0} max={1} step="any" value={volume} />
+						<input type="range" min={0} max={1} step="any" bind:value={volume} />
 					</td>
 				</tr>
 				<tr>
@@ -134,7 +198,12 @@
 						<label for="controls">Controls</label>
 					</th>
 					<td>
-						<input id="controls" type="checkbox" checked={controls} />
+						<input
+							id="controls"
+							type="checkbox"
+							bind:checked={controls}
+							on:change={handleToggleControls}
+						/>
 						<em>&nbsp; Requires player reload</em>
 					</td>
 				</tr>
@@ -151,7 +220,7 @@
 						<label for="loop">Loop</label>
 					</th>
 					<td>
-						<input id="loop" type="checkbox" checked={loop} />
+						<input id="loop" type="checkbox" bind:checked={loop} />
 					</td>
 				</tr>
 				<tr>
@@ -159,7 +228,7 @@
 						<label for="light">Light mode</label>
 					</th>
 					<td>
-						<input id="light" type="checkbox" checked={light} />
+						<input id="light" type="checkbox" bind:checked={light} />
 					</td>
 				</tr>
 				<tr>
@@ -181,21 +250,21 @@
 					<td>
 						<LoadButton
 							on:click={() => {
-								url = 'https://www.youtube.com/watch?v=oUFJJNQGwhk';
+								load('https://www.youtube.com/watch?v=oUFJJNQGwhk');
 							}}
 						>
 							Test A
 						</LoadButton>
 						<LoadButton
 							on:click={() => {
-								url = 'https://www.youtube.com/watch?v=jNgP6d9HraI';
+								load('https://www.youtube.com/watch?v=jNgP6d9HraI');
 							}}
 						>
 							Test B
 						</LoadButton>
 						<LoadButton
 							on:click={() => {
-								url = 'https://www.youtube.com/playlist?list=PLogRWNZ498ETeQNYrOlqikEML3bKJcdcx';
+								load('https://www.youtube.com/playlist?list=PLogRWNZ498ETeQNYrOlqikEML3bKJcdcx');
 							}}
 						>
 							Playlist
@@ -207,21 +276,21 @@
 					<td>
 						<LoadButton
 							on:click={() => {
-								url = 'https://soundcloud.com/miami-nights-1984/accelerated';
+								load('https://soundcloud.com/miami-nights-1984/accelerated');
 							}}
 						>
 							Test A
 						</LoadButton>
 						<LoadButton
 							on:click={() => {
-								url = 'https://soundcloud.com/tycho/tycho-awake';
+								load('https://soundcloud.com/tycho/tycho-awake');
 							}}
 						>
 							Test B
 						</LoadButton>
 						<LoadButton
 							on:click={() => {
-								url = 'https://soundcloud.com/yunghog/sets/doperaptraxxx';
+								load('https://soundcloud.com/yunghog/sets/doperaptraxxx');
 							}}
 						>
 							Playlist
@@ -233,14 +302,14 @@
 					<td>
 						<LoadButton
 							on:click={() => {
-								url = 'https://www.facebook.com/facebook/videos/10153231379946729/';
+								load('https://www.facebook.com/facebook/videos/10153231379946729/');
 							}}
 						>
 							Test A
 						</LoadButton>
 						<LoadButton
 							on:click={() => {
-								url = 'https://www.facebook.com/FacebookDevelopers/videos/10152454700553553/';
+								load('https://www.facebook.com/FacebookDevelopers/videos/10152454700553553/');
 							}}
 						>
 							Test B
@@ -252,14 +321,14 @@
 					<td>
 						<LoadButton
 							on:click={() => {
-								url = 'https://vimeo.com/90509568';
+								load('https://vimeo.com/90509568');
 							}}
 						>
 							Test A
 						</LoadButton>
 						<LoadButton
 							on:click={() => {
-								url = 'https://vimeo.com/169599296';
+								load('https://vimeo.com/169599296');
 							}}
 						>
 							Test B
@@ -271,21 +340,21 @@
 					<td>
 						<LoadButton
 							on:click={() => {
-								url = 'https://www.twitch.tv/videos/106400740';
+								load('https://www.twitch.tv/videos/106400740');
 							}}
 						>
 							Test A
 						</LoadButton>
 						<LoadButton
 							on:click={() => {
-								url = 'https://www.twitch.tv/videos/12783852';
+								load('https://www.twitch.tv/videos/12783852');
 							}}
 						>
 							Test B
 						</LoadButton>
 						<LoadButton
 							on:click={() => {
-								url = 'https://www.twitch.tv/kronovi';
+								load('https://www.twitch.tv/kronovi');
 							}}
 						>
 							Test C
@@ -297,14 +366,14 @@
 					<td>
 						<LoadButton
 							on:click={() => {
-								url = 'https://streamable.com/moo';
+								load('https://streamable.com/moo');
 							}}
 						>
 							Test A
 						</LoadButton>
 						<LoadButton
 							on:click={() => {
-								url = 'https://streamable.com/ifjh';
+								load('https://streamable.com/ifjh');
 							}}
 						>
 							Test B
@@ -316,21 +385,21 @@
 					<td>
 						<LoadButton
 							on:click={() => {
-								url = 'https://home.wistia.com/medias/e4a27b971d';
+								load('https://home.wistia.com/medias/e4a27b971d');
 							}}
 						>
 							Test A
 						</LoadButton>
 						<LoadButton
 							on:click={() => {
-								url = 'https://home.wistia.com/medias/29b0fbf547';
+								load('https://home.wistia.com/medias/29b0fbf547');
 							}}
 						>
 							Test B
 						</LoadButton>
 						<LoadButton
 							on:click={() => {
-								url = 'https://home.wistia.com/medias/bq6epni33s';
+								load('https://home.wistia.com/medias/bq6epni33s');
 							}}
 						>
 							Test C
@@ -342,14 +411,14 @@
 					<td>
 						<LoadButton
 							on:click={() => {
-								url = 'https://www.dailymotion.com/video/x5e9eog';
+								load('https://www.dailymotion.com/video/x5e9eog');
 							}}
 						>
 							Test A
 						</LoadButton>
 						<LoadButton
 							on:click={() => {
-								url = 'https://www.dailymotion.com/video/x61xx3z';
+								load('https://www.dailymotion.com/video/x61xx3z');
 							}}
 						>
 							Test B
@@ -361,15 +430,16 @@
 					<td>
 						<LoadButton
 							on:click={() => {
-								url = 'https://www.mixcloud.com/mixcloud/meet-the-curators/';
+								load('https://www.mixcloud.com/mixcloud/meet-the-curators/');
 							}}
 						>
 							Test A
 						</LoadButton>
 						<LoadButton
 							on:click={() => {
-								url =
-									'https://www.mixcloud.com/mixcloud/mixcloud-curates-4-mary-anne-hobbs-in-conversation-with-dan-deacon/';
+								load(
+									'https://www.mixcloud.com/mixcloud/mixcloud-curates-4-mary-anne-hobbs-in-conversation-with-dan-deacon/'
+								);
 							}}
 						>
 							Test B
@@ -381,14 +451,14 @@
 					<td>
 						<LoadButton
 							on:click={() => {
-								url = 'https://video.vidyard.com/watch/YBvcF2BEfvKdowmfrRwk57';
+								load('https://video.vidyard.com/watch/YBvcF2BEfvKdowmfrRwk57');
 							}}
 						>
 							Test A
 						</LoadButton>
 						<LoadButton
 							on:click={() => {
-								url = 'https://video.vidyard.com/watch/BLXgYCDGfwU62vdMWybNVJ';
+								load('https://video.vidyard.com/watch/BLXgYCDGfwU62vdMWybNVJ');
 							}}
 						>
 							Test B
@@ -400,16 +470,18 @@
 					<td>
 						<LoadButton
 							on:click={() => {
-								url =
-									'https://cdnapisec.kaltura.com/p/2507381/sp/250738100/embedIframeJs/uiconf_id/44372392/partner_id/2507381?iframeembed=true&playerId=kaltura_player_1605622074&entry_id=1_jz404fbl';
+								load(
+									'https://cdnapisec.kaltura.com/p/2507381/sp/250738100/embedIframeJs/uiconf_id/44372392/partner_id/2507381?iframeembed=true&playerId=kaltura_player_1605622074&entry_id=1_jz404fbl'
+								);
 							}}
 						>
 							Test A
 						</LoadButton>
 						<LoadButton
 							on:click={() => {
-								url =
-									'https://cdnapisec.kaltura.com/p/2507381/sp/250738100/embedIframeJs/uiconf_id/44372392/partner_id/2507381?iframeembed=true&playerId=kaltura_player_1605622336&entry_id=1_i1jmzcn3';
+								load(
+									'https://cdnapisec.kaltura.com/p/2507381/sp/250738100/embedIframeJs/uiconf_id/44372392/partner_id/2507381?iframeembed=true&playerId=kaltura_player_1605622336&entry_id=1_i1jmzcn3'
+								);
 							}}
 						>
 							Test B
@@ -421,45 +493,48 @@
 					<td>
 						<LoadButton
 							on:click={() => {
-								url =
-									'https://test-videos.co.uk/vids/bigbuckbunny/mp4/h264/360/Big_Buck_Bunny_360_10s_1MB.mp4';
+								load(
+									'https://test-videos.co.uk/vids/bigbuckbunny/mp4/h264/360/Big_Buck_Bunny_360_10s_1MB.mp4'
+								);
 							}}
 						>
 							mp4
 						</LoadButton>
 						<LoadButton
 							on:click={() => {
-								url =
-									'https://test-videos.co.uk/vids/bigbuckbunny/webm/vp8/360/Big_Buck_Bunny_360_10s_1MB.webm';
+								load(
+									'https://test-videos.co.uk/vids/bigbuckbunny/webm/vp8/360/Big_Buck_Bunny_360_10s_1MB.webm'
+								);
 							}}
 						>
 							webm
 						</LoadButton>
 						<LoadButton
 							on:click={() => {
-								url = 'https://filesamples.com/samples/video/ogv/sample_640x360.ogv';
+								load('https://filesamples.com/samples/video/ogv/sample_640x360.ogv');
 							}}
 						>
 							ogv
 						</LoadButton>
 						<LoadButton
 							on:click={() => {
-								url = 'https://storage.googleapis.com/media-session/elephants-dream/the-wires.mp3';
+								load('https://storage.googleapis.com/media-session/elephants-dream/the-wires.mp3');
 							}}
 						>
 							mp3
 						</LoadButton>
 						<LoadButton
 							on:click={() => {
-								url =
-									'https://bitdash-a.akamaihd.net/content/MI201109210084_1/m3u8s/f08e80da-bf1d-4e3d-8899-f0f6155f6efa.m3u8';
+								load(
+									'https://bitdash-a.akamaihd.net/content/MI201109210084_1/m3u8s/f08e80da-bf1d-4e3d-8899-f0f6155f6efa.m3u8'
+								);
 							}}
 						>
 							HLS (m3u8)
 						</LoadButton>
 						<LoadButton
 							on:click={() => {
-								url = 'https://dash.akamaized.net/akamai/bbb_30fps/bbb_30fps_640x360_800k.mpd';
+								load('https://dash.akamaized.net/akamai/bbb_30fps/bbb_30fps_640x360_800k.mpd');
 							}}
 						>
 							DASH (mpd)
@@ -472,7 +547,7 @@
 						<input type="text" placeholder="Enter URL" bind:value={urlInput} />
 						<button
 							on:click={() => {
-								url = urlInput;
+								load(urlInput);
 							}}
 						>
 							Load
@@ -672,6 +747,10 @@
 		height: 270px;
 	}
 
+	.svelte-player {
+		margin-bottom: 10px;
+		background: rgba(0, 0, 0, 0.1);
+	}
 	.faded {
 		color: rgba(0, 0, 0, 0.5);
 	}
