@@ -1,11 +1,12 @@
 <script lang="ts">
 	import type { PlayerRef } from '~/lib/types';
-	import type { OnProgressProps } from '~/lib/players/types';
+	import type { OnProgressProps, PlayerUrl } from '~/lib/players/types';
 	import YouTube from '~/lib/SveltePlayer.svelte';
 	import LoadButton from './LoadButton.svelte';
 	import Duration from './Duration.svelte';
+	import screenfull from 'screenfull';
 
-	let url: string | string[] = '';
+	let url: PlayerUrl = '';
 	let pip = false;
 	let playing = true;
 	let controls = false;
@@ -21,12 +22,14 @@
 	let seeking = false;
 
 	let playerRef: PlayerRef | undefined = undefined;
+	let prevUrl: PlayerUrl = '';
 
-	function load(requestUrl: string | string[]) {
+	function load(requestUrl: PlayerUrl) {
 		url = requestUrl;
 		played = 0;
 		loaded = 0;
 		pip = false;
+		prevUrl = '';
 	}
 
 	function handleStop() {
@@ -35,9 +38,20 @@
 	}
 
 	function handleToggleControls() {
+		prevUrl = url;
 		url = '';
-		load(url);
+		console.log(url);
 	}
+
+	function onPrevURLStateChange(prevUrlState: typeof prevUrl) {
+		setTimeout(() => {
+			if (prevUrlState !== '') {
+				load(prevUrlState);
+			}
+		});
+	}
+
+	$: onPrevURLStateChange(prevUrl);
 
 	function handleOnPlaybackRateChange(event: CustomEvent<number>) {
 		playbackRate = parseFloat(String(event.detail));
@@ -59,7 +73,9 @@
 
 	function handleSeekMouseUp() {
 		seeking = false;
-		playerRef?.seekTo(parseFloat(String(played)));
+		if (playerRef !== undefined) {
+			playerRef.seekTo(parseFloat(String(played)));
+		}
 	}
 
 	function handleProgress(event: CustomEvent<OnProgressProps>) {
@@ -83,7 +99,7 @@
 	}
 
 	function handleClickFullscreen() {
-		alert('TODO: not implemented');
+		screenfull.request(document.querySelector('.svelte-player') ?? undefined);
 	}
 </script>
 

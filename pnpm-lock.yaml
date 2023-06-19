@@ -39,6 +39,9 @@ devDependencies:
   publint:
     specifier: ^0.1.9
     version: 0.1.12
+  screenfull:
+    specifier: ^6.0.2
+    version: 6.0.2
   svelte:
     specifier: ^3.54.0
     version: 3.59.1
@@ -1661,6 +1664,11 @@ packages:
       graceful-fs: 4.2.11
       mkdirp: 0.5.6
       rimraf: 2.7.1
+    dev: true
+
+  /screenfull@6.0.2:
+    resolution: {integrity: sha512-AQdy8s4WhNvUZ6P8F6PB21tSPIYKniic+Ogx0AacBMjKP1GUHN2E9URxQHtCusiwxudnCKkdy4GrHXPPJSkCCw==}
+    engines: {node: ^14.13.1 || >=16.0.0}
     dev: true
 
   /semver@7.5.2:
