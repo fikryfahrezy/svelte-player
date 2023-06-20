@@ -1,11 +1,26 @@
-// import type { Player } from './types';
-import { youtube } from './patterns';
+import type { FilePlayerUrl } from './file-types';
+import { canPlayYoutube, canPlayFile, AUDIO_EXTENSIONS } from './patterns';
+import { supportsWebKitPresentationMode } from './utils';
 
 const players = [
 	{
-		canPlay: youtube,
+		canPlay: canPlayYoutube,
 		loadComponent: () => {
 			return import('./YouTube.svelte');
+		}
+	},
+	{
+		canPlay: canPlayFile,
+		canEnablePIP: (url: FilePlayerUrl) => {
+			return (
+				canPlayFile(url) &&
+				(document.pictureInPictureEnabled || supportsWebKitPresentationMode()) &&
+				typeof url === 'string' &&
+				!AUDIO_EXTENSIONS.test(url)
+			);
+		},
+		loadComponent: () => {
+			return import('./NotImplemented.svelte');
 		}
 	}
 ];

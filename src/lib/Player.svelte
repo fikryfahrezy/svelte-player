@@ -20,6 +20,7 @@
 	export let playbackRate: number;
 	export let progressInterval: number;
 	export let playsinline: boolean;
+	export let pip: boolean;
 	export let stopOnUnmount: boolean;
 
 	export let progressFrequency: number | undefined = undefined;
@@ -28,7 +29,6 @@
 	// export let forceLoad: boolean | undefined = undefined;
 	export let activePlayer: Player['loadComponent'];
 
-	let mounted = false;
 	let isReady = false;
 	let isPlaying = false; // Track playing state internally to prevent bugs
 	let isLoading = true; // Use isLoading to prevent onPause when switching URL
@@ -46,8 +46,6 @@
 	const dispatch = createEventDispatcher<PlayerDispatcher>();
 
 	onMount(() => {
-		mounted = true;
-
 		return () => {
 			clearTimeout(progressTimeout);
 			clearTimeout(durationCheckTimeout);
@@ -58,7 +56,6 @@
 					player.disablePIP();
 				}
 			}
-			mounted = false;
 		};
 	});
 
@@ -92,6 +89,20 @@
 	}
 
 	$: handlePropsPlayingChange(playing);
+
+	function handlePropsPipChange(propsPip: typeof pip) {
+		if (player !== undefined && isReady) {
+			if (propsPip && player.enablePIP) {
+				player.enablePIP();
+			}
+
+			if (!propsPip && player.disablePIP) {
+				player.disablePIP();
+			}
+		}
+	}
+
+	$: handlePropsPipChange(pip);
 
 	function handlePropsVolumeChange(propsVolume: typeof volume) {
 		if (player !== undefined && isReady && propsVolume !== null) {
@@ -128,6 +139,14 @@
 	}
 
 	$: handlePropsPlaybackRateChange(playbackRate);
+
+	function handlePropsLoopChange(propsLoop: typeof loop) {
+		if (player !== undefined && isReady && player.setLoop) {
+			player.setLoop(propsLoop);
+		}
+	}
+
+	$: handlePropsLoopChange(loop);
 
 	function handlePlayerMount() {
 		if (player !== undefined) {
@@ -223,10 +242,6 @@
 	}
 
 	function handleReady() {
-		if (!mounted) {
-			return;
-		}
-
 		isReady = true;
 		isLoading = false;
 		dispatch('ready');

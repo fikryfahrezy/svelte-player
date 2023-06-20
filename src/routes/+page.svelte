@@ -1,7 +1,7 @@
 <script lang="ts">
-	import type { PlayerRef } from '~/lib/types';
+	import type { SveltePlayerRef } from '~/lib/types';
 	import type { OnProgressProps, PlayerUrl } from '~/lib/players/types';
-	import YouTube from '~/lib/SveltePlayer.svelte';
+	import SveltePlayer from '~/lib/SveltePlayer.svelte';
 	import LoadButton from './LoadButton.svelte';
 	import Duration from './Duration.svelte';
 	import screenfull from 'screenfull';
@@ -21,7 +21,7 @@
 	let urlInput = '';
 	let seeking = false;
 
-	let playerRef: PlayerRef | undefined = undefined;
+	let playerRef: SveltePlayerRef | undefined = undefined;
 	let prevUrl: PlayerUrl = '';
 
 	function load(requestUrl: PlayerUrl) {
@@ -107,7 +107,7 @@
 	<section class="section">
 		<h1>SveltePlayer Demo</h1>
 		<div class="player-wrapper svelte-player">
-			<YouTube
+			<SveltePlayer
 				{url}
 				{muted}
 				{playing}
@@ -115,6 +115,7 @@
 				{volume}
 				{controls}
 				{loop}
+				{pip}
 				bind:this={playerRef}
 				on:ready={() => {
 					console.log('onReady');
@@ -157,19 +158,20 @@
 						{#if light}
 							<button
 								on:click={() => {
-									alert('TODO: not implemented');
+									if (playerRef !== undefined) {
+										playerRef.showPreview();
+									}
 								}}
 							>
 								Show preview
 							</button>
 						{/if}
-						<button
-							on:click={() => {
-								alert('TODO: not implemented');
-							}}
-						>
-							{pip ? 'Disable PiP' : 'Enable PiP'}
-						</button>
+						{#if playerRef !== undefined && playerRef.canEnablePIP(url)}
+							<label>
+								<input type="checkbox" bind:checked={pip} />
+								{!pip ? 'Disable PiP' : 'Enable PiP'}
+							</label>
+						{/if}
 					</td>
 				</tr>
 				<tr>

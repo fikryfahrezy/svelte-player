@@ -142,3 +142,28 @@ export function callPlayer(player: GlobalSDKObject, checkIsReady?: () => boolean
 		)(...args);
 	};
 }
+
+export function isMediaStream(url: string) {
+	return (
+		typeof window !== 'undefined' &&
+		typeof window.MediaStream !== 'undefined' &&
+		(url as unknown) instanceof window.MediaStream
+	);
+}
+
+export function isBlobUrl(url: string) {
+	return /^blob:/.test(url);
+}
+
+export function supportsWebKitPresentationMode(video = document.createElement('video')) {
+	// Check if Safari supports PiP, and is not on mobile (other than iPad)
+	// iPhone safari appears to "support" PiP through the check, however PiP does not function
+	const notMobile = /iPhone|iPod/.test(navigator.userAgent) === false;
+	return (
+		'webkitSupportsPresentationMode' in video &&
+		video.webkitSupportsPresentationMode &&
+		'webkitSetPresentationMode' in video &&
+		typeof video.webkitSetPresentationMode === 'function' &&
+		notMobile
+	);
+}

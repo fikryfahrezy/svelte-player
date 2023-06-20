@@ -2,7 +2,8 @@ import type {
 	GlobalSDKObject,
 	InternalPlayerKey,
 	Dispatcher,
-	PlayerMediaRef
+	PlayerMediaRef,
+	PlayerUrl
 } from './players/types';
 
 export type SeekToType = 'seconds' | 'fraction';
@@ -21,4 +22,10 @@ export type PlayerRef = {
 
 export type SveltePlayerDispatcher = Dispatcher & {
 	ready: PlayerRef;
+	onClickPreview: null;
+};
+
+export type SveltePlayerRef = PlayerRef & {
+	canEnablePIP(url: PlayerUrl): boolean;
+	showPreview(): void;
 };
