@@ -1,12 +1,13 @@
 <script lang="ts">
 	import type { PlayerRef, SeekToType, SveltePlayerDispatcher, SveltePlayerRef } from './types';
-	import type { InternalPlayerKey, PlayerUrl } from './players/types';
+	import type { InternalPlayerKey, PlayerUrl, FilePlayerUrl } from './players/types';
+
 	import { createEventDispatcher } from 'svelte';
 	import Player from './Player.svelte';
 	import players from './players';
 	import Preview from './Preview.svelte';
 
-	export let url: PlayerUrl;
+	export let url: FilePlayerUrl;
 	export let playing = false;
 	export let loop = false;
 	export let controls = false;

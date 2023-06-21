@@ -1,4 +1,4 @@
-import type { FilePlayerUrl } from './file-types';
+import type { FilePlayerUrl } from './types';
 import { canPlayYoutube, canPlayFile, AUDIO_EXTENSIONS } from './patterns';
 import { supportsWebKitPresentationMode } from './utils';
 

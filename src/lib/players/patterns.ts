@@ -1,5 +1,4 @@
-import type { PlayerUrl } from './types';
-import type { FilePlayerUrl } from './file-types';
+import type { FilePlayerUrl } from './types';
 
 import { isMediaStream, isBlobUrl } from './utils';
 
@@ -15,9 +14,22 @@ export const HLS_EXTENSIONS = /\.(m3u8)($|\?)/i;
 export const DASH_EXTENSIONS = /\.(mpd)($|\?)/i;
 export const FLV_EXTENSIONS = /\.(flv)($|\?)/i;
 
-export function canPlayYoutube(url: PlayerUrl) {
+function everyNonObjectUrl(url: Exclude<FilePlayerUrl, string>, urlCase: RegExp) {
+	let isEveryUrl = true;
+	for (let i = 0; i < url.length; i++) {
+		const item = url[i];
+		if (typeof item === 'string') {
+			isEveryUrl = isEveryUrl && urlCase.test(item);
+		} else {
+			return false;
+		}
+	}
+	return isEveryUrl;
+}
+
+export function canPlayYoutube(url: FilePlayerUrl) {
 	if (url instanceof Array) {
-		return url.every((item) => MATCH_URL_YOUTUBE.test(item));
+		return everyNonObjectUrl(url, MATCH_URL_YOUTUBE);
 	}
 	return MATCH_URL_YOUTUBE.test(url);
 }

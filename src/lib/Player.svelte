@@ -6,12 +6,12 @@
 		PlayerMediaRef,
 		InternalPlayerKey,
 		OnErrorProps,
-		PlayerUrl
+		FilePlayerUrl
 	} from './players/types';
 	import { onMount, createEventDispatcher } from 'svelte';
 	import { isMediaStream } from './utils';
 
-	export let url: PlayerUrl;
+	export let url: FilePlayerUrl;
 	export let playing: boolean;
 	export let loop: boolean;
 	export let controls: boolean;
@@ -32,7 +32,7 @@
 	let isReady = false;
 	let isPlaying = false; // Track playing state internally to prevent bugs
 	let isLoading = true; // Use isLoading to prevent onPause when switching URL
-	let loadOnReady: PlayerUrl | null = null;
+	let loadOnReady: FilePlayerUrl | null = null;
 	let seekOnPlay: number | null = null;
 	let progressTimeout: number | undefined = undefined;
 	let durationCheckTimeout: number | undefined = undefined;

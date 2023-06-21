@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { PlayerUrl } from './types';
+	import type { FilePlayerUrl } from './types';
 	import type {
 		ParsePlaylistFn,
 		YouTubeDispatcher,
@@ -37,18 +37,25 @@
 		dispatch('mount');
 	});
 
-	function getID(url: PlayerUrl) {
+	function getID(url: FilePlayerUrl) {
 		if (!url || url instanceof Array || MATCH_PLAYLIST.test(url)) {
 			return null;
 		}
 		return url.match(MATCH_URL_YOUTUBE)?.[1] ?? null;
 	}
 
-	function parsePlaylist(url: PlayerUrl): ReturnType<ParsePlaylistFn> {
+	function parsePlaylist(url: FilePlayerUrl): ReturnType<ParsePlaylistFn> {
 		if (url instanceof Array) {
 			return {
 				listType: 'playlist',
-				list: url.map(getID).join(',')
+				list: url
+					.map((item) => {
+						if (typeof item === 'string') {
+							return getID(item);
+						}
+						return null;
+					})
+					.join(',')
 			};
 		}
 		if (MATCH_PLAYLIST.test(url)) {
@@ -112,7 +119,7 @@
 		}
 	}
 
-	export function load(url: PlayerUrl, isReady?: boolean) {
+	export function load(url: FilePlayerUrl, isReady?: boolean) {
 		const id = getID(url);
 		if (id === null) {
 			return;

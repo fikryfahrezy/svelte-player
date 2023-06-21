@@ -1,7 +1,13 @@
 // The codes in this file, is just copy-paste from https://github.com/cookpete/react-player
 // See original: https://github.com/cookpete/react-player/blob/master/src/utils.js
 
-import type { GetSDKParams, GlobalSDK, GlobalSDKType, PlayerUrl, GlobalSDKObject } from './types';
+import type {
+	GetSDKParams,
+	GlobalSDK,
+	GlobalSDKType,
+	GlobalSDKObject,
+	FilePlayerUrl
+} from './types';
 import loadScript from 'load-script';
 
 declare global {
@@ -18,7 +24,7 @@ const MATCH_NUMERIC = /^\d+$/;
 
 // Parse YouTube URL for a start time param, ie ?t=1h14m30s
 // and return the start time in seconds
-function parseTimeParam(url: PlayerUrl, pattern: RegExp) {
+function parseTimeParam(url: FilePlayerUrl, pattern: RegExp) {
 	if (url instanceof Array) {
 		return undefined;
 	}
@@ -48,11 +54,11 @@ function parseTimeString(stamp: string) {
 	return seconds;
 }
 
-export function parseStartTime(url: PlayerUrl) {
+export function parseStartTime(url: FilePlayerUrl) {
 	return parseTimeParam(url, MATCH_START_QUERY);
 }
 
-export function parseEndTime(url: PlayerUrl) {
+export function parseEndTime(url: FilePlayerUrl) {
 	return parseTimeParam(url, MATCH_END_QUERY);
 }
 

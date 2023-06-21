@@ -1,6 +1,6 @@
-import type { PlayerUrl } from './players/types';
+import type { FilePlayerUrl } from './players/types';
 
-export function isMediaStream(url: PlayerUrl) {
+export function isMediaStream(url: FilePlayerUrl) {
 	return (
 		typeof window !== 'undefined' &&
 		typeof window.MediaStream !== 'undefined' &&

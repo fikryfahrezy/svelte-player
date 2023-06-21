@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { PlayerMedia, PlayerUrl } from './types';
+	import type { PlayerMedia, FilePlayerUrl } from './types';
 
 	export const playing: boolean | undefined = undefined;
 	export const controls: boolean | undefined = undefined;
@@ -8,7 +8,7 @@
 
 	let player: PlayerMedia | undefined;
 
-	export function load(url: PlayerUrl, isReady?: boolean) {
+	export function load(url: FilePlayerUrl, isReady?: boolean) {
 		console.log('load');
 	}
 

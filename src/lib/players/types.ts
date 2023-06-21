@@ -41,7 +41,7 @@ export type PlayerProps = {
 };
 
 export type PlayerMedia = {
-	load(url: PlayerUrl, isReady?: boolean): void;
+	load(url: FilePlayerUrl, isReady?: boolean): void;
 	stop(): void;
 	play(): void;
 	pause(): void;
@@ -97,3 +97,7 @@ export type Dispatcher = {
 export type PlayerMediaRef = PlayerMedia & PlayerProps;
 
 export type InternalPlayerKey = 'player' | 'hls' | 'dash';
+
+export type FileMediaUrl = { src: string; type: string };
+
+export type FilePlayerUrl = PlayerUrl | FileMediaUrl[];
