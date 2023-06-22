@@ -5,6 +5,8 @@ import type {
 	PlayerMediaRef,
 	PlayerUrl
 } from './players/types';
+import type { YouTubeConfig } from './players/youtube-types';
+import type { FileConfig } from './players/file-types';
 
 export type SeekToType = 'seconds' | 'fraction';
 
@@ -29,3 +31,11 @@ export type SveltePlayerRef = PlayerRef & {
 	canEnablePIP(url: PlayerUrl): boolean;
 	showPreview(): void;
 };
+
+export type Config = {
+	youtube: YouTubeConfig;
+	file: FileConfig;
+};
+
+export type PlayerKey = keyof Config;
+export type PlayerConfig = Config[keyof Config];

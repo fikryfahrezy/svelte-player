@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { SeekToType, PlayerDispatcher } from './types';
+	import type { SeekToType, PlayerDispatcher, PlayerConfig } from './types';
 	import type { Player } from './players';
 	import type {
 		OnProgressProps,
@@ -22,6 +22,7 @@
 	export let playsinline: boolean;
 	export let pip: boolean;
 	export let stopOnUnmount: boolean;
+	export let config: object;
 
 	export let progressFrequency: number | undefined = undefined;
 
@@ -325,6 +326,7 @@
 		{controls}
 		{playsinline}
 		{loop}
+		{config}
 		bind:this={player}
 		on:mount={handlePlayerMount}
 		on:ready={handleReady}

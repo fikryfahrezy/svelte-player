@@ -1,11 +1,37 @@
 <script lang="ts">
-	import type { PlayerRef, SeekToType, SveltePlayerDispatcher, SveltePlayerRef } from './types';
+	import type {
+		PlayerRef,
+		SeekToType,
+		SveltePlayerDispatcher,
+		SveltePlayerRef,
+		Config,
+		PlayerKey
+	} from './types';
 	import type { InternalPlayerKey, PlayerUrl, FilePlayerUrl } from './players/types';
 
 	import { createEventDispatcher } from 'svelte';
+	import merge from 'deepmerge';
+	import memoize from 'memoize-one';
 	import Player from './Player.svelte';
 	import players from './players';
 	import Preview from './Preview.svelte';
+
+	// eslint-disable-next-line @typescript-eslint/no-empty-function
+	const noop = () => {};
+
+	const defaultConfig: Config = {
+		youtube: {
+			playerVars: {
+				playsinline: 1,
+				rel: 0,
+				iv_load_policy: 1,
+				modestbranding: 1
+			},
+			embedOptions: {},
+			onUnstarted: noop
+		},
+		file: {}
+	};
 
 	export let url: FilePlayerUrl;
 	export let playing = false;
@@ -20,6 +46,7 @@
 	export let pip = false;
 	export let stopOnUnmount = true;
 	export let previewTabIndex = 0;
+	export let config: Partial<Config> = {};
 	export let oEmbedUrl = 'https://noembed.com/embed?url={url}';
 
 	export let progressFrequency: number | undefined = undefined;
@@ -96,6 +123,19 @@
 	function handleReady() {
 		dispatch('ready', sveltePlayer);
 	}
+
+	function getConfig<T extends PlayerKey>(configUrl: FilePlayerUrl, configKey: T) {
+		const memoized = memoize<(url: typeof configUrl, key: T) => Config[T]>((_, key) => {
+			return merge.all([
+				defaultConfig,
+				defaultConfig[key] || {},
+				config,
+				config[key] || {}
+			]) as Config[T];
+		});
+
+		return memoized(configUrl, configKey);
+	}
 </script>
 
 {#if showPreviewState}
@@ -127,6 +167,7 @@
 				{controls}
 				{playsinline}
 				{pip}
+				config={getConfig(url, player.key)}
 				activePlayer={player.loadComponent}
 				bind:this={playerRef}
 				on:ready={handleReady}
