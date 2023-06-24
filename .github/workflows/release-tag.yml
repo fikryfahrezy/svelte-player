@@ -1,10 +1,11 @@
-name: CI
+name: Release
 on:
-  - push
-  - pull_request
+  push:
+    tags:
+      - 'v*' # Push events to matching v*, i.e. v1.0, v20.15.10
 
 jobs:
-  lint-check-test:
+  release:
     runs-on: ubuntu-latest
 
     steps:
@@ -40,11 +41,5 @@ jobs:
       - name: Install dependencies
         run: pnpm install
 
-      - name: Run lint
-        run: pnpm lint
-
-      - name: Run Check
-        run: pnpm check
-
-      - name: Run test
-        run: pnpm test:unit
+      - name: Run Pre-publish
+        run: pnpm prepublishOnly
