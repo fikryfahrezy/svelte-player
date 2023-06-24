@@ -1,6 +1,10 @@
 {
-	"name": "check",
-	"version": "0.0.1",
+	"name": "svelte-player",
+	"version": "0.0.2",
+	"repository": {
+	  "type": "git",
+	  "url": "git+https://github.com/fikryfahrezy/svelte-player.git"
+	},
 	"scripts": {
 		"dev": "vite dev",
 		"build": "vite build && npm run package",

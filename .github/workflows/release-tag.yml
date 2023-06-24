@@ -41,5 +41,7 @@ jobs:
       - name: Install dependencies
         run: pnpm install
 
-      - name: Run Pre-publish
-        run: pnpm prepublishOnly
+      - name: Publish Package
+        run: npm publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
