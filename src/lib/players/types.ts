@@ -23,7 +23,7 @@ export type PlayerUrl = string | string[];
 
 export type Player = {
 	canPlay: (url: PlayerUrl) => boolean;
-	loadComponent: () => Promise<{ default: typeof SvelteComponent }>;
+	loadComponent: () => Promise<{ default: typeof SvelteComponent<any> }>;
 	loopOnEnded?: boolean;
 	forceLoad?: boolean;
 };
