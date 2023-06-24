@@ -29,7 +29,7 @@ export type Player = {
 };
 
 export type GetSDKParams<T extends keyof GlobalSDK = GlobalSDKType> = SDKBase<T> & {
-	isLoaded: (sdk: GlobalSDK[T]) => boolean;
+	isLoaded?: (sdk: GlobalSDK[T]) => boolean;
 	fetchScript?: typeof loadScript;
 };
 
@@ -75,23 +75,23 @@ export type OnErrorProps = {
 };
 
 export type Dispatcher = {
-	mount: void;
-	start: void;
-	play: void;
+	mount: undefined;
+	start: undefined;
+	play: undefined;
 	progress: OnProgressProps;
 	duration: number;
-	pause: void;
-	buffer: void;
-	bufferEnd: void;
+	pause: undefined;
+	buffer: undefined;
+	bufferEnd: undefined;
 	seek: number;
-	ended: void;
+	ended: undefined;
 	error: OnErrorProps;
 	clickPreview: unknown; // TODO: to implement corrent type
-	enablePIP: void;
-	disablePIP: void;
+	enablePIP: undefined;
+	disablePIP: undefined;
 	playbackRateChange: number;
 	playbackQualityChange: YTPlayerOnPlaybackQualityChangeEvent;
-	loaded: void;
+	loaded: undefined;
 };
 
 export type PlayerMediaRef = PlayerMedia & PlayerProps;

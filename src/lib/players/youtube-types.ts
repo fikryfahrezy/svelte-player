@@ -1,4 +1,4 @@
-import type { PlayerMedia, Dispatcher, PlayerUrl } from './types';
+import type { Dispatcher, PlayerUrl } from './types';
 
 export type ParsePlaylistFn = (url: PlayerUrl) =>
 	| {
@@ -12,7 +12,7 @@ export type ParsePlaylistFn = (url: PlayerUrl) =>
 	| { listType?: undefined; list?: undefined };
 
 export type YouTubeDispatcher = Dispatcher & {
-	ready: PlayerMedia;
+	ready: undefined;
 };
 
 export type YouTubeMediaPlayer = YTPlayer; // Make it alias to suppress error on lint

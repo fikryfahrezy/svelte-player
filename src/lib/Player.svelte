@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { SeekToType, PlayerDispatcher, PlayerConfig } from './types';
+	import type { SeekToType, PlayerDispatcher } from './types';
 	import type { Player } from './players';
 	import type {
 		OnProgressProps,
@@ -9,7 +9,7 @@
 		FilePlayerUrl
 	} from './players/types';
 	import { onMount, createEventDispatcher } from 'svelte';
-	import { isMediaStream } from './utils';
+	import { isMediaStream } from './players/utils';
 
 	export let url: FilePlayerUrl;
 	export let playing: boolean;
@@ -22,7 +22,7 @@
 	export let playsinline: boolean;
 	export let pip: boolean;
 	export let stopOnUnmount: boolean;
-	export let config: object;
+	export let config: object; // Expect this type is `PlayerConfig` but, can't figure it out how
 
 	export let progressFrequency: number | undefined = undefined;
 

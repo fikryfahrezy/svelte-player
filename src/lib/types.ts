@@ -11,7 +11,7 @@ import type { FileConfig } from './players/file-types';
 export type SeekToType = 'seconds' | 'fraction';
 
 export type PlayerDispatcher = Dispatcher & {
-	ready: PlayerMediaRef;
+	ready: undefined;
 };
 
 export type PlayerRef = {

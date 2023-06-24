@@ -69,8 +69,9 @@
 
 <div
 	style={preview}
+	tabindex={previewTabIndex}
 	class="svelte-player__preview"
-	tabIndex={previewTabIndex}
+	role="button"
 	on:click
 	on:keypress={handleKeyPress}
 >

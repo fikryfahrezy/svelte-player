@@ -79,7 +79,7 @@ type Request = {
 const requests: Record<string, Request[] | null> = {};
 export function getSDK<T extends GlobalSDKType>({
 	fetchScript = loadScript,
-	isLoaded,
+	isLoaded = () => true,
 	sdkGlobal,
 	url,
 	sdkReady = null
@@ -120,40 +120,11 @@ export function getSDK<T extends GlobalSDKType>({
 	});
 }
 
-export function callPlayer(player: GlobalSDKObject, checkIsReady?: () => boolean) {
-	return function <T extends keyof typeof player>(
-		method: T,
-		...args: Parameters<(typeof player)[T]>
-	) {
-		const isReady = checkIsReady?.() ?? true;
-		if (!isReady) {
-			return null;
-		}
-
-		// Util method for calling a method on this.player
-		// but guard against errors and console.warn instead
-		if (!player || !player[method]) {
-			let message = `SveltePlayer: player could not call %c${method}%c – `;
-			if (!player) {
-				message += 'The player was not available';
-			} else if (!player[method]) {
-				message += 'The method was not available';
-			}
-			console.warn(message, 'font-weight: bold', '');
-			return null;
-		}
-
-		return (
-			player[method] as (...args: Parameters<(typeof player)[T]>) => ReturnType<(typeof player)[T]>
-		)(...args);
-	};
-}
-
-export function isMediaStream(url: string) {
+export function isMediaStream(url: FilePlayerUrl) {
 	return (
 		typeof window !== 'undefined' &&
 		typeof window.MediaStream !== 'undefined' &&
-		(url as unknown) instanceof window.MediaStream
+		url instanceof window.MediaStream
 	);
 }
 

@@ -126,12 +126,7 @@
 
 	function getConfig<T extends PlayerKey>(configUrl: FilePlayerUrl, configKey: T) {
 		const memoized = memoize<(url: typeof configUrl, key: T) => Config[T]>((_, key) => {
-			return merge.all([
-				defaultConfig,
-				defaultConfig[key] || {},
-				config,
-				config[key] || {}
-			]) as Config[T];
+			return merge<Config[T]>(defaultConfig[key] || {}, config[key] || {});
 		});
 
 		return memoized(configUrl, configKey);
