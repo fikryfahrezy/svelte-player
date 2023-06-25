@@ -1,21 +1,21 @@
 // See more about YouTube's IFrame API here:
 // https://developers.google.com/youtube/iframe_api_reference
 
-type BooleanNumber = 0 | 1;
+export type BooleanNumber = 0 | 1;
 
-type YTPlayerOnErrorValue = 2 | 5 | 100 | 101 | 150;
+export type YTPlayerOnErrorValue = 2 | 5 | 100 | 101 | 150;
 
-type YTPlaybackRate = 0.25 | 0.5 | 1 | 1.5 | 2;
+export type YTPlaybackRate = 0.25 | 0.5 | 1 | 1.5 | 2;
 
-type YTListPlaylistType = 'playlist';
+export type YTListPlaylistType = 'playlist';
 
-type YTListUserUploadsType = 'user_uploads';
+export type YTListUserUploadsType = 'user_uploads';
 
-type YTListType = YTListPlaylistType | YTListUserUploadsType;
+export type YTListType = YTListPlaylistType | YTListUserUploadsType;
 
-type YTPlaybackQualityValue = 'small' | 'medium' | 'large' | 'hd720' | 'hd1080' | 'highres';
+export type YTPlaybackQualityValue = 'small' | 'medium' | 'large' | 'hd720' | 'hd1080' | 'highres';
 
-type YTPlayerState = {
+export type YTPlayerState = {
 	UNSTARTED: -1;
 	ENDED: 0;
 	PLAYING: 1;
@@ -24,9 +24,9 @@ type YTPlayerState = {
 	CUED: 5;
 };
 
-type YTPlayerStateValue = YTPlayerState[keyof YTPlayerState];
+export type YTPlayerStateValue = YTPlayerState[keyof YTPlayerState];
 
-type YTPlayerPlayerVars = {
+export type YTPlayerPlayerVars = {
 	autoplay: BooleanNumber;
 	cc_lang_pref: string;
 	cc_load_policy: BooleanNumber;
@@ -50,31 +50,31 @@ type YTPlayerPlayerVars = {
 	widget_referrer: string;
 };
 
-type YTPlayerOnReadyEvent = {
+export type YTPlayerOnReadyEvent = {
 	target: YTPlayer;
 };
 
-type YTPlayerOnStateChangeEvent = {
+export type YTPlayerOnStateChangeEvent = {
 	target: YTPlayer;
 	data: YTPlayerStateValue;
 };
 
-type YTPlayerOnPlaybackQualityChangeEvent = {
+export type YTPlayerOnPlaybackQualityChangeEvent = {
 	target: YTPlayer;
 	data: YTPlaybackQualityValue;
 };
 
-type YTPlayerOnPlaybackRateChangeEvent = {
+export type YTPlayerOnPlaybackRateChangeEvent = {
 	target: YTPlayer;
 	data: number;
 };
 
-type YTPlayerOnErrorEvent = {
+export type YTPlayerOnErrorEvent = {
 	target: YTPlayer;
 	data: YTPlayerOnErrorValue;
 };
 
-type YTPlayerEvents = {
+export type YTPlayerEvents = {
 	onReady(event: YTPlayerOnReadyEvent): void;
 	onStateChange(event: YTPlayerOnStateChangeEvent): void;
 	onPlaybackQualityChange(event: YTPlayerOnPlaybackQualityChangeEvent): void;
@@ -83,7 +83,7 @@ type YTPlayerEvents = {
 	onApiChange(events: unknown): void; // TODO: to implement corrent type
 };
 
-type YTPlayerOptions = {
+export type YTPlayerOptions = {
 	height: string;
 	width: string;
 	videoId: string;
@@ -91,56 +91,58 @@ type YTPlayerOptions = {
 	events: Partial<YTPlayerEvents>;
 };
 
-type CueVideoByIDParams = {
+export type CueVideoByIDParams = {
 	videoId: string;
 	startSeconds?: number;
 	endSeconds?: number;
 };
 
-type LoadVideoByIDParams = {
+export type LoadVideoByIDParams = {
 	videoId: string;
 	startSeconds?: number;
 	endSeconds?: number;
 };
 
-type CueVideoByUrlParams = {
+export type CueVideoByUrlParams = {
 	mediaContentUrl: string;
 	startSeconds?: number;
 	endSeconds?: number;
 };
 
-type LoadVideoByUrlParams = {
+export type LoadVideoByUrlParams = {
 	mediaContentUrl: string;
 	startSeconds?: number;
 	endSeconds?: number;
 };
 
-type CuePlaylistParams = {
+export type CuePlaylistParams = {
 	listType?: YTListType;
 	list: string;
 	index?: number;
 	startSeconds?: number;
 };
 
-type LoadPlaylistParams = {
+export type LoadPlaylistParams = {
 	list: string;
 	listType?: YTListType;
 	index?: number;
 	startSeconds?: number;
 };
 
-type SphericalObject = {
+export type SphericalObject = {
 	yaw: number; // between 0 - 360
 	pitch: number; // between -90 - 90
 	roll: number; // between -180 - 180
 	fov: number; // between 30 - 120
 };
 
-type SetSphericalPropertiesParams = SphericalObject & {
+export type SetSphericalPropertiesParams = SphericalObject & {
 	enableOrientationSensor?: boolean;
 };
 
-interface YTPlayer {
+export type AnyFunction = (...args: any[]) => any; // TODO: remove this
+
+export interface YTPlayer {
 	cueVideoById(videoId: string, startSeconds?: number): void;
 	cueVideoById(params: CueVideoByIDParams): void;
 	loadVideoById(videoId: string, startSeconds?: number): void;
@@ -161,7 +163,7 @@ interface YTPlayer {
 	setSphericalProperties(properties: Partial<SetSphericalPropertiesParams>): void;
 	nextVideo(): void;
 	previousVideo(): void;
-	playVideoAt(index: number): Void;
+	playVideoAt(index: number): void;
 	mute(): void;
 	unMute(): void;
 	isMuted(): boolean;
@@ -181,25 +183,25 @@ interface YTPlayer {
 	getVideoEmbedCode(): string;
 	getPlaylist(): string[];
 	getPlaylistIndex(): number;
-	addEventListener(event: string, listener: string | function): void;
-	removeEventListener(event: string, listener: string | function): void;
+	addEventListener(event: string, listener: string | AnyFunction): void; // TODO: to impelment corrent type for `AnyFunction`
+	removeEventListener(event: string, listener: string | AnyFunction): void; // TODO: to impelment corrent type for `AnyFunction`
 	getIframe(): HTMLIFrameElement;
 	destroy(): void;
 }
 
-interface YTPlayerConstructor {
+export interface YTPlayerConstructor {
 	new (container: string | HTMLElement, options?: Partial<YTPlayerOptions>): YTPlayer;
 	readonly prototype: YTPlayer;
 }
 
-type YT = {
+export type YT = {
 	Player: YTPlayerConstructor;
 	PlayerState: YTPlayerState;
 	loaded: BooleanNumber;
 	loading: BooleanNumber;
-	ready: function; // TODO: to impelment corrent type
-	scan: function; // TODO: to impelment corrent type
-	setConfig: function; // TODO: to impelment corrent type
-	subscribe: function; // TODO: to impelment corrent type
-	unsubscribe: function; // TODO: to impelment corrent type
+	ready: AnyFunction; // TODO: to impelment corrent type
+	scan: AnyFunction; // TODO: to impelment corrent type
+	setConfig: AnyFunction; // TODO: to impelment corrent type
+	subscribe: AnyFunction; // TODO: to impelment corrent type
+	unsubscribe: AnyFunction; // TODO: to impelment corrent type
 };

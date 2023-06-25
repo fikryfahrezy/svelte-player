@@ -1,12 +1,8 @@
 <script lang="ts">
 	import type { FilePlayerUrl } from './types';
-	import type {
-		ParsePlaylistFn,
-		YouTubeDispatcher,
-		YouTubeMediaPlayer,
-		YouTubeMediaPlayerOnStateChangeEvent,
-		YouTubeConfig
-	} from './youtube-types';
+
+	import type { YTPlayer, YTPlayerOnStateChangeEvent } from './global-types';
+	import type { ParsePlaylistFn, YouTubeDispatcher, YouTubeConfig } from './youtube-types';
 	import { createEventDispatcher, onMount } from 'svelte';
 	import { MATCH_URL_YOUTUBE } from './patterns';
 	import { getSDK, parseEndTime, parseStartTime } from './utils';
@@ -31,7 +27,7 @@
 
 	let isPlayerReady = false;
 	let container: HTMLDivElement | undefined;
-	let player: YouTubeMediaPlayer | undefined;
+	let player: YTPlayer | undefined;
 
 	onMount(() => {
 		dispatch('mount');
@@ -85,7 +81,7 @@
 		return {};
 	}
 
-	function onStateChange(event: YouTubeMediaPlayerOnStateChangeEvent) {
+	function onStateChange(event: YTPlayerOnStateChangeEvent) {
 		const { data } = event;
 
 		const { UNSTARTED, PLAYING, PAUSED, BUFFERING, ENDED, CUED } = window[SDK_GLOBAL].PlayerState;

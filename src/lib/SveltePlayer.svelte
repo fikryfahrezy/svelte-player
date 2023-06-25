@@ -12,7 +12,7 @@
 	import { createEventDispatcher } from 'svelte';
 	import merge from 'deepmerge';
 	import memoize from 'memoize-one';
-	import Player from './Player.svelte';
+	import Player from './PlayerMedia.svelte';
 	import players from './players';
 	import Preview from './Preview.svelte';
 

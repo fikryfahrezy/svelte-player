@@ -1,5 +1,6 @@
 import type { SvelteComponent } from 'svelte';
 import type loadScript from 'load-script';
+import type { YT, YTPlayer, YTPlayerOnPlaybackQualityChangeEvent } from './global-types';
 
 export type GlobalSDK = {
 	YT: YT;

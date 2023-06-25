@@ -1,13 +1,9 @@
 // The codes in this file, is just copy-paste from https://github.com/cookpete/react-player
 // See original: https://github.com/cookpete/react-player/blob/master/src/utils.js
 
-import type {
-	GetSDKParams,
-	GlobalSDK,
-	GlobalSDKType,
-	GlobalSDKObject,
-	FilePlayerUrl
-} from './types';
+import type { YT } from './global-types';
+
+import type { GetSDKParams, GlobalSDK, GlobalSDKType, FilePlayerUrl } from './types';
 import loadScript from 'load-script';
 
 declare global {

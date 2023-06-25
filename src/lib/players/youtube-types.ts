@@ -1,5 +1,12 @@
 import type { Dispatcher, PlayerUrl } from './types';
 
+import type {
+	YTListUserUploadsType,
+	YTListPlaylistType,
+	YTPlayerPlayerVars,
+	YTPlayerOptions
+} from './global-types';
+
 export type ParsePlaylistFn = (url: PlayerUrl) =>
 	| {
 			listType: YTListPlaylistType;
@@ -14,10 +21,6 @@ export type ParsePlaylistFn = (url: PlayerUrl) =>
 export type YouTubeDispatcher = Dispatcher & {
 	ready: undefined;
 };
-
-export type YouTubeMediaPlayer = YTPlayer; // Make it alias to suppress error on lint
-
-export type YouTubeMediaPlayerOnStateChangeEvent = YTPlayerOnStateChangeEvent; // Make it alias to suppress error on lint
 
 export type YouTubeConfig = {
 	playerVars?: Partial<YTPlayerPlayerVars>;
