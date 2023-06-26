@@ -1,12 +1,7 @@
-import type {
-	GlobalSDKObject,
-	InternalPlayerKey,
-	Dispatcher,
-	PlayerMediaRef,
-	PlayerUrl
-} from './players/types';
+import type { GlobalSDKObject, InternalPlayerKey, Dispatcher, PlayerUrl } from './players/types';
 import type { YouTubeConfig } from './players/youtube-types';
 import type { FileConfig } from './players/file-types';
+import type { NotImplementedConfig } from './players/not-implemented-types';
 
 export type SeekToType = 'seconds' | 'fraction';
 
@@ -35,6 +30,7 @@ export type SveltePlayerRef = PlayerRef & {
 export type Config = {
 	youtube: YouTubeConfig;
 	file: FileConfig;
+	'not-implemented': NotImplementedConfig;
 };
 
 export type PlayerKey = keyof Config;

@@ -1,6 +1,7 @@
 <script lang="ts">
 	import type { SveltePlayerRef } from '../lib/types';
 	import type { OnProgressProps, PlayerUrl } from '../lib/players/types';
+
 	import SveltePlayer from '../lib/SveltePlayer.svelte';
 	import LoadButton from './LoadButton.svelte';
 	import Duration from './Duration.svelte';

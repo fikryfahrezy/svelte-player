@@ -4,8 +4,8 @@
 
 <script lang="ts">
 	import { createEventDispatcher, onMount } from 'svelte';
-	export let previewTabIndex: number;
 
+	export let previewTabIndex: number;
 	export let url: string;
 	export let light: boolean | string;
 	export let oEmbedUrl: string;
@@ -64,7 +64,7 @@
 		isElement ? 'position: absolute;' : ''
 	} ${flexCenter}`;
 	const playIcon =
-		'border-style: solid; border-width: 16px 0 16px 26px; border-color: transparent transparent transparent white; margin-left: 7px';
+		'border-style: solid; border-width: 16px 0 16px 26px; border-color: transparent transparent transparent white; margin-left: 7px;';
 </script>
 
 <div

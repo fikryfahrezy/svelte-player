@@ -15,14 +15,16 @@
 	export let playing: boolean;
 	export let loop: boolean;
 	export let controls: boolean;
-	export let volume: number | null = null;
+	export let volume: number | null;
 	export let muted: boolean;
 	export let playbackRate: number;
+	export let width: string;
+	export let height: string;
 	export let progressInterval: number;
 	export let playsinline: boolean;
 	export let pip: boolean;
 	export let stopOnUnmount: boolean;
-	export let config: object; // Expect this type is `PlayerConfig` but, can't figure it out how
+	export let config: any; // Expect this type is `PlayerConfig` but, can't figure it out how
 
 	export let progressFrequency: number | undefined = undefined;
 
@@ -30,6 +32,7 @@
 	// export let forceLoad: boolean | undefined = undefined;
 	export let activePlayer: Player['loadComponent'];
 
+	let mounted = false;
 	let isReady = false;
 	let isPlaying = false; // Track playing state internally to prevent bugs
 	let isLoading = true; // Use isLoading to prevent onPause when switching URL
@@ -47,6 +50,8 @@
 	const dispatch = createEventDispatcher<PlayerDispatcher>();
 
 	onMount(() => {
+		mounted = true;
+
 		return () => {
 			clearTimeout(progressTimeout);
 			clearTimeout(durationCheckTimeout);
@@ -57,6 +62,8 @@
 					player.disablePIP();
 				}
 			}
+
+			mounted = false;
 		};
 	});
 
@@ -243,6 +250,10 @@
 	}
 
 	function handleReady() {
+		if (!mounted) {
+			return;
+		}
+
 		isReady = true;
 		isLoading = false;
 		dispatch('ready');
@@ -327,6 +338,10 @@
 		{playsinline}
 		{loop}
 		{config}
+		{url}
+		{width}
+		{height}
+		{muted}
 		bind:this={player}
 		on:mount={handlePlayerMount}
 		on:ready={handleReady}

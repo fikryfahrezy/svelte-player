@@ -1,17 +1,21 @@
 <script lang="ts">
 	import type { FilePlayerUrl } from './types';
-
 	import type { YTPlayer, YTPlayerOnStateChangeEvent } from './global-types';
 	import type { ParsePlaylistFn, YouTubeDispatcher, YouTubeConfig } from './youtube-types';
+
 	import { createEventDispatcher, onMount } from 'svelte';
 	import { MATCH_URL_YOUTUBE } from './patterns';
 	import { getSDK, parseEndTime, parseStartTime } from './utils';
 
-	export let playing: boolean | undefined = undefined;
-	export let controls: boolean | undefined = undefined;
-	export let playsinline: boolean | undefined = undefined;
-	export let loop: boolean | undefined = undefined;
-	export let config: YouTubeConfig | undefined = undefined;
+	export const url: FilePlayerUrl | undefined = undefined; // not used yet, but for suppress the warn from svelte check
+	export let playing: boolean;
+	export let loop: boolean;
+	export let controls: boolean;
+	export const muted: boolean | undefined = undefined; // not used yet, but for suppress the warn from svelte check
+	export const width: string | undefined = undefined; // not used yet, but for suppress the warn from svelte check
+	export const height: string | undefined = undefined; // not used yet, but for suppress the warn from svelte check
+	export let playsinline: boolean;
+	export let config: YouTubeConfig;
 
 	const playerVars = config?.playerVars;
 	const embedOptions = config?.embedOptions;

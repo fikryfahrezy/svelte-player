@@ -23,7 +23,7 @@ export type YouTubeDispatcher = Dispatcher & {
 };
 
 export type YouTubeConfig = {
-	playerVars?: Partial<YTPlayerPlayerVars>;
-	embedOptions?: Partial<YTPlayerOptions>;
-	onUnstarted?: () => void;
+	playerVars: Partial<YTPlayerPlayerVars>;
+	embedOptions: Partial<YTPlayerOptions>;
+	onUnstarted: () => void;
 };

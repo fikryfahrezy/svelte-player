@@ -23,6 +23,18 @@ const players = [
 			);
 		},
 		loadComponent: () => {
+			return import('./FilePlayer.svelte');
+		}
+	},
+	{
+		key: 'not-implemented',
+		canPlay() {
+			return false;
+		},
+		canEnablePIP: () => {
+			return false;
+		},
+		loadComponent: () => {
 			return import('./NotImplemented.svelte');
 		}
 	}

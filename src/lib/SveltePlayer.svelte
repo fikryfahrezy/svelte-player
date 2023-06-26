@@ -1,4 +1,14 @@
 <script lang="ts">
+	// Recursive Partial<T> in TypeScript
+	// https://stackoverflow.com/a/51365037/12976234
+	type RecursivePartial<T> = {
+		[P in keyof T]?: T[P] extends (infer U)[]
+			? RecursivePartial<U>[]
+			: T[P] extends object | undefined
+			? RecursivePartial<T[P]>
+			: T[P];
+	};
+
 	import type {
 		PlayerRef,
 		SeekToType,
@@ -15,23 +25,7 @@
 	import Player from './PlayerMedia.svelte';
 	import players from './players';
 	import Preview from './Preview.svelte';
-
-	// eslint-disable-next-line @typescript-eslint/no-empty-function
-	const noop = () => {};
-
-	const defaultConfig: Config = {
-		youtube: {
-			playerVars: {
-				playsinline: 1,
-				rel: 0,
-				iv_load_policy: 1,
-				modestbranding: 1
-			},
-			embedOptions: {},
-			onUnstarted: noop
-		},
-		file: {}
-	};
+	import { defaultConfig } from './props';
 
 	export let url: FilePlayerUrl;
 	export let playing = false;
@@ -41,12 +35,14 @@
 	export let volume: number | null = null;
 	export let muted = false;
 	export let playbackRate = 1;
+	export let width = '640px';
+	export let height = '360px';
 	export let progressInterval = 1000;
 	export let playsinline = false;
 	export let pip = false;
 	export let stopOnUnmount = true;
 	export let previewTabIndex = 0;
-	export let config: Partial<Config> = {};
+	export let config: RecursivePartial<Config> = {};
 	export let oEmbedUrl = 'https://noembed.com/embed?url={url}';
 
 	export let progressFrequency: number | undefined = undefined;
@@ -162,6 +158,8 @@
 				{controls}
 				{playsinline}
 				{pip}
+				{width}
+				{height}
 				config={getConfig(url, player.key)}
 				activePlayer={player.loadComponent}
 				bind:this={playerRef}

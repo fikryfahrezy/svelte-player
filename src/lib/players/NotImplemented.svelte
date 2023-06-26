@@ -1,10 +1,15 @@
 <script lang="ts">
 	import type { PlayerMedia, FilePlayerUrl } from './types';
 
+	export const url: FilePlayerUrl | undefined = undefined;
 	export const playing: boolean | undefined = undefined;
-	export const controls: boolean | undefined = undefined;
-	export const playsinline: boolean | undefined = undefined;
 	export const loop: boolean | undefined = undefined;
+	export const controls: boolean | undefined = undefined;
+	export const muted: boolean | undefined = undefined;
+	export const width: string | undefined = undefined;
+	export const height: string | undefined = undefined;
+	export const playsinline: boolean | undefined = undefined;
+	export const config: object | undefined = undefined;
 
 	let player: PlayerMedia | undefined;
 
