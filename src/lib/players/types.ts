@@ -1,6 +1,11 @@
 import type { SvelteComponent } from 'svelte';
 import type loadScript from 'load-script';
-import type { YT, YTPlayer, YTPlayerOnPlaybackQualityChangeEvent } from './global-types';
+import type {
+	YT,
+	YTPlayer,
+	YTPlayerOnPlaybackQualityChangeEvent,
+	FileConfiAttributes
+} from './global-types';
 
 export type GlobalSDK = {
 	YT: YT;
@@ -8,7 +13,7 @@ export type GlobalSDK = {
 
 export type GlobalSDKType = keyof GlobalSDK;
 
-export type GlobalSDKObject = YTPlayer;
+export type GlobalSDKObject = YTPlayer | FileConfiAttributes;
 
 export type GlobalSDKReady = 'onYouTubeIframeAPIReady';
 

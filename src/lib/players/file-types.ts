@@ -1,7 +1,5 @@
-import type { HTMLVideoAttributes, HTMLAudioAttributes } from 'svelte/elements';
+import type { FileConfiAttributes } from './global-types';
 import type { FilePlayerUrl } from './types';
-
-export type FileConfiAttributes = Omit<HTMLVideoAttributes | HTMLAudioAttributes, `on:${string}`>;
 
 export type FileConfiHlsOptions = Record<string, never>;
 

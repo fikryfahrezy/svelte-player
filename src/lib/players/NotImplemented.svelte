@@ -65,6 +65,14 @@
 		return 0;
 	}
 
+	export function enablePIP() {
+		console.log('enablePIP');
+	}
+
+	export function disablePIP() {
+		console.log('disablePIP');
+	}
+
 	export function getPlayer() {
 		return null;
 	}

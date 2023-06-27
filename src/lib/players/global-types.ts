@@ -1,3 +1,5 @@
+import type { HTMLVideoAttributes, HTMLAudioAttributes } from 'svelte/elements';
+
 // See more about YouTube's IFrame API here:
 // https://developers.google.com/youtube/iframe_api_reference
 
@@ -205,3 +207,5 @@ export type YT = {
 	subscribe: AnyFunction; // TODO: to impelment corrent type
 	unsubscribe: AnyFunction; // TODO: to impelment corrent type
 };
+
+export type FileConfiAttributes = Omit<HTMLVideoAttributes | HTMLAudioAttributes, `on:${string}`>;
