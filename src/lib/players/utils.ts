@@ -1,15 +1,24 @@
 // The codes in this file, is just copy-paste from https://github.com/cookpete/react-player
 // See original: https://github.com/cookpete/react-player/blob/master/src/utils.js
 
-import type { YT } from './global-types';
-
-import type { GetSDKParams, GlobalSDK, GlobalSDKType, FilePlayerUrl } from './types';
+import type {
+	GlobalSDKYT,
+	GlobalSDK,
+	GlobalSDKType,
+	GlobalSDKFLV,
+	GlobalSDKDASH,
+	GlobalSDKHLS
+} from './global-types';
+import type { GetSDKParams, FilePlayerUrl } from './types';
 import loadScript from 'load-script';
 
 declare global {
 	interface Window {
-		YT: YT;
+		YT: GlobalSDKYT;
 		onYouTubeIframeAPIReady: () => void;
+		Hls: GlobalSDKHLS;
+		dashjs: GlobalSDKDASH;
+		flvjs: GlobalSDKFLV;
 	}
 }
 
@@ -58,7 +67,7 @@ export function parseEndTime(url: FilePlayerUrl) {
 	return parseTimeParam(url, MATCH_END_QUERY);
 }
 
-function getGlobal(key: GlobalSDKType) {
+function getGlobal<T extends GlobalSDKType>(key: T): GlobalSDK[T] | null {
 	if (window[key]) {
 		return window[key];
 	}

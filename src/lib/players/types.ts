@@ -1,21 +1,13 @@
 import type { SvelteComponent } from 'svelte';
+
 import type loadScript from 'load-script';
 import type {
-	YT,
-	YTPlayer,
 	YTPlayerOnPlaybackQualityChangeEvent,
-	FileConfiAttributes
+	GlobalSDK,
+	GlobalSDKReady,
+	GlobalSDKType,
+	GlobalSDKObject
 } from './global-types';
-
-export type GlobalSDK = {
-	YT: YT;
-};
-
-export type GlobalSDKType = keyof GlobalSDK;
-
-export type GlobalSDKObject = YTPlayer | FileConfiAttributes;
-
-export type GlobalSDKReady = 'onYouTubeIframeAPIReady';
 
 export type SDKBase<T extends keyof GlobalSDK> = {
 	url: string;
@@ -76,11 +68,12 @@ export type OnProgressProps = {
 export type OnErrorProps = {
 	error: unknown;
 	data?: unknown;
-	hlsInstance?: unknown;
-	hlsGlobal?: unknown;
+	sdkInstance?: unknown;
+	sdkGlobal?: unknown;
 };
 
 export type Dispatcher = {
+	ready: undefined,
 	mount: undefined;
 	start: undefined;
 	play: undefined;

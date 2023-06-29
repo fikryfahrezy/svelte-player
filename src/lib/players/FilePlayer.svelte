@@ -1,9 +1,17 @@
 <script lang="ts">
-	import type { FilePlayerUrl } from './types';
+	import type {
+		GlobalSDKDASHKey,
+		GlobalSDKHLSKey,
+		GlobalSDKFLVKey,
+		GlobalSDKHLS
+	} from './global-types';
+	import type { FilePlayerUrl, Dispatcher } from './types';
 	import type { FileConfig, ShouldUseAudioParams } from './file-types';
+	import type { DashJSMediaPlayerClass } from './dash-types';
+	import type { FlvJSPlayer } from './flv-types';
 
-	import { onMount } from 'svelte';
-	import { isMediaStream } from './utils';
+	import { onMount, createEventDispatcher } from 'svelte';
+	import { isMediaStream, getSDK } from './utils';
 	import { AUDIO_EXTENSIONS, HLS_EXTENSIONS, DASH_EXTENSIONS, FLV_EXTENSIONS } from './patterns';
 
 	export let url: FilePlayerUrl;
@@ -32,18 +40,27 @@
 		'MSStream' in window &&
 		!window.MSStream;
 	const HLS_SDK_URL = 'https://cdn.jsdelivr.net/npm/hls.js@VERSION/dist/hls.min.js';
-	const HLS_GLOBAL = 'Hls';
+	const HLS_GLOBAL: GlobalSDKHLSKey = 'Hls';
 	const DASH_SDK_URL = 'https://cdnjs.cloudflare.com/ajax/libs/dashjs/VERSION/dash.all.min.js';
-	const DASH_GLOBAL = 'dashjs';
+	const DASH_GLOBAL: GlobalSDKDASHKey = 'dashjs';
 	const FLV_SDK_URL = 'https://cdn.jsdelivr.net/npm/flv.js@VERSION/dist/flv.min.js';
-	const FLV_GLOBAL = 'flvjs';
+	const FLV_GLOBAL: GlobalSDKFLVKey = 'flvjs';
 	const MATCH_DROPBOX_URL = /www\.dropbox\.com\/.+/;
 	const MATCH_CLOUDFLARE_STREAM = /https:\/\/watch\.cloudflarestream\.com\/([a-z0-9]+)/;
 	const REPLACE_CLOUDFLARE_STREAM = 'https://videodelivery.net/{id}/manifest/video.m3u8';
 
+	const dispatch = createEventDispatcher<Dispatcher>();
+
+	let hls: GlobalSDKHLS | undefined = undefined;
+	let dash: DashJSMediaPlayerClass | undefined = undefined;
+	let flv: FlvJSPlayer | undefined = undefined;
+
 	onMount(() => {
 		if (player !== undefined) {
 			addListeners(player);
+			if (IS_IOS || config.forceDisableHls) {
+				player.load();
+			}
 		}
 		return () => {
 			if (player !== undefined) {
@@ -99,39 +116,50 @@
 	}
 
 	function onReady(...args: any) {
+		dispatch('ready');
 		// this.props.onReady(...args)
 	}
 
 	function onPlay(...args: any) {
 		// this.props.onPlay(...args)
+		dispatch('play');
 	}
 
 	function onBuffer(...args: any) {
 		// this.props.onBuffer(...args)
+		dispatch('buffer');
 	}
 
 	function onBufferEnd(...args: any) {
 		// this.props.onBufferEnd(...args)
+		dispatch('bufferEnd');
 	}
 
 	function onPause(...args: any) {
 		// this.props.onPause(...args)
+		dispatch('pause');
 	}
 
 	function onEnded(...args: any) {
 		// this.props.onEnded(...args)
+		dispatch('ended');
 	}
 
 	function onError(...args: any) {
 		// this.props.onError(...args)
+		dispatch('error', {
+			error: 'error'
+		});
 	}
 
 	function onPlayBackRateChange(event: any) {
 		// this.props.onPlaybackRateChange(event.target.playbackRate)
+		dispatch('playbackRateChange', event.target.playbackRate);
 	}
 
 	function onEnablePIP(...args: any) {
 		// this.props.onEnablePIP(...args)
+		dispatch('enablePIP');
 	}
 
 	function onDisablePIP(e: any) {
@@ -140,6 +168,11 @@
 		// if (playing) {
 		// 	this.play();
 		// }
+
+		dispatch('disablePIP');
+		if (playing) {
+			play();
+		}
 	}
 
 	function onPresentationModeChange(e: any) {
@@ -199,8 +232,94 @@
 		return FLV_EXTENSIONS.test(url) || config.forceFLV;
 	}
 
-	export function load(url: FilePlayerUrl, isReady?: boolean) {
-		console.log('load');
+	export function load(url: FilePlayerUrl, _?: boolean) {
+		const { hlsVersion, hlsOptions, dashVersion, flvVersion } = config;
+		if (hls) {
+			hls.destroy();
+		}
+
+		if (dash) {
+			dash.reset();
+		}
+		if (shouldUseHLS(url)) {
+			getSDK({
+				url: HLS_SDK_URL.replace('VERSION', hlsVersion),
+				sdkGlobal: HLS_GLOBAL
+			}).then((Hls) => {
+				// const bla = new X()
+				// hls = new Hls(hlsOptions);
+				// hls.on(Hls.Events.MANIFEST_PARSED, () => {
+				// 	dispatch('ready');
+				// });
+				// hls.on(Hls.Events.ERROR, (e, data) => {
+				// 	dispatch('error', {
+				// 		error: e,
+				// 		data: data,
+				// 		sdkInstance: hls,
+				// 		sdkGlobal: Hls
+				// 	});
+				// });
+				// if (typeof url === 'string') {
+				// 	if (MATCH_CLOUDFLARE_STREAM.test(url)) {
+				// 		const id = url.match(MATCH_CLOUDFLARE_STREAM)?.[1];
+				// 		if (id !== undefined) {
+				// 			hls.loadSource(REPLACE_CLOUDFLARE_STREAM.replace('{id}', id));
+				// 		}
+				// 	} else {
+				// 		hls.loadSource(url);
+				// 	}
+				// }
+				// if (player !== undefined) {
+				// 	hls.attachMedia(player);
+				// }
+				// dispatch('loaded');
+			});
+		}
+		if (shouldUseDASH(url)) {
+			getSDK({
+				url: DASH_SDK_URL.replace('VERSION', dashVersion),
+				sdkGlobal: DASH_GLOBAL
+			}).then((dashjs) => {
+				dash = dashjs.MediaPlayer().create();
+				if (typeof url === 'string') {
+					dash.initialize(player, url, playing);
+				}
+				dash.on('error', (e) => {
+					dispatch('error', {
+						error: e.error
+					});
+				});
+				if (parseInt(dashVersion) < 3) {
+					// dash.getDebug().setLogToBrowserConsole(false);
+				} else {
+					// dash.updateSettings({ debug: { logLevel: dashjs.Debug.LOG_LEVEL_NONE } });
+				}
+				dispatch('loaded');
+			});
+		}
+		if (shouldUseFLV(url)) {
+			getSDK({
+				url: FLV_SDK_URL.replace('VERSION', flvVersion),
+				sdkGlobal: FLV_GLOBAL
+			}).then((flvjs) => {
+				if (typeof url === 'string') {
+					flv = flvjs.createPlayer({ type: 'flv', url });
+					if (player !== undefined) {
+						flv.attachMediaElement(player);
+					}
+					flv.on(flvjs.Events.ERROR, (e, data) => {
+						dispatch('error', {
+							error: e.error,
+							data: data,
+							sdkInstance: flv,
+							sdkGlobal: flvjs
+						});
+					});
+					flv.load();
+					dispatch('loaded');
+				}
+			});
+		}
 	}
 
 	export function play() {

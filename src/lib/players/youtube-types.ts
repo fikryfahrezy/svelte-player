@@ -1,4 +1,4 @@
-import type { Dispatcher, PlayerUrl } from './types';
+import type { PlayerUrl } from './types';
 
 import type {
 	YTListUserUploadsType,
@@ -17,10 +17,6 @@ export type ParsePlaylistFn = (url: PlayerUrl) =>
 			list: string;
 	  }
 	| { listType?: undefined; list?: undefined };
-
-export type YouTubeDispatcher = Dispatcher & {
-	ready: undefined;
-};
 
 export type YouTubeConfig = {
 	playerVars: Partial<YTPlayerPlayerVars>;

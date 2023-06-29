@@ -14,15 +14,14 @@ export const HLS_EXTENSIONS = /\.(m3u8)($|\?)/i;
 export const DASH_EXTENSIONS = /\.(mpd)($|\?)/i;
 export const FLV_EXTENSIONS = /\.(flv)($|\?)/i;
 
-function everyNonObjectUrl(url: Exclude<FilePlayerUrl, string>, urlCase: RegExp) {
+export function everyNonObjectUrl(url: Exclude<FilePlayerUrl, string>, urlCase: RegExp) {
 	let isEveryUrl = true;
 	for (let i = 0; i < url.length; i++) {
 		const item = url[i];
-		if (typeof item === 'string') {
-			isEveryUrl = isEveryUrl && urlCase.test(item);
-		} else {
+		if (typeof item !== 'string') {
 			return false;
 		}
+		isEveryUrl = isEveryUrl && urlCase.test(item);
 	}
 	return isEveryUrl;
 }

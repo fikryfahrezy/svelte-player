@@ -1,4 +1,5 @@
-import type { GlobalSDKObject, InternalPlayerKey, Dispatcher, PlayerUrl } from './players/types';
+import type { GlobalSDKObject } from './players/global-types';
+import type { InternalPlayerKey, Dispatcher, PlayerUrl } from './players/types';
 import type { YouTubeConfig } from './players/youtube-types';
 import type { FileConfig } from './players/file-types';
 import type { NotImplementedConfig } from './players/not-implemented-types';
@@ -17,7 +18,7 @@ export type PlayerRef = {
 	seekTo(amount: number, type?: SeekToType, keepPlaying?: boolean): void;
 };
 
-export type SveltePlayerDispatcher = Dispatcher & {
+export type SveltePlayerDispatcher = Omit<Dispatcher, 'ready'> & {
 	ready: PlayerRef;
 	onClickPreview: null;
 };

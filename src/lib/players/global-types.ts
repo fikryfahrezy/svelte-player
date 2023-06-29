@@ -1,4 +1,7 @@
 import type { HTMLVideoAttributes, HTMLAudioAttributes } from 'svelte/elements';
+import type Hls from 'hls.js';
+import type dashjs from 'dashjs';
+import type flvjs from 'flv.js';
 
 // See more about YouTube's IFrame API here:
 // https://developers.google.com/youtube/iframe_api_reference
@@ -209,3 +212,35 @@ export type YT = {
 };
 
 export type FileConfiAttributes = Omit<HTMLVideoAttributes | HTMLAudioAttributes, `on:${string}`>;
+
+export type DashJS = typeof dashjs;
+export type FlvJS = typeof flvjs;
+
+export type GlobalSDK = {
+	YT: YT;
+	Hls: Hls;
+	dashjs: DashJS;
+	flvjs: FlvJS;
+};
+
+export type GlobalSDKType = keyof GlobalSDK;
+
+export type GlobalSDKYTKey = Extract<GlobalSDKType, 'YT'>;
+export type GlobalSDKHLSKey = Extract<GlobalSDKType, 'Hls'>;
+export type GlobalSDKDASHKey = Extract<GlobalSDKType, 'dashjs'>;
+export type GlobalSDKFLVKey = Extract<GlobalSDKType, 'flvjs'>;
+
+export type GlobalSDKValue = GlobalSDK[GlobalSDKType];
+
+export type GlobalSDKYT = Extract<GlobalSDKValue, YT>;
+export type GlobalSDKHLS = Extract<GlobalSDKValue, Hls>;
+export type GlobalSDKDASH = Extract<GlobalSDKValue, DashJS>;
+export type GlobalSDKFLV = Extract<GlobalSDKValue, FlvJS>;
+
+export type GlobalSDKObject = YTPlayer;
+
+export type GlobalSDKYTObject = Extract<GlobalSDKObject, YTPlayer>;
+
+export type GlobalSDKReady = 'onYouTubeIframeAPIReady';
+
+export type GlobalSDKYTReady = Extract<GlobalSDKReady, 'onYouTubeIframeAPIReady'>;

@@ -1,7 +1,8 @@
 <script lang="ts">
-	import type { FilePlayerUrl } from './types';
+	import type { GlobalSDKYTKey, GlobalSDKYTReady } from './global-types';
 	import type { YTPlayer, YTPlayerOnStateChangeEvent } from './global-types';
-	import type { ParsePlaylistFn, YouTubeDispatcher, YouTubeConfig } from './youtube-types';
+	import type { FilePlayerUrl, PlayerUrl, Dispatcher } from './types';
+	import type { ParsePlaylistFn, YouTubeConfig } from './youtube-types';
 
 	import { createEventDispatcher, onMount } from 'svelte';
 	import { MATCH_URL_YOUTUBE } from './patterns';
@@ -22,12 +23,12 @@
 	const onUnstarted = config?.onUnstarted;
 
 	const SDK_URL = 'https://www.youtube.com/iframe_api';
-	const SDK_GLOBAL = 'YT';
-	const SDK_GLOBAL_READY = 'onYouTubeIframeAPIReady';
+	const SDK_GLOBAL: GlobalSDKYTKey = 'YT';
+	const SDK_GLOBAL_READY: GlobalSDKYTReady = 'onYouTubeIframeAPIReady';
 	const MATCH_PLAYLIST = /[?&](?:list|channel)=([a-zA-Z0-9_-]+)/;
 	const MATCH_USER_UPLOADS = /user\/([a-zA-Z0-9_-]+)\/?/;
 
-	const dispatch = createEventDispatcher<YouTubeDispatcher>();
+	const dispatch = createEventDispatcher<Dispatcher>();
 
 	let isPlayerReady = false;
 	let container: HTMLDivElement | undefined;
@@ -37,25 +38,26 @@
 		dispatch('mount');
 	});
 
-	function getID(url: FilePlayerUrl) {
+	function getID(url: PlayerUrl) {
 		if (!url || url instanceof Array || MATCH_PLAYLIST.test(url)) {
 			return null;
 		}
 		return url.match(MATCH_URL_YOUTUBE)?.[1] ?? null;
 	}
 
-	function parsePlaylist(url: FilePlayerUrl): ReturnType<ParsePlaylistFn> {
+	function parsePlaylist(url: PlayerUrl): ReturnType<ParsePlaylistFn> {
 		if (url instanceof Array) {
+			const urls = new Array(url.length);
+			for (let i = 0; i < url.length; i++) {
+				const urlItem = url[i];
+				if (typeof urlItem === 'string') {
+					urls[i] = getID(urlItem);
+				}
+			}
+
 			return {
 				listType: 'playlist',
-				list: url
-					.map((item) => {
-						if (typeof item === 'string') {
-							return getID(item);
-						}
-						return null;
-					})
-					.join(',')
+				list: url.join(',')
 			};
 		}
 		if (MATCH_PLAYLIST.test(url)) {
@@ -119,7 +121,7 @@
 		}
 	}
 
-	export function load(url: FilePlayerUrl, isReady?: boolean) {
+	export function load(url: PlayerUrl, isReady?: boolean) {
 		const id = getID(url);
 		if (id === null) {
 			return;
@@ -152,53 +154,61 @@
 			isLoaded(sdk) {
 				return sdk.loaded === 1;
 			}
-		}).then((YT) => {
-			if (!container) {
-				return;
-			}
-			player = new YT.Player(container, {
-				width: '100%',
-				height: '100%',
-				videoId: id,
-				playerVars: {
-					autoplay: playing ? 1 : 0,
-					controls: controls ? 1 : 0,
-					start: parseStartTime(url),
-					end: parseEndTime(url),
-					origin: window.location.origin,
-					playsinline: playsinline ? 1 : 0,
-					...parsePlaylist(url),
-					...playerVars
-				},
-				events: {
-					onReady: () => {
-						isPlayerReady = true;
-						if (player !== undefined && isPlayerReady && loop) {
-							player.setLoop(true);
+		}).then(
+			(YT) => {
+				if (!container) {
+					return;
+				}
+				player = new YT.Player(container, {
+					width: '100%',
+					height: '100%',
+					videoId: id,
+					playerVars: {
+						autoplay: playing ? 1 : 0,
+						controls: controls ? 1 : 0,
+						start: parseStartTime(url),
+						end: parseEndTime(url),
+						origin: window.location.origin,
+						playsinline: playsinline ? 1 : 0,
+						...parsePlaylist(url),
+						...playerVars
+					},
+					events: {
+						onReady: () => {
+							isPlayerReady = true;
+							if (player !== undefined && isPlayerReady && loop) {
+								player.setLoop(true);
+							}
+							dispatch('ready');
+						},
+						onPlaybackRateChange: (event) => {
+							dispatch('playbackRateChange', event.data);
+						},
+						onPlaybackQualityChange: (event) => {
+							dispatch('playbackQualityChange', event);
+						},
+						onStateChange,
+						onError: (event) => {
+							dispatch('error', {
+								error: event.data
+							});
 						}
-						dispatch('ready');
 					},
-					onPlaybackRateChange: (event) => {
-						dispatch('playbackRateChange', event.data);
-					},
-					onPlaybackQualityChange: (event) => {
-						dispatch('playbackQualityChange', event);
-					},
-					onStateChange,
-					onError: (event) => {
-						dispatch('error', {
-							error: event.data
-						});
-					}
-				},
-				...embedOptions
-			});
-			if (embedOptions?.events) {
-				console.warn(
-					"Using `embedOptions.events` will likely break things. Use SveltePlayer's callback props instead, eg onReady, onPlay, onPause"
-				);
+					...embedOptions
+				});
+			},
+			(err) => {
+				dispatch('error', {
+					error: err
+				});
 			}
-		});
+		);
+
+		if (embedOptions?.events) {
+			console.warn(
+				"Using `embedOptions.events` will likely break things. Use SveltePlayer's callback props instead, eg onReady, onPlay, onPause"
+			);
+		}
 	}
 
 	export function play() {
