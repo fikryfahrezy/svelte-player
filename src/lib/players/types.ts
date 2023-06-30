@@ -6,8 +6,10 @@ import type {
 	GlobalSDK,
 	GlobalSDKReady,
 	GlobalSDKType,
-	GlobalSDKObject
+	YTPlayer
 } from './global-types';
+
+export type PlayerInstance = YTPlayer | HTMLAudioElement | HTMLVideoElement;
 
 export type SDKBase<T extends keyof GlobalSDK> = {
 	url: string;
@@ -54,7 +56,7 @@ export type PlayerMedia = {
 	setLoop?(loop: boolean): void;
 	enablePIP?(): void;
 	disablePIP?(): void;
-	getPlayer?(): GlobalSDKObject | null;
+	getPlayer?(): PlayerInstance | null;
 };
 
 export type OnProgressProps = {
@@ -73,7 +75,7 @@ export type OnErrorProps = {
 };
 
 export type Dispatcher = {
-	ready: undefined,
+	ready: undefined;
 	mount: undefined;
 	start: undefined;
 	play: undefined;

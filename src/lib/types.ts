@@ -1,5 +1,4 @@
-import type { GlobalSDKObject } from './players/global-types';
-import type { InternalPlayerKey, Dispatcher, PlayerUrl } from './players/types';
+import type { InternalPlayerKey, Dispatcher, PlayerUrl, PlayerInstance } from './players/types';
 import type { YouTubeConfig } from './players/youtube-types';
 import type { FileConfig } from './players/file-types';
 import type { NotImplementedConfig } from './players/not-implemented-types';
@@ -14,7 +13,7 @@ export type PlayerRef = {
 	getDuration(): number | null;
 	getCurrentTime(): number | null;
 	getSecondsLoaded(): number | null;
-	getInternalPlayer(key?: InternalPlayerKey): GlobalSDKObject | null;
+	getInternalPlayer(key?: InternalPlayerKey): PlayerInstance | null;
 	seekTo(amount: number, type?: SeekToType, keepPlaying?: boolean): void;
 };
 

@@ -1,11 +1,17 @@
-import type { FileConfiAttributes } from './global-types';
+import type {
+	HTMLVideoAttributes,
+	HTMLAudioAttributes,
+	HTMLTrackAttributes
+} from 'svelte/elements';
 import type { FilePlayerUrl } from './types';
+
+export type FileConfiAttributes = Omit<HTMLVideoAttributes | HTMLAudioAttributes, `on:${string}`>;
 
 export type FileConfiHlsOptions = Record<string, never>;
 
 export type FileConfig = {
 	attributes: Partial<FileConfiAttributes>;
-	tracks: never[];
+	tracks: Omit<HTMLTrackAttributes, `on:${string}`>[];
 	forceVideo: boolean;
 	forceAudio: boolean;
 	forceHLS: boolean;

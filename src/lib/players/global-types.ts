@@ -1,4 +1,3 @@
-import type { HTMLVideoAttributes, HTMLAudioAttributes } from 'svelte/elements';
 import type Hls from 'hls.js';
 import type dashjs from 'dashjs';
 import type flvjs from 'flv.js';
@@ -211,14 +210,27 @@ export type YT = {
 	unsubscribe: AnyFunction; // TODO: to impelment corrent type
 };
 
-export type FileConfiAttributes = Omit<HTMLVideoAttributes | HTMLAudioAttributes, `on:${string}`>;
+type TypeOfDashJS = typeof dashjs;
+type DashJSLogLevel = TypeOfDashJS['LogLevel'];
 
-export type DashJS = typeof dashjs;
+export type DashJSDebugLogLevel = {
+	LOG_LEVEL_NONE: DashJSLogLevel['LOG_LEVEL_NONE'];
+	LOG_LEVEL_FATAL: DashJSLogLevel['LOG_LEVEL_FATAL'];
+	LOG_LEVEL_ERROR: DashJSLogLevel['LOG_LEVEL_ERROR'];
+	LOG_LEVEL_WARNING: DashJSLogLevel['LOG_LEVEL_WARNING'];
+	LOG_LEVEL_INFO: DashJSLogLevel['LOG_LEVEL_INFO'];
+	LOG_LEVEL_DEBUG: DashJSLogLevel['LOG_LEVEL_DEBUG'];
+};
+
+export type DashJS = TypeOfDashJS & {
+	Debug: DashJSDebugLogLevel;
+};
 export type FlvJS = typeof flvjs;
+export type HlsJS = typeof Hls;
 
 export type GlobalSDK = {
 	YT: YT;
-	Hls: Hls;
+	Hls: HlsJS;
 	dashjs: DashJS;
 	flvjs: FlvJS;
 };
@@ -233,13 +245,10 @@ export type GlobalSDKFLVKey = Extract<GlobalSDKType, 'flvjs'>;
 export type GlobalSDKValue = GlobalSDK[GlobalSDKType];
 
 export type GlobalSDKYT = Extract<GlobalSDKValue, YT>;
-export type GlobalSDKHLS = Extract<GlobalSDKValue, Hls>;
+export type GlobalSDKHLS = Extract<GlobalSDKValue, HlsJS>;
+export type GlobalSDKHLSClass = Hls;
 export type GlobalSDKDASH = Extract<GlobalSDKValue, DashJS>;
 export type GlobalSDKFLV = Extract<GlobalSDKValue, FlvJS>;
-
-export type GlobalSDKObject = YTPlayer;
-
-export type GlobalSDKYTObject = Extract<GlobalSDKObject, YTPlayer>;
 
 export type GlobalSDKReady = 'onYouTubeIframeAPIReady';
 

@@ -3,7 +3,7 @@
 		GlobalSDKDASHKey,
 		GlobalSDKHLSKey,
 		GlobalSDKFLVKey,
-		GlobalSDKHLS
+		GlobalSDKHLSClass
 	} from './global-types';
 	import type { FilePlayerUrl, Dispatcher } from './types';
 	import type { FileConfig, ShouldUseAudioParams } from './file-types';
@@ -11,7 +11,7 @@
 	import type { FlvJSPlayer } from './flv-types';
 
 	import { onMount, createEventDispatcher } from 'svelte';
-	import { isMediaStream, getSDK } from './utils';
+	import { getSDK, isMediaStream, supportsWebKitPresentationMode } from './utils';
 	import { AUDIO_EXTENSIONS, HLS_EXTENSIONS, DASH_EXTENSIONS, FLV_EXTENSIONS } from './patterns';
 
 	export let url: FilePlayerUrl;
@@ -51,11 +51,12 @@
 
 	const dispatch = createEventDispatcher<Dispatcher>();
 
-	let hls: GlobalSDKHLS | undefined = undefined;
+	let hls: GlobalSDKHLSClass | undefined = undefined;
 	let dash: DashJSMediaPlayerClass | undefined = undefined;
 	let flv: FlvJSPlayer | undefined = undefined;
 
 	onMount(() => {
+		dispatch('mount');
 		if (player !== undefined) {
 			addListeners(player);
 			if (IS_IOS || config.forceDisableHls) {
@@ -69,6 +70,8 @@
 			}
 		};
 	});
+
+	$: shouldUseAudio({ config, url });
 
 	function addListeners(playerParams: Exclude<typeof player, undefined>) {
 		playerParams.addEventListener('play', onPlay);
@@ -241,68 +244,70 @@
 		if (dash) {
 			dash.reset();
 		}
-		if (shouldUseHLS(url)) {
-			getSDK({
-				url: HLS_SDK_URL.replace('VERSION', hlsVersion),
-				sdkGlobal: HLS_GLOBAL
-			}).then((Hls) => {
-				// const bla = new X()
-				// hls = new Hls(hlsOptions);
-				// hls.on(Hls.Events.MANIFEST_PARSED, () => {
-				// 	dispatch('ready');
-				// });
-				// hls.on(Hls.Events.ERROR, (e, data) => {
-				// 	dispatch('error', {
-				// 		error: e,
-				// 		data: data,
-				// 		sdkInstance: hls,
-				// 		sdkGlobal: Hls
-				// 	});
-				// });
-				// if (typeof url === 'string') {
-				// 	if (MATCH_CLOUDFLARE_STREAM.test(url)) {
-				// 		const id = url.match(MATCH_CLOUDFLARE_STREAM)?.[1];
-				// 		if (id !== undefined) {
-				// 			hls.loadSource(REPLACE_CLOUDFLARE_STREAM.replace('{id}', id));
-				// 		}
-				// 	} else {
-				// 		hls.loadSource(url);
-				// 	}
-				// }
-				// if (player !== undefined) {
-				// 	hls.attachMedia(player);
-				// }
-				// dispatch('loaded');
-			});
-		}
-		if (shouldUseDASH(url)) {
-			getSDK({
-				url: DASH_SDK_URL.replace('VERSION', dashVersion),
-				sdkGlobal: DASH_GLOBAL
-			}).then((dashjs) => {
-				dash = dashjs.MediaPlayer().create();
-				if (typeof url === 'string') {
-					dash.initialize(player, url, playing);
-				}
-				dash.on('error', (e) => {
-					dispatch('error', {
-						error: e.error
+
+		if (typeof url === 'string') {
+			if (shouldUseHLS(url)) {
+				getSDK({
+					url: HLS_SDK_URL.replace('VERSION', hlsVersion),
+					sdkGlobal: HLS_GLOBAL
+				}).then((Hls) => {
+					hls = new Hls(hlsOptions);
+					hls.on(Hls.Events.MANIFEST_PARSED, () => {
+						dispatch('ready');
 					});
+					hls.on(Hls.Events.ERROR, (e, data) => {
+						dispatch('error', {
+							error: e,
+							data: data,
+							sdkInstance: hls,
+							sdkGlobal: Hls
+						});
+					});
+					if (MATCH_CLOUDFLARE_STREAM.test(url)) {
+						const id = url.match(MATCH_CLOUDFLARE_STREAM)?.[1];
+						if (id !== undefined) {
+							hls.loadSource(REPLACE_CLOUDFLARE_STREAM.replace('{id}', id));
+						}
+					} else {
+						hls.loadSource(url);
+					}
+					if (player !== undefined) {
+						hls.attachMedia(player);
+					}
+					dispatch('loaded');
 				});
-				if (parseInt(dashVersion) < 3) {
-					// dash.getDebug().setLogToBrowserConsole(false);
-				} else {
-					// dash.updateSettings({ debug: { logLevel: dashjs.Debug.LOG_LEVEL_NONE } });
-				}
-				dispatch('loaded');
-			});
-		}
-		if (shouldUseFLV(url)) {
-			getSDK({
-				url: FLV_SDK_URL.replace('VERSION', flvVersion),
-				sdkGlobal: FLV_GLOBAL
-			}).then((flvjs) => {
-				if (typeof url === 'string') {
+			}
+			if (shouldUseDASH(url)) {
+				getSDK({
+					url: DASH_SDK_URL.replace('VERSION', dashVersion),
+					sdkGlobal: DASH_GLOBAL
+				}).then((dashjs) => {
+					dash = dashjs.MediaPlayer().create();
+					dash.initialize(player, url, playing);
+					dash.on('error', (e) => {
+						dispatch('error', {
+							error: e.error
+						});
+					});
+					if (parseInt(dashVersion) < 3) {
+						const dashDebug = dash.getDebug();
+						if (
+							'setLogToBrowserConsole' in dashDebug &&
+							typeof dashDebug.setLogToBrowserConsole === 'function'
+						) {
+							dashDebug.setLogToBrowserConsole(false);
+						}
+					} else {
+						dash.updateSettings({ debug: { logLevel: dashjs.Debug.LOG_LEVEL_NONE } });
+					}
+					dispatch('loaded');
+				});
+			}
+			if (shouldUseFLV(url)) {
+				getSDK({
+					url: FLV_SDK_URL.replace('VERSION', flvVersion),
+					sdkGlobal: FLV_GLOBAL
+				}).then((flvjs) => {
 					flv = flvjs.createPlayer({ type: 'flv', url });
 					if (player !== undefined) {
 						flv.attachMediaElement(player);
@@ -317,17 +322,37 @@
 					});
 					flv.load();
 					dispatch('loaded');
+				});
+			}
+		}
+
+		if (player !== undefined) {
+			if (url instanceof Array) {
+				// When setting new urls (<source>) on an already loaded video,
+				// HTMLMediaElement.load() is needed to reset the media element
+				// and restart the media resource. Just replacing children source
+				// dom nodes is not enough
+				player.load();
+			} else if (isMediaStream(url)) {
+				try {
+					player.srcObject = url as unknown as MediaStream;
+				} catch (e) {
+					player.src = window.URL.createObjectURL(url as unknown as MediaSource | Blob);
 				}
-			});
+			}
 		}
 	}
 
 	export function play() {
 		if (player !== undefined) {
 			const promise = player.play();
-			// if (promise) {
-			// 	promise.catch(props.onError);
-			// }
+			if (promise) {
+				promise.catch((err) => {
+					dispatch('error', {
+						error: err
+					});
+				});
+			}
 		}
 	}
 
@@ -340,9 +365,9 @@
 	export function stop() {
 		if (player !== undefined) {
 			player.removeAttribute('src');
-			// if (this.dash) {
-			// 	this.dash.reset();
-			// }
+			if (dash) {
+				dash.reset();
+			}
 		}
 	}
 
@@ -370,36 +395,93 @@
 		}
 	}
 
-	export function setPlaybackRate(rate: number) {
-		console.log('setPlaybackRate');
-	}
-
-	export function setLoop(loop: boolean) {
-		console.log('setLoop');
-	}
-
-	export function getDuration() {
-		return 0;
-	}
-
-	export function getCurrentTime() {
-		return 0;
-	}
-
-	export function getSecondsLoaded() {
-		return 0;
-	}
-
 	export function enablePIP() {
-		console.log('enablePIP');
+		if (document.pictureInPictureElement !== player) {
+			if (
+				player !== undefined &&
+				'requestPictureInPicture' in player &&
+				player.requestPictureInPicture
+			) {
+				player.requestPictureInPicture();
+			}
+		} else if (
+			'requestPictureInPicture' in player &&
+			supportsWebKitPresentationMode(player) &&
+			'webkitPresentationMode' in player &&
+			player.webkitPresentationMode !== 'picture-in-picture' &&
+			'webkitSetPresentationMode' in player &&
+			typeof player.webkitSetPresentationMode === 'function'
+		) {
+			player.webkitSetPresentationMode('picture-in-picture');
+		}
 	}
 
 	export function disablePIP() {
-		console.log('disablePIP');
+		if (document.exitPictureInPicture && document.pictureInPictureElement === player) {
+			document.exitPictureInPicture();
+		} else if (
+			player !== undefined &&
+			'requestPictureInPicture' in player &&
+			supportsWebKitPresentationMode(player) &&
+			'webkitPresentationMode' in player &&
+			player.webkitPresentationMode !== 'inline' &&
+			'webkitSetPresentationMode' in player &&
+			typeof player.webkitSetPresentationMode === 'function'
+		) {
+			player.webkitSetPresentationMode('inline');
+		}
 	}
 
-	export function getPlayer() {
-		return null;
+	export function setPlaybackRate(rate: number) {
+		try {
+			if (player !== undefined) {
+				player.playbackRate = rate;
+			}
+		} catch (error) {
+			dispatch('error', {
+				error: error
+			});
+		}
+	}
+
+	export function setLoop(_: boolean) {
+		// do nothing
+	}
+
+	export function getDuration() {
+		if (!player) {
+			return 0;
+		}
+		const { duration, seekable } = player;
+		// on iOS, live streams return Infinity for the duration
+		// so instead we use the end of the seekable timerange
+		if (duration === Infinity && seekable.length > 0) {
+			return seekable.end(seekable.length - 1);
+		}
+		return duration;
+	}
+
+	export function getCurrentTime() {
+		if (!player) {
+			return 0;
+		}
+		return player.currentTime;
+	}
+
+	export function getSecondsLoaded() {
+		if (!player) {
+			return 0;
+		}
+		const { buffered } = player;
+		if (buffered.length === 0) {
+			return 0;
+		}
+		const end = buffered.end(buffered.length - 1);
+		const duration = getDuration();
+		if (duration !== null && end > duration) {
+			return duration;
+		}
+		return end;
 	}
 
 	function getSource(url: FilePlayerUrl) {
@@ -413,6 +495,14 @@
 			return url.replace('www.dropbox.com', 'dl.dropboxusercontent.com');
 		}
 		return url;
+	}
+
+	export function getPlayer() {
+		if (player !== undefined) {
+			return player;
+		}
+
+		return null;
 	}
 
 	function checkShouldUseAudio(url: FilePlayerUrl) {
@@ -438,7 +528,20 @@
 	{...config.attributes}
 	class:fullwidth={style === ''}
 	class:fullheight={style === ''}
-/>
+>
+	{#if url instanceof Array}
+		{#each url as urlElement}
+			{#if typeof urlElement === 'string'}
+				<source src={urlElement} />
+			{:else}
+				<source {...urlElement} />
+			{/if}
+		{/each}
+	{/if}
+	{#each config.tracks as track}
+		<track {...track} />
+	{/each}
+</svelte:element>
 
 <style>
 	.fullwidth {
