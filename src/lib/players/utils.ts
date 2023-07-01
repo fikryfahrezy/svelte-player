@@ -137,7 +137,9 @@ export function isBlobUrl(url: string) {
 	return /^blob:/.test(url);
 }
 
-export function supportsWebKitPresentationMode(video = document.createElement('video')) {
+export function supportsWebKitPresentationMode(
+	video: HTMLMediaElement = document.createElement('video')
+) {
 	// Check if Safari supports PiP, and is not on mobile (other than iPad)
 	// iPhone safari appears to "support" PiP through the check, however PiP does not function
 	const notMobile = /iPhone|iPod/.test(navigator.userAgent) === false;

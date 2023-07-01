@@ -24,8 +24,6 @@
 	export const playsinline: boolean | undefined = undefined; // not used yet, but for suppress the warn from svelte check ;
 	export let config: FileConfig;
 
-	let player: HTMLAudioElement | HTMLVideoElement | undefined;
-
 	const HAS_NAVIGATOR = typeof navigator !== 'undefined';
 	const IS_IPAD_PRO =
 		HAS_NAVIGATOR && navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1;
@@ -51,14 +49,53 @@
 
 	const dispatch = createEventDispatcher<Dispatcher>();
 
+	type UrlObject = {
+		url: FilePlayerUrl | undefined;
+		prevUrl: FilePlayerUrl | undefined;
+	};
+
+	const urlObj: Partial<UrlObject> = {};
+	const urlObjProxy = new Proxy(urlObj, {
+		set(target, prop, newValue) {
+			if (prop === 'url') {
+				target.prevUrl = target.url;
+			}
+			target[prop as keyof UrlObject] = newValue;
+			return true;
+		}
+	});
+
+	type PlayerElement = HTMLAudioElement | HTMLVideoElement;
+	type PlayerObject = {
+		player: PlayerElement | undefined;
+		prevPlayer: PlayerElement | undefined;
+	};
+
+	const playerObj: Partial<PlayerObject> = {};
+	const playerObjProxy = new Proxy(playerObj, {
+		set(target, prop, newValue) {
+			if (prop === 'player' && target.player !== null) {
+				target.prevPlayer = target.player;
+			}
+			if (newValue !== null) {
+				if (target.prevPlayer !== undefined) {
+					removeListeners(target.prevPlayer, urlObjProxy.prevUrl);
+				}
+				addListeners(newValue as PlayerElement);
+				target[prop as keyof PlayerObject] = newValue;
+			}
+			return true;
+		}
+	});
+
 	let hls: GlobalSDKHLSClass | undefined = undefined;
 	let dash: DashJSMediaPlayerClass | undefined = undefined;
 	let flv: FlvJSPlayer | undefined = undefined;
 
 	onMount(() => {
 		dispatch('mount');
+		const player = playerObjProxy.player;
 		if (player !== undefined) {
-			addListeners(player);
 			if (IS_IOS || config.forceDisableHls) {
 				player.load();
 			}
@@ -67,13 +104,25 @@
 			if (player !== undefined) {
 				player.src = '';
 				removeListeners(player);
+				if (hls) {
+					hls.destroy();
+				}
 			}
 		};
 	});
 
-	$: shouldUseAudio({ config, url });
+	$: player = playerObjProxy.player;
 
-	function addListeners(playerParams: Exclude<typeof player, undefined>) {
+	function handlePropsUrlChange(propsUrl: typeof url) {
+		if (!isMediaStream(propsUrl) && player !== undefined) {
+			player.srcObject = null;
+		}
+		urlObjProxy.url = propsUrl;
+	}
+
+	$: handlePropsUrlChange(url);
+
+	function addListeners(playerParams: Exclude<PlayerObject['player'], undefined>) {
 		playerParams.addEventListener('play', onPlay);
 		playerParams.addEventListener('waiting', onBuffer);
 		playerParams.addEventListener('playing', onBufferEnd);
@@ -97,7 +146,7 @@
 	}
 
 	function removeListeners(
-		playerParams: Exclude<typeof player, undefined>,
+		playerParams: Exclude<PlayerObject['player'], undefined>,
 		urlParams?: typeof url
 	) {
 		playerParams.removeEventListener('canplay', onReady);
@@ -118,79 +167,64 @@
 		}
 	}
 
-	function onReady(...args: any) {
-		dispatch('ready');
-		// this.props.onReady(...args)
+	function onReady(e: Event) {
+		dispatch('ready', e);
 	}
 
-	function onPlay(...args: any) {
-		// this.props.onPlay(...args)
-		dispatch('play');
+	function onPlay(e: Event) {
+		dispatch('play', e);
 	}
 
-	function onBuffer(...args: any) {
-		// this.props.onBuffer(...args)
-		dispatch('buffer');
+	function onBuffer(e: Event) {
+		dispatch('buffer', e);
 	}
 
-	function onBufferEnd(...args: any) {
-		// this.props.onBufferEnd(...args)
-		dispatch('bufferEnd');
+	function onBufferEnd(e: Event) {
+		dispatch('bufferEnd', e);
 	}
 
-	function onPause(...args: any) {
-		// this.props.onPause(...args)
-		dispatch('pause');
+	function onPause(e: Event) {
+		dispatch('pause', e);
 	}
 
-	function onEnded(...args: any) {
-		// this.props.onEnded(...args)
-		dispatch('ended');
+	function onEnded(e: Event) {
+		dispatch('ended', e);
 	}
 
-	function onError(...args: any) {
-		// this.props.onError(...args)
+	function onError(e: Event) {
 		dispatch('error', {
-			error: 'error'
+			error: e
 		});
 	}
 
-	function onPlayBackRateChange(event: any) {
-		// this.props.onPlaybackRateChange(event.target.playbackRate)
-		dispatch('playbackRateChange', event.target.playbackRate);
+	function onPlayBackRateChange(event: Event) {
+		dispatch('playbackRateChange', (event.target as HTMLMediaElement).playbackRate);
 	}
 
-	function onEnablePIP(...args: any) {
-		// this.props.onEnablePIP(...args)
-		dispatch('enablePIP');
+	function onEnablePIP(e: Event) {
+		dispatch('enablePIP', e);
 	}
 
-	function onDisablePIP(e: any) {
-		// const { onDisablePIP, playing } = this.props;
-		// onDisablePIP(e);
-		// if (playing) {
-		// 	this.play();
-		// }
-
-		dispatch('disablePIP');
+	function onDisablePIP(e: Event) {
+		dispatch('disablePIP', e);
 		if (playing) {
 			play();
 		}
 	}
 
-	function onPresentationModeChange(e: any) {
-		// if (this.player && supportsWebKitPresentationMode(this.player)) {
-		// 	const { webkitPresentationMode } = this.player;
-		// 	if (webkitPresentationMode === 'picture-in-picture') {
-		// 		this.onEnablePIP(e);
-		// 	} else if (webkitPresentationMode === 'inline') {
-		// 		this.onDisablePIP(e);
-		// 	}
-		// }
+	function onPresentationModeChange(e: Event) {
+		if (player && supportsWebKitPresentationMode(player) && 'webkitPresentationMode' in player) {
+			const { webkitPresentationMode } = player;
+			if (webkitPresentationMode === 'picture-in-picture') {
+				onEnablePIP(e);
+			} else if (webkitPresentationMode === 'inline') {
+				onDisablePIP(e);
+			}
+		}
 	}
 
-	function onSeek(e: any) {
-		// this.props.onSeek(e.target.currentTime);
+	function onSeek(e: Event) {
+		dispatch('seek', (e.target as HTMLMediaElement).currentTime);
 	}
 
 	function shouldUseAudio(props: ShouldUseAudioParams) {
@@ -405,7 +439,6 @@
 				player.requestPictureInPicture();
 			}
 		} else if (
-			'requestPictureInPicture' in player &&
 			supportsWebKitPresentationMode(player) &&
 			'webkitPresentationMode' in player &&
 			player.webkitPresentationMode !== 'picture-in-picture' &&
@@ -421,7 +454,6 @@
 			document.exitPictureInPicture();
 		} else if (
 			player !== undefined &&
-			'requestPictureInPicture' in player &&
 			supportsWebKitPresentationMode(player) &&
 			'webkitPresentationMode' in player &&
 			player.webkitPresentationMode !== 'inline' &&
@@ -445,7 +477,7 @@
 	}
 
 	export function setLoop(_: boolean) {
-		// do nothing
+		// do nothing; not implemented
 	}
 
 	export function getDuration() {
@@ -517,7 +549,7 @@
 
 <svelte:element
 	this={Element}
-	bind:this={player}
+	bind:this={playerObjProxy.player}
 	src={getSource(url)}
 	{style}
 	preload="auto"

@@ -75,21 +75,21 @@ export type OnErrorProps = {
 };
 
 export type Dispatcher = {
-	ready: undefined;
+	ready: undefined | Event;
 	mount: undefined;
 	start: undefined;
-	play: undefined;
+	play: undefined | Event;
 	progress: OnProgressProps;
 	duration: number;
-	pause: undefined;
-	buffer: undefined;
-	bufferEnd: undefined;
+	pause: undefined | Event;
+	buffer: undefined | Event;
+	bufferEnd: undefined | Event;
 	seek: number;
-	ended: undefined;
+	ended: undefined | Event;
 	error: OnErrorProps;
 	clickPreview: unknown; // TODO: to implement corrent type
-	enablePIP: undefined;
-	disablePIP: undefined;
+	enablePIP: Event;
+	disablePIP: Event;
 	playbackRateChange: number;
 	playbackQualityChange: YTPlayerOnPlaybackQualityChangeEvent;
 	loaded: undefined;

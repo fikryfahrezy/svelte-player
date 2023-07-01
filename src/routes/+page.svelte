@@ -41,7 +41,6 @@
 	function handleToggleControls() {
 		prevUrl = url;
 		url = '';
-		console.log(url);
 	}
 
 	function onPrevURLStateChange(prevUrlState: typeof prevUrl) {
@@ -59,12 +58,12 @@
 	}
 
 	function handlePlay() {
-		console.log('onPlay');
+		// console.log('onPlay');
 		playing = true;
 	}
 
 	function handlePause() {
-		console.log('onPause');
+		// console.log('onPause');
 		playing = false;
 	}
 
@@ -81,7 +80,7 @@
 
 	function handleProgress(event: CustomEvent<OnProgressProps>) {
 		const state = event.detail;
-		console.log('onProgress', state);
+		// console.log('onProgress', state);
 		// We only want to update time slider if we are not currently seeking
 		if (!seeking && state.loaded !== undefined && state.played !== undefined) {
 			loaded = state.loaded;
@@ -90,12 +89,12 @@
 	}
 
 	function handleEnded() {
-		console.log('onEnded');
+		// console.log('onEnded');
 		playing = loop;
 	}
 
 	function handleDuration(event: CustomEvent<number>) {
-		console.log('onDuration', event.detail);
+		// console.log('onDuration', event.detail);
 		duration = event.detail;
 	}
 
@@ -119,28 +118,28 @@
 				{pip}
 				bind:this={playerRef}
 				on:ready={() => {
-					console.log('onReady');
+					// console.log('onReady');
 				}}
 				on:start={() => {
-					console.log('onStart');
+					// console.log('onStart');
 				}}
 				on:play={handlePlay}
 				on:pause={handlePause}
 				on:buffer={() => {
-					console.log('onBuffer');
+					// console.log('onBuffer');
 				}}
 				on:playbackRateChange={handleOnPlaybackRateChange}
 				on:seek={(e) => {
-					console.log('onSeek', e);
+					// console.log('onSeek', e);
 				}}
 				on:ended={handleEnded}
 				on:error={(e) => {
-					console.log('onError', e);
+					// console.log('onError', e);
 				}}
 				on:progress={handleProgress}
 				on:duration={handleDuration}
 				on:playbackQualityChange={(e) => {
-					console.log('onPlaybackQualityChange', e);
+					// console.log('onPlaybackQualityChange', e);
 				}}
 			/>
 		</div>
@@ -627,6 +626,8 @@
 	</section>
 	<footer class="footer">
 		<a href="https://github.com/fikryfahrezy/svelte-player">GitHub</a>
+		·
+		<a href="https://www.npmjs.com/package/svelte-player">npm</a>
 	</footer>
 </div>
 
