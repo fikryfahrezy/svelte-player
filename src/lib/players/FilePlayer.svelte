@@ -68,19 +68,18 @@
 	type PlayerElement = HTMLAudioElement | HTMLVideoElement;
 	type PlayerObject = {
 		player: PlayerElement | undefined;
-		prevPlayer: PlayerElement | undefined;
 	};
 
+	// This code is to replicate ReactPlayer behavior
+	// https://github.com/cookpete/react-player/blob/2811bc59b9368170acc20d4f1e39555413d0d9e1/src/players/FilePlayer.js#L34-L37
 	const playerObj: Partial<PlayerObject> = {};
 	const playerObjProxy = new Proxy(playerObj, {
 		set(target, prop, newValue) {
-			if (prop === 'player' && target.player !== null) {
-				target.prevPlayer = target.player;
-			}
-			if (newValue !== null) {
-				if (target.prevPlayer !== undefined) {
-					removeListeners(target.prevPlayer, urlObjProxy.prevUrl);
+			if (prop === 'player' && newValue !== null) {
+				if (target.player !== undefined) {
+					removeListeners(target.player, urlObjProxy.prevUrl);
 				}
+
 				addListeners(newValue as PlayerElement);
 				target[prop as keyof PlayerObject] = newValue;
 			}
