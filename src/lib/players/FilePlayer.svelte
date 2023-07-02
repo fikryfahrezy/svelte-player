@@ -476,7 +476,7 @@
 	}
 
 	export function setLoop(_: boolean) {
-		// do nothing; not implemented
+		// do nothing, no implementation
 	}
 
 	export function getDuration() {

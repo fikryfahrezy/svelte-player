@@ -240,7 +240,7 @@
 			// Convert fraction to seconds based on duration
 			const duration = player.getDuration();
 			if (!duration) {
-				console.warn('ReactPlayer: could not seek using fraction - duration not yet available');
+				console.warn('SveltePlayer: could not seek using fraction - duration not yet available');
 				return;
 			}
 			player.seekTo(duration * amount, keepPlaying);

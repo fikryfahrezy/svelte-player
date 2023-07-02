@@ -1,6 +1,10 @@
 <script lang="ts">
-	import type { GlobalSDKYTKey, GlobalSDKYTReady } from './global-types';
-	import type { YTPlayer, YTPlayerOnStateChangeEvent } from './global-types';
+	import type {
+		GlobalSDKYTKey,
+		GlobalSDKYTReady,
+		YTPlayer,
+		YTPlayerOnStateChangeEvent
+	} from './global-types';
 	import type { FilePlayerUrl, PlayerUrl, Dispatcher } from './types';
 	import type { ParsePlaylistFn, YouTubeConfig } from './youtube-types';
 

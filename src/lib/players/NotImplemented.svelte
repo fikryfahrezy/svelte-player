@@ -1,5 +1,7 @@
 <script lang="ts">
-	import type { PlayerMedia, FilePlayerUrl } from './types';
+	import type { PlayerMedia, FilePlayerUrl, Dispatcher } from './types';
+
+	import { onMount, createEventDispatcher } from 'svelte';
 
 	export const url: FilePlayerUrl | undefined = undefined;
 	export const playing: boolean | undefined = undefined;
@@ -11,7 +13,13 @@
 	export const playsinline: boolean | undefined = undefined;
 	export const config: object | undefined = undefined;
 
+	const dispatch = createEventDispatcher<Dispatcher>();
+
 	let player: PlayerMedia | undefined;
+
+	onMount(() => {
+		dispatch('mount');
+	});
 
 	export function load(url: FilePlayerUrl, isReady?: boolean) {
 		console.log('load');

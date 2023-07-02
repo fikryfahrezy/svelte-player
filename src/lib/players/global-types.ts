@@ -179,7 +179,7 @@ export interface YTPlayer {
 	getAvailablePlaybackRates(): YTPlaybackRate[];
 	setLoop(loopPlaylists: boolean): void;
 	setShuffle(shufflePlaylist: boolean): void;
-	getVideoLoadedFraction(): number; // between 0 - 1
+	getVideoLoadedFraction(): number; //Float, between 0 - 1
 	getPlayerState(): YTPlayerStateValue;
 	getCurrentTime(): number;
 	getDuration(): number;
@@ -210,6 +210,143 @@ export type YT = {
 	unsubscribe: AnyFunction; // TODO: to impelment corrent type
 };
 
+// https://dev.twitch.tv/docs/embed/video-and-clips/#interactive-frames-for-live-streams-and-vods
+export type TwitchPlayerChannelOption = {
+	channel: string;
+	video: undefined;
+	collection: undefined;
+};
+
+export type TwitchPlayerVideoOption = {
+	channel: undefined;
+	video: string;
+	collection: undefined;
+};
+
+export type TwitchPlayerCollectionOption = {
+	channel: undefined;
+	video: undefined;
+	collection: string;
+};
+
+export type TwitchPlayerLinkOption =
+	| TwitchPlayerChannelOption
+	| TwitchPlayerVideoOption
+	| TwitchPlayerCollectionOption;
+
+export type TwitchPlayerRequiredOptions = TwitchPlayerLinkOption & {
+	height: number | string;
+	width: number | string;
+	parent?: string[];
+};
+
+export type TwitchPlayerOptionalOptions = {
+	autoplay: boolean;
+	muted: boolean;
+	time: string;
+
+	// These options are not documented in Twitch Doc
+	// But actually can passed these options
+	playsinline: boolean;
+	controls: boolean;
+};
+
+export type TwitchPlayerOptions = TwitchPlayerRequiredOptions &
+	Partial<TwitchPlayerOptionalOptions>;
+
+export type TwitchPlaybackStats = {
+	backendVersion: string;
+	bufferSize: number;
+	codecs: string;
+	displayResolution: string;
+	fps: string;
+	hlsLatencyBroadcaster: number;
+	playbackRate: number;
+	skippedFrames: number;
+	videoResolution: string;
+};
+
+export type TwitchPlayerCAPTIONS = 'captions';
+export type TwitchPlayerENDED = 'ended';
+export type TwitchPlayerPAUSE = 'pause';
+export type TwitchPlayerPLAY = 'play';
+export type TwitchPlayerPLAYBACK_BLOCKED = 'playbackBlocked';
+export type TwitchPlayerPLAYING = 'playing';
+export type TwitchPlayerOFFLINE = 'offline';
+export type TwitchPlayerONLINE = 'online';
+export type TwitchPlayerREADY = 'ready';
+export type TwitchPlayerSEEK = 'seek';
+
+export type TwitchPlayerEVENT =
+	| TwitchPlayerCAPTIONS
+	| TwitchPlayerENDED
+	| TwitchPlayerPAUSE
+	| TwitchPlayerPLAY
+	| TwitchPlayerPLAYBACK_BLOCKED
+	| TwitchPlayerPLAYING
+	| TwitchPlayerOFFLINE
+	| TwitchPlayerONLINE
+	| TwitchPlayerREADY
+	| TwitchPlayerSEEK;
+
+export type TwitchPlayerEVENTCallback = (params: Record<string, never>) => void;
+
+export type TwitchPlayerSEEKEVENTCallbackParams = { position: number };
+
+export type TwitchPlayerSEEKEVENTCallback = (params: TwitchPlayerSEEKEVENTCallbackParams) => void;
+
+export interface TwitchPlayer {
+	disableCaptions(): void;
+	enableCaptions(): void;
+	pause(): void;
+	play(): void;
+	seek(timestamp: number /* Float */): void;
+	setChannel(channel: string): void;
+	setCollection(collectionID: string, videoID: string): void;
+	setQuality(quality: string): void;
+	setVideo(videoID: string, timestamp: number): void;
+	getMuted(): boolean;
+	setMuted(muted: boolean): void;
+	getVolume(): number /* Float, between 0.0 - 1.0 */;
+	setVolume(volumelevel: number /* Float, between 0.0 - 1.0 */): void;
+	getPlaybackStats(): TwitchPlaybackStats;
+	getChannel(): string;
+	getCurrentTime(): number /* Float */;
+	getDuration(): number /* Float */;
+	getEnded(): boolean;
+	getQualities(): string[];
+	getQuality(): string;
+	getVideo(): string;
+	isPaused(): boolean;
+	addEventListener(
+		event: Exclude<TwitchPlayerEVENT, TwitchPlayerSEEK>,
+		callback: TwitchPlayerEVENTCallback
+	): void;
+	addEventListener(
+		event: Extract<TwitchPlayerEVENT, TwitchPlayerSEEK>,
+		callback: TwitchPlayerSEEKEVENTCallback
+	): void;
+}
+
+export interface TwitchPlayerConstructor {
+	new (container: string, options: Partial<TwitchPlayerOptions>): TwitchPlayer;
+	readonly prototype: TwitchPlayer;
+	CAPTIONS: TwitchPlayerCAPTIONS;
+	ENDED: TwitchPlayerENDED;
+	PAUSE: TwitchPlayerPAUSE;
+	PLAY: TwitchPlayerPLAY;
+	PLAYBACK_BLOCKED: TwitchPlayerPLAYBACK_BLOCKED;
+	PLAYING: TwitchPlayerPLAYING;
+	OFFLINE: TwitchPlayerOFFLINE;
+	ONLINE: TwitchPlayerONLINE;
+	READY: TwitchPlayerREADY;
+	SEEK: TwitchPlayerSEEK;
+}
+
+export type Twitch = {
+	Player: TwitchPlayerConstructor;
+};
+
 type TypeOfDashJS = typeof dashjs;
 type DashJSLogLevel = TypeOfDashJS['LogLevel'];
 
@@ -233,6 +370,7 @@ export type GlobalSDK = {
 	Hls: HlsJS;
 	dashjs: DashJS;
 	flvjs: FlvJS;
+	Twitch: Twitch;
 };
 
 export type GlobalSDKType = keyof GlobalSDK;
@@ -241,6 +379,7 @@ export type GlobalSDKYTKey = Extract<GlobalSDKType, 'YT'>;
 export type GlobalSDKHLSKey = Extract<GlobalSDKType, 'Hls'>;
 export type GlobalSDKDASHKey = Extract<GlobalSDKType, 'dashjs'>;
 export type GlobalSDKFLVKey = Extract<GlobalSDKType, 'flvjs'>;
+export type GlobalSDKTwitchKey = Extract<GlobalSDKType, 'Twitch'>;
 
 export type GlobalSDKValue = GlobalSDK[GlobalSDKType];
 
@@ -249,6 +388,7 @@ export type GlobalSDKHLS = Extract<GlobalSDKValue, HlsJS>;
 export type GlobalSDKHLSClass = Hls;
 export type GlobalSDKDASH = Extract<GlobalSDKValue, DashJS>;
 export type GlobalSDKFLV = Extract<GlobalSDKValue, FlvJS>;
+export type GlobalSDKTwitch = Extract<GlobalSDKValue, Twitch>;
 
 export type GlobalSDKReady = 'onYouTubeIframeAPIReady';
 

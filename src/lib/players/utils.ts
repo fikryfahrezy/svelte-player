@@ -7,7 +7,8 @@ import type {
 	GlobalSDKType,
 	GlobalSDKFLV,
 	GlobalSDKDASH,
-	GlobalSDKHLS
+	GlobalSDKHLS,
+	GlobalSDKTwitch
 } from './global-types';
 import type { GetSDKParams, FilePlayerUrl } from './types';
 import loadScript from 'load-script';
@@ -19,6 +20,7 @@ declare global {
 		Hls: GlobalSDKHLS;
 		dashjs: GlobalSDKDASH;
 		flvjs: GlobalSDKFLV;
+		Twitch: GlobalSDKTwitch;
 	}
 }
 
@@ -65,6 +67,11 @@ export function parseStartTime(url: FilePlayerUrl) {
 
 export function parseEndTime(url: FilePlayerUrl) {
 	return parseTimeParam(url, MATCH_END_QUERY);
+}
+
+// http://stackoverflow.com/a/38622545
+export function randomString() {
+	return Math.random().toString(36).substring(2, 7);
 }
 
 function getGlobal<T extends GlobalSDKType>(key: T): GlobalSDK[T] | null {

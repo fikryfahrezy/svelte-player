@@ -6,10 +6,11 @@ import type {
 	GlobalSDK,
 	GlobalSDKReady,
 	GlobalSDKType,
-	YTPlayer
+	YTPlayer,
+	TwitchPlayer
 } from './global-types';
 
-export type PlayerInstance = YTPlayer | HTMLAudioElement | HTMLVideoElement;
+export type PlayerInstance = YTPlayer | TwitchPlayer | HTMLAudioElement | HTMLVideoElement;
 
 export type SDKBase<T extends keyof GlobalSDK> = {
 	url: string;

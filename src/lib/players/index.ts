@@ -1,5 +1,5 @@
 import type { FilePlayerUrl } from './types';
-import { canPlayYoutube, canPlayFile, AUDIO_EXTENSIONS } from './patterns';
+import { canPlayYoutube, canPlayFile, AUDIO_EXTENSIONS, canPlayTwitch } from './patterns';
 import { supportsWebKitPresentationMode } from './utils';
 
 const players = [
@@ -9,6 +9,14 @@ const players = [
 		canEnablePIP: undefined,
 		loadComponent: () => {
 			return import('./YouTube.svelte');
+		}
+	},
+	{
+		key: 'twitch',
+		canPlay: canPlayTwitch,
+		canEnablePIP: undefined,
+		loadComponent: () => {
+			return import('./Twitch.svelte');
 		}
 	},
 	{

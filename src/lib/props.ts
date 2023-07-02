@@ -14,6 +14,10 @@ export const defaultConfig: Config = {
 		embedOptions: {},
 		onUnstarted: noop
 	},
+	twitch: {
+		options: {},
+		playerId: null
+	},
 	file: {
 		attributes: {},
 		tracks: [],

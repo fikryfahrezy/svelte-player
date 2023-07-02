@@ -1,7 +1,18 @@
 import type { InternalPlayerKey, Dispatcher, PlayerUrl, PlayerInstance } from './players/types';
 import type { YouTubeConfig } from './players/youtube-types';
+import type { TwitchConfig } from './players/twitch-types';
 import type { FileConfig } from './players/file-types';
 import type { NotImplementedConfig } from './players/not-implemented-types';
+
+// Recursive Partial<T> in TypeScript
+// https://stackoverflow.com/a/51365037/12976234
+export type RecursivePartial<T> = {
+	[P in keyof T]?: T[P] extends (infer U)[]
+		? RecursivePartial<U>[]
+		: T[P] extends object | undefined
+		? RecursivePartial<T[P]>
+		: T[P];
+};
 
 export type SeekToType = 'seconds' | 'fraction';
 
@@ -29,6 +40,7 @@ export type SveltePlayerRef = PlayerRef & {
 
 export type Config = {
 	youtube: YouTubeConfig;
+	twitch: TwitchConfig;
 	file: FileConfig;
 	'not-implemented': NotImplementedConfig;
 };
