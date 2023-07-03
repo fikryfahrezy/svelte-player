@@ -7,6 +7,7 @@ import { isMediaStream, isBlobUrl } from './utils';
 
 export const MATCH_URL_YOUTUBE =
 	/(?:youtu\.be\/|youtube(?:-nocookie|education)?\.com\/(?:embed\/|v\/|watch\/|watch\?v=|watch\?.+&v=|shorts\/|live\/))((\w|-){11})|youtube\.com\/playlist\?list=|youtube\.com\/user\//;
+export const MATCH_URL_SOUNDCLOUD = /(?:soundcloud\.com|snd\.sc)\/[^.]+$/;
 export const MATCH_URL_TWITCH_VIDEO = /(?:www\.|go\.)?twitch\.tv\/videos\/(\d+)($|\?)/;
 export const MATCH_URL_TWITCH_CHANNEL = /(?:www\.|go\.)?twitch\.tv\/([a-zA-Z0-9_]+)($|\?)/;
 export const AUDIO_EXTENSIONS =
@@ -33,6 +34,13 @@ export function canPlayYoutube(url: FilePlayerUrl) {
 		return everyNonObjectUrl(url, MATCH_URL_YOUTUBE);
 	}
 	return MATCH_URL_YOUTUBE.test(url);
+}
+
+export function canPlaySoundCloud(url: FilePlayerUrl) {
+	if (url instanceof Array) {
+		return false;
+	}
+	return MATCH_URL_SOUNDCLOUD.test(url) && !AUDIO_EXTENSIONS.test(url);
 }
 
 export function canPlayTwitch(url: FilePlayerUrl) {

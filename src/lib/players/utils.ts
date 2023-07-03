@@ -8,7 +8,8 @@ import type {
 	GlobalSDKFLV,
 	GlobalSDKDASH,
 	GlobalSDKHLS,
-	GlobalSDKTwitch
+	GlobalSDKTwitch,
+	GlobalSDKSoundCloud
 } from './global-types';
 import type { GetSDKParams, FilePlayerUrl } from './types';
 import loadScript from 'load-script';
@@ -17,10 +18,11 @@ declare global {
 	interface Window {
 		YT: GlobalSDKYT;
 		onYouTubeIframeAPIReady: () => void;
+		SC: GlobalSDKSoundCloud;
+		Twitch: GlobalSDKTwitch;
 		Hls: GlobalSDKHLS;
 		dashjs: GlobalSDKDASH;
 		flvjs: GlobalSDKFLV;
-		Twitch: GlobalSDKTwitch;
 	}
 }
 

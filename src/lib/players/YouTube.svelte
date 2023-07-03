@@ -5,7 +5,7 @@
 		YTPlayer,
 		YTPlayerOnStateChangeEvent
 	} from './global-types';
-	import type { FilePlayerUrl, PlayerUrl, Dispatcher } from './types';
+	import type { FilePlayerUrl, PlayerUrl, Dispatcher, GetPlayerReturn } from './types';
 	import type { ParsePlaylistFn, YouTubeConfig } from './youtube-types';
 
 	import { createEventDispatcher, onMount } from 'svelte';
@@ -125,7 +125,7 @@
 		}
 	}
 
-	export function load(url: PlayerUrl, isReady?: boolean) {
+	export function load(url: PlayerUrl, isReady?: boolean): void {
 		const id = getID(url);
 		if (id === null) {
 			return;
@@ -215,19 +215,19 @@
 		}
 	}
 
-	export function play() {
+	export function play(): void {
 		if (player !== undefined && isPlayerReady) {
 			player.playVideo();
 		}
 	}
 
-	export function pause() {
+	export function pause(): void {
 		if (player !== undefined && isPlayerReady) {
 			player.pauseVideo();
 		}
 	}
 
-	export function stop() {
+	export function stop(): void {
 		if (player !== undefined && isPlayerReady) {
 			const youtubeIframe = player.getIframe();
 			if (youtubeIframe !== null && !document.body.contains(youtubeIframe)) {
@@ -237,7 +237,7 @@
 		}
 	}
 
-	export function seekTo(amount: number, keepPlaying?: boolean) {
+	export function seekTo(amount: number, keepPlaying?: boolean): void {
 		if (player !== undefined && isPlayerReady) {
 			player.seekTo(amount);
 			if (!keepPlaying && !playing) {
@@ -246,50 +246,50 @@
 		}
 	}
 
-	export function setVolume(fraction: number) {
+	export function setVolume(fraction: number): void {
 		if (player !== undefined && isPlayerReady) {
 			player.setVolume(fraction * 100);
 		}
 	}
 
-	export function mute() {
+	export function mute(): void {
 		if (player !== undefined && isPlayerReady) {
 			player.mute();
 		}
 	}
 
-	export function unmute() {
+	export function unmute(): void {
 		if (player !== undefined && isPlayerReady) {
 			player.unMute();
 		}
 	}
 
-	export function setPlaybackRate(rate: number) {
+	export function setPlaybackRate(rate: number): void {
 		if (player !== undefined && isPlayerReady) {
 			player.setPlaybackRate(rate);
 		}
 	}
 
-	export function setLoop(loop: boolean) {
+	export function setLoop(loop: boolean): void {
 		if (player !== undefined && isPlayerReady) {
 			player.setLoop(loop);
 		}
 	}
 
-	export function getDuration() {
+	export function getDuration(): number {
 		if (player !== undefined && isPlayerReady) {
 			return player.getDuration();
 		}
 		return 0;
 	}
 
-	export function getCurrentTime() {
+	export function getCurrentTime(): number {
 		if (player !== undefined && isPlayerReady) {
 			return player.getCurrentTime();
 		}
 		return 0;
 	}
-	export function getSecondsLoaded() {
+	export function getSecondsLoaded(): number {
 		let loadedFraction = 0;
 		if (player !== undefined && isPlayerReady) {
 			loadedFraction = player.getVideoLoadedFraction();
@@ -297,7 +297,7 @@
 		return loadedFraction * getDuration();
 	}
 
-	export function getPlayer() {
+	export function getPlayer(): GetPlayerReturn | null {
 		if (player !== undefined) {
 			return player;
 		}

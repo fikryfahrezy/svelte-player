@@ -5,7 +5,7 @@
 		GlobalSDKFLVKey,
 		GlobalSDKHLSClass
 	} from './global-types';
-	import type { FilePlayerUrl, Dispatcher } from './types';
+	import type { FilePlayerUrl, Dispatcher, GetPlayerReturn } from './types';
 	import type { FileConfig, ShouldUseAudioParams } from './file-types';
 	import type { DashJSMediaPlayerClass } from './dash-types';
 	import type { FlvJSPlayer } from './flv-types';
@@ -268,7 +268,7 @@
 		return FLV_EXTENSIONS.test(url) || config.forceFLV;
 	}
 
-	export function load(url: FilePlayerUrl, _?: boolean) {
+	export function load(url: FilePlayerUrl, _?: boolean): void {
 		const { hlsVersion, hlsOptions, dashVersion, flvVersion } = config;
 		if (hls) {
 			hls.destroy();
@@ -376,7 +376,7 @@
 		}
 	}
 
-	export function play() {
+	export function play(): void {
 		if (player !== undefined) {
 			const promise = player.play();
 			if (promise) {
@@ -389,13 +389,13 @@
 		}
 	}
 
-	export function pause() {
+	export function pause(): void {
 		if (player !== undefined) {
 			player.pause();
 		}
 	}
 
-	export function stop() {
+	export function stop(): void {
 		if (player !== undefined) {
 			player.removeAttribute('src');
 			if (dash) {
@@ -404,31 +404,31 @@
 		}
 	}
 
-	export function seekTo(seconds: number, _?: boolean) {
+	export function seekTo(seconds: number, _?: boolean): void {
 		if (player !== undefined) {
 			player.currentTime = seconds;
 		}
 	}
 
-	export function setVolume(fraction: number) {
+	export function setVolume(fraction: number): void {
 		if (player !== undefined) {
 			player.volume = fraction;
 		}
 	}
 
-	export function mute() {
+	export function mute(): void {
 		if (player !== undefined) {
 			player.muted = true;
 		}
 	}
 
-	export function unmute() {
+	export function unmute(): void {
 		if (player !== undefined) {
 			player.muted = false;
 		}
 	}
 
-	export function enablePIP() {
+	export function enablePIP(): void {
 		if (document.pictureInPictureElement !== player) {
 			if (
 				player !== undefined &&
@@ -448,7 +448,7 @@
 		}
 	}
 
-	export function disablePIP() {
+	export function disablePIP(): void {
 		if (document.exitPictureInPicture && document.pictureInPictureElement === player) {
 			document.exitPictureInPicture();
 		} else if (
@@ -463,7 +463,7 @@
 		}
 	}
 
-	export function setPlaybackRate(rate: number) {
+	export function setPlaybackRate(rate: number): void {
 		try {
 			if (player !== undefined) {
 				player.playbackRate = rate;
@@ -475,11 +475,11 @@
 		}
 	}
 
-	export function setLoop(_: boolean) {
+	export function setLoop(_: boolean): void {
 		// do nothing, no implementation
 	}
 
-	export function getDuration() {
+	export function getDuration(): number {
 		if (!player) {
 			return 0;
 		}
@@ -492,7 +492,7 @@
 		return duration;
 	}
 
-	export function getCurrentTime() {
+	export function getCurrentTime(): number {
 		if (!player) {
 			return 0;
 		}
@@ -528,7 +528,7 @@
 		return url;
 	}
 
-	export function getPlayer() {
+	export function getPlayer(): GetPlayerReturn | null {
 		if (player !== undefined) {
 			return player;
 		}

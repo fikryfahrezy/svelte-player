@@ -7,10 +7,18 @@ import type {
 	GlobalSDKReady,
 	GlobalSDKType,
 	YTPlayer,
-	TwitchPlayer
+	TwitchPlayer,
+	NotImplementedPlayer,
+	SoundCloudPlayer
 } from './global-types';
 
-export type PlayerInstance = YTPlayer | TwitchPlayer | HTMLAudioElement | HTMLVideoElement;
+export type PlayerInstance =
+	| YTPlayer
+	| TwitchPlayer
+	| HTMLAudioElement
+	| HTMLVideoElement
+	| NotImplementedPlayer
+	| SoundCloudPlayer;
 
 export type SDKBase<T extends keyof GlobalSDK> = {
 	url: string;
@@ -41,6 +49,8 @@ export type PlayerProps = {
 	loop?: boolean;
 };
 
+export type GetPlayerReturn = PlayerInstance | null;
+
 export type PlayerMedia = {
 	load(url: FilePlayerUrl, isReady?: boolean): void;
 	stop(): void;
@@ -57,7 +67,7 @@ export type PlayerMedia = {
 	setLoop?(loop: boolean): void;
 	enablePIP?(): void;
 	disablePIP?(): void;
-	getPlayer?(): PlayerInstance | null;
+	getPlayer?(): GetPlayerReturn;
 };
 
 export type OnProgressProps = {

@@ -1,5 +1,6 @@
 import type { InternalPlayerKey, Dispatcher, PlayerUrl, PlayerInstance } from './players/types';
 import type { YouTubeConfig } from './players/youtube-types';
+import type { SoundCloudConfig } from './players/sound-cloud-types';
 import type { TwitchConfig } from './players/twitch-types';
 import type { FileConfig } from './players/file-types';
 import type { NotImplementedConfig } from './players/not-implemented-types';
@@ -40,6 +41,7 @@ export type SveltePlayerRef = PlayerRef & {
 
 export type Config = {
 	youtube: YouTubeConfig;
+	soundcloud: SoundCloudConfig;
 	twitch: TwitchConfig;
 	file: FileConfig;
 	'not-implemented': NotImplementedConfig;

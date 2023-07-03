@@ -14,6 +14,7 @@ export const defaultConfig: Config = {
 		embedOptions: {},
 		onUnstarted: noop
 	},
+	soundcloud: {},
 	twitch: {
 		options: {},
 		playerId: null

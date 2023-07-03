@@ -266,28 +266,28 @@ export type TwitchPlaybackStats = {
 	videoResolution: string;
 };
 
-export type TwitchPlayerCAPTIONS = 'captions';
-export type TwitchPlayerENDED = 'ended';
-export type TwitchPlayerPAUSE = 'pause';
-export type TwitchPlayerPLAY = 'play';
-export type TwitchPlayerPLAYBACK_BLOCKED = 'playbackBlocked';
-export type TwitchPlayerPLAYING = 'playing';
-export type TwitchPlayerOFFLINE = 'offline';
-export type TwitchPlayerONLINE = 'online';
-export type TwitchPlayerREADY = 'ready';
-export type TwitchPlayerSEEK = 'seek';
+export type TwitchPlayerCAPTIONSEvent = 'captions';
+export type TwitchPlayerENDEDEvent = 'ended';
+export type TwitchPlayerPAUSEEvent = 'pause';
+export type TwitchPlayerPLAYEvent = 'play';
+export type TwitchPlayerPLAYBACK_BLOCKEDEvent = 'playbackBlocked';
+export type TwitchPlayerPLAYINGEvent = 'playing';
+export type TwitchPlayerOFFLINEEvent = 'offline';
+export type TwitchPlayerONLINEEvent = 'online';
+export type TwitchPlayerREADYEvent = 'ready';
+export type TwitchPlayerSEEKEvent = 'seek';
 
 export type TwitchPlayerEVENT =
-	| TwitchPlayerCAPTIONS
-	| TwitchPlayerENDED
-	| TwitchPlayerPAUSE
-	| TwitchPlayerPLAY
-	| TwitchPlayerPLAYBACK_BLOCKED
-	| TwitchPlayerPLAYING
-	| TwitchPlayerOFFLINE
-	| TwitchPlayerONLINE
-	| TwitchPlayerREADY
-	| TwitchPlayerSEEK;
+	| TwitchPlayerCAPTIONSEvent
+	| TwitchPlayerENDEDEvent
+	| TwitchPlayerPAUSEEvent
+	| TwitchPlayerPLAYEvent
+	| TwitchPlayerPLAYBACK_BLOCKEDEvent
+	| TwitchPlayerPLAYINGEvent
+	| TwitchPlayerOFFLINEEvent
+	| TwitchPlayerONLINEEvent
+	| TwitchPlayerREADYEvent
+	| TwitchPlayerSEEKEvent;
 
 export type TwitchPlayerEVENTCallback = (params: Record<string, never>) => void;
 
@@ -319,11 +319,11 @@ export interface TwitchPlayer {
 	getVideo(): string;
 	isPaused(): boolean;
 	addEventListener(
-		event: Exclude<TwitchPlayerEVENT, TwitchPlayerSEEK>,
+		event: Exclude<TwitchPlayerEVENT, TwitchPlayerSEEKEvent>,
 		callback: TwitchPlayerEVENTCallback
 	): void;
 	addEventListener(
-		event: Extract<TwitchPlayerEVENT, TwitchPlayerSEEK>,
+		event: Extract<TwitchPlayerEVENT, TwitchPlayerSEEKEvent>,
 		callback: TwitchPlayerSEEKEVENTCallback
 	): void;
 }
@@ -331,21 +331,95 @@ export interface TwitchPlayer {
 export interface TwitchPlayerConstructor {
 	new (container: string, options: Partial<TwitchPlayerOptions>): TwitchPlayer;
 	readonly prototype: TwitchPlayer;
-	CAPTIONS: TwitchPlayerCAPTIONS;
-	ENDED: TwitchPlayerENDED;
-	PAUSE: TwitchPlayerPAUSE;
-	PLAY: TwitchPlayerPLAY;
-	PLAYBACK_BLOCKED: TwitchPlayerPLAYBACK_BLOCKED;
-	PLAYING: TwitchPlayerPLAYING;
-	OFFLINE: TwitchPlayerOFFLINE;
-	ONLINE: TwitchPlayerONLINE;
-	READY: TwitchPlayerREADY;
-	SEEK: TwitchPlayerSEEK;
+	CAPTIONS: TwitchPlayerCAPTIONSEvent;
+	ENDED: TwitchPlayerENDEDEvent;
+	PAUSE: TwitchPlayerPAUSEEvent;
+	PLAY: TwitchPlayerPLAYEvent;
+	PLAYBACK_BLOCKED: TwitchPlayerPLAYBACK_BLOCKEDEvent;
+	PLAYING: TwitchPlayerPLAYINGEvent;
+	OFFLINE: TwitchPlayerOFFLINEEvent;
+	ONLINE: TwitchPlayerONLINEEvent;
+	READY: TwitchPlayerREADYEvent;
+	SEEK: TwitchPlayerSEEKEvent;
 }
 
 export type Twitch = {
 	Player: TwitchPlayerConstructor;
 };
+
+export type SoundCloudWidgetLOAD_PROGRESSEvent = 'loadProgress';
+export type SoundCloudWidgetPLAY_PROGRESSEvent = 'playProgress';
+export type SoundCloudWidgetPLAYEvent = 'play';
+export type SoundCloudWidgetPAUSEEvent = 'pause';
+export type SoundCloudWidgetFINISHEvent = 'finish';
+export type SoundCloudWidgetSEEKEvent = 'seek';
+
+export type SoundCloudUIREADYEvent = 'ready';
+export type SoundCloudUICLICK_DOWNLOADEvent = 'clickDownload ';
+export type SoundCloudUICLICK_BUYEvent = 'clickBuy';
+export type SoundCloudUIOPEN_SHARE_PANELEvent = 'openSharePanel';
+export type SoundCloudUIERROREvent = 'error';
+
+export type SoundCloudPlayerEVENT =
+	| SoundCloudWidgetLOAD_PROGRESSEvent
+	| SoundCloudWidgetPLAY_PROGRESSEvent
+	| SoundCloudWidgetPLAYEvent
+	| SoundCloudWidgetPAUSEEvent
+	| SoundCloudWidgetFINISHEvent
+	| SoundCloudWidgetSEEKEvent
+	| SoundCloudUIREADYEvent
+	| SoundCloudUICLICK_DOWNLOADEvent
+	| SoundCloudUICLICK_BUYEvent
+	| SoundCloudUIOPEN_SHARE_PANELEvent
+	| SoundCloudUIERROREvent;
+
+export type SoundCloudWidgetEvents = {
+	LOAD_PROGRESS: SoundCloudWidgetLOAD_PROGRESSEvent;
+	PLAY_PROGRESS: SoundCloudWidgetPLAY_PROGRESSEvent;
+	PLAY: SoundCloudWidgetPLAYEvent;
+	PAUSE: SoundCloudWidgetPAUSEEvent;
+	FINISH: SoundCloudWidgetFINISHEvent;
+	SEEK: SoundCloudWidgetSEEKEvent;
+	READY: SoundCloudUIREADYEvent;
+	CLICK_DOWNLOAD: SoundCloudUICLICK_DOWNLOADEvent;
+	CLICK_BUY: SoundCloudUICLICK_BUYEvent;
+	OPEN_SHARE_PANEL: SoundCloudUIOPEN_SHARE_PANELEvent;
+	ERROR: SoundCloudUIERROREvent;
+};
+
+// TODO: Implement this
+export type SoundCloudPlayer = {
+	bind(): void;
+	unbind(): void;
+	load(): void;
+	play(): void;
+	pause(): void;
+	toggle(): void;
+	seekTo(): void;
+	setVolume(): void;
+	next(): void;
+	prev(): void;
+	skip(): void;
+	getVolume(): void;
+	getDuration(): void;
+	getPosition(): void;
+	getSounds(): void;
+	getCurrentSound(): void;
+	getCurrentSoundIndex(): void;
+	isPaused(): void;
+};
+
+export interface SoundCloudWidget {
+	(container: string | HTMLIFrameElement): SoundCloudPlayer;
+	Events: SoundCloudWidgetEvents;
+}
+
+// https://developers.soundcloud.com/docs/api/html5-widget
+export type SoundCloud = {
+	Widget: SoundCloudWidget;
+};
+
+export type NotImplementedPlayer = Record<string, never>;
 
 type TypeOfDashJS = typeof dashjs;
 type DashJSLogLevel = TypeOfDashJS['LogLevel'];
@@ -367,28 +441,31 @@ export type HlsJS = typeof Hls;
 
 export type GlobalSDK = {
 	YT: YT;
+	SC: SoundCloud;
+	Twitch: Twitch;
 	Hls: HlsJS;
 	dashjs: DashJS;
 	flvjs: FlvJS;
-	Twitch: Twitch;
 };
 
 export type GlobalSDKType = keyof GlobalSDK;
 
 export type GlobalSDKYTKey = Extract<GlobalSDKType, 'YT'>;
+export type GlobalSDKSoundCloudKey = Extract<GlobalSDKType, 'SC'>;
+export type GlobalSDKTwitchKey = Extract<GlobalSDKType, 'Twitch'>;
 export type GlobalSDKHLSKey = Extract<GlobalSDKType, 'Hls'>;
 export type GlobalSDKDASHKey = Extract<GlobalSDKType, 'dashjs'>;
 export type GlobalSDKFLVKey = Extract<GlobalSDKType, 'flvjs'>;
-export type GlobalSDKTwitchKey = Extract<GlobalSDKType, 'Twitch'>;
 
 export type GlobalSDKValue = GlobalSDK[GlobalSDKType];
 
 export type GlobalSDKYT = Extract<GlobalSDKValue, YT>;
-export type GlobalSDKHLS = Extract<GlobalSDKValue, HlsJS>;
+export type GlobalSDKSoundCloud = Extract<GlobalSDKValue, SoundCloud>;
+export type GlobalSDKTwitch = Extract<GlobalSDKValue, Twitch>;
 export type GlobalSDKHLSClass = Hls;
+export type GlobalSDKHLS = Extract<GlobalSDKValue, HlsJS>;
 export type GlobalSDKDASH = Extract<GlobalSDKValue, DashJS>;
 export type GlobalSDKFLV = Extract<GlobalSDKValue, FlvJS>;
-export type GlobalSDKTwitch = Extract<GlobalSDKValue, Twitch>;
 
 export type GlobalSDKReady = 'onYouTubeIframeAPIReady';
 
