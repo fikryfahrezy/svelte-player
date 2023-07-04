@@ -14,7 +14,15 @@ export const defaultConfig: Config = {
 		embedOptions: {},
 		onUnstarted: noop
 	},
-	soundcloud: {},
+	soundcloud: {
+		options: {
+			visual: true,
+			buying: false,
+			download: false,
+			sharing: false,
+			show_playcount: false
+		}
+	},
 	twitch: {
 		options: {},
 		playerId: null

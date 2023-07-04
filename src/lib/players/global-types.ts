@@ -347,6 +347,7 @@ export type Twitch = {
 	Player: TwitchPlayerConstructor;
 };
 
+// https://developers.soundcloud.com/docs/api/html5-widget
 export type SoundCloudWidgetLOAD_PROGRESSEvent = 'loadProgress';
 export type SoundCloudWidgetPLAY_PROGRESSEvent = 'playProgress';
 export type SoundCloudWidgetPLAYEvent = 'play';
@@ -355,9 +356,9 @@ export type SoundCloudWidgetFINISHEvent = 'finish';
 export type SoundCloudWidgetSEEKEvent = 'seek';
 
 export type SoundCloudUIREADYEvent = 'ready';
-export type SoundCloudUICLICK_DOWNLOADEvent = 'clickDownload ';
-export type SoundCloudUICLICK_BUYEvent = 'clickBuy';
-export type SoundCloudUIOPEN_SHARE_PANELEvent = 'openSharePanel';
+export type SoundCloudUICLICK_DOWNLOADEvent = 'downloadClicked';
+export type SoundCloudUICLICK_BUYEvent = 'buyClicked';
+export type SoundCloudUIOPEN_SHARE_PANELEvent = 'sharePanelOpened';
 export type SoundCloudUIERROREvent = 'error';
 
 export type SoundCloudPlayerEVENT =
@@ -387,26 +388,57 @@ export type SoundCloudWidgetEvents = {
 	ERROR: SoundCloudUIERROREvent;
 };
 
-// TODO: Implement this
+export type SoundCloudPlayerLoadOptions = {
+	auto_play: boolean;
+	color: string /* hex code, example #0066CC */;
+	buying: boolean;
+	sharing: boolean;
+	download: boolean;
+	show_artwork: boolean;
+	show_playcount: boolean;
+	show_user: boolean;
+	start_track: number /* from 0 */;
+	single_active: boolean;
+	callback(): void;
+	visual: boolean; // Undocumented, but makes player fill container and look better
+};
+
+export type SoundCloudPlayerBindCallbackParams = {
+	soundId: number;
+	loadedProgress: number;
+	currentPosition: number;
+	relativePosition: number;
+};
+
+export type SoundCloudPlayerBindCallbackFn = (params: SoundCloudPlayerBindCallbackParams) => void;
+
+// TODO: Fix the any / unknown types
 export type SoundCloudPlayer = {
-	bind(): void;
-	unbind(): void;
-	load(): void;
+	bind(
+		event: Exclude<SoundCloudPlayerEVENT, SoundCloudUIERROREvent>,
+		listener: SoundCloudPlayerBindCallbackFn
+	): void;
+	bind(
+		event: Extract<SoundCloudPlayerEVENT, SoundCloudUIERROREvent>,
+		listener: (e: unknown) => void
+	): void;
+	unbind(event: SoundCloudPlayerEVENT): void;
+	load(url: string, options?: Partial<SoundCloudPlayerLoadOptions>): void;
 	play(): void;
 	pause(): void;
 	toggle(): void;
-	seekTo(): void;
-	setVolume(): void;
+	seekTo(milliseconds: number): void;
+	setVolume(volume: number /* range 0-100 */): void;
 	next(): void;
 	prev(): void;
-	skip(): void;
-	getVolume(): void;
-	getDuration(): void;
-	getPosition(): void;
-	getSounds(): void;
-	getCurrentSound(): void;
-	getCurrentSoundIndex(): void;
-	isPaused(): void;
+	skip(soundIndex: number /* starting from 0 */): void;
+	getVolume(callback: AnyFunction): number /* range 0-100 */;
+	getDuration(callback: AnyFunction): number /* in millisecond */;
+	getPosition(callback: AnyFunction): number /* in millisecond */;
+	getSounds(callback: AnyFunction): Record<string, never>[];
+	getCurrentSound(callback: AnyFunction): Record<string, never>;
+	getCurrentSoundIndex(callback: AnyFunction): number /* index of current sound */;
+	isPaused(callback: AnyFunction): boolean;
 };
 
 export interface SoundCloudWidget {
@@ -414,7 +446,6 @@ export interface SoundCloudWidget {
 	Events: SoundCloudWidgetEvents;
 }
 
-// https://developers.soundcloud.com/docs/api/html5-widget
 export type SoundCloud = {
 	Widget: SoundCloudWidget;
 };

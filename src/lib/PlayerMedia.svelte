@@ -342,6 +342,7 @@
 		{width}
 		{height}
 		{muted}
+		{volume}
 		bind:this={player}
 		on:mount={handlePlayerMount}
 		on:ready={handleReady}

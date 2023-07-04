@@ -16,6 +16,7 @@
 	export let playing: boolean;
 	export let loop: boolean;
 	export let controls: boolean;
+	export const volume: number | null = null; // not used yet, but for suppress the warn from svelte check
 	export const muted: boolean | undefined = undefined; // not used yet, but for suppress the warn from svelte check
 	export const width: string | undefined = undefined; // not used yet, but for suppress the warn from svelte check
 	export const height: string | undefined = undefined; // not used yet, but for suppress the warn from svelte check

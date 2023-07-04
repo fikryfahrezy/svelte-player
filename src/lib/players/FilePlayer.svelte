@@ -18,6 +18,7 @@
 	export let playing: boolean;
 	export let loop: boolean;
 	export let controls: boolean;
+	export const volume: number | null = null; // not used yet, but for suppress the warn from svelte check
 	export let muted: boolean;
 	export let width: string;
 	export let height: string;

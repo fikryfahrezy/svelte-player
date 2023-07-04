@@ -10,11 +10,12 @@
 	export const playing: boolean | undefined = undefined;
 	export const loop: boolean | undefined = undefined;
 	export const controls: boolean | undefined = undefined;
+	export let volume: number | null;
 	export const muted: boolean | undefined = undefined;
 	export const width: string | undefined = undefined;
 	export const height: string | undefined = undefined;
 	export const playsinline: boolean | undefined = undefined;
-	export const config: SoundCloudConfig | undefined = undefined;
+	export let config: SoundCloudConfig;
 
 	function handlePropsUrlChange(propsUrl: typeof url) {
 		if (propsUrl instanceof Array) {
@@ -33,11 +34,15 @@
 	let iframeContainer: HTMLIFrameElement | undefined;
 	let player: SoundCloudPlayer | undefined;
 
+	let duration = 0;
+	let currentTime = 0;
+	let fractionLoaded = 0;
+
 	onMount(() => {
 		dispatch('mount');
 	});
 
-	export function load(url: FilePlayerUrl, isReady?: boolean): void {
+	export function load(url: string, isReady?: boolean): void {
 		getSDK({
 			url: SDK_URL,
 			sdkGlobal: SDK_GLOBAL
@@ -48,94 +53,101 @@
 			const { PLAY, PLAY_PROGRESS, PAUSE, FINISH, ERROR } = SC.Widget.Events;
 			if (!isReady) {
 				player = SC.Widget(iframeContainer);
+				player.bind(PLAY, () => {
+					dispatch('play');
+				});
+				player.bind(PAUSE, () => {
+					const remaining = duration - currentTime;
+					if (remaining < 0.05) {
+						// Prevent onPause firing right before onEnded
+						return;
+					}
+					dispatch('pause');
+				});
+				player.bind(PLAY_PROGRESS, (e) => {
+					currentTime = e.currentPosition / 1000;
+					fractionLoaded = e.loadedProgress;
+				});
+				player.bind(FINISH, () => {
+					dispatch('ended');
+				});
+				player.bind(ERROR, (e) => {
+					dispatch('error', { error: e });
+				});
+			}
+
+			if (player !== undefined) {
+				player.load(url, {
+					...config.options,
+					callback: () => {
+						if (player !== undefined) {
+							player.getDuration((duration) => {
+								duration = duration / 1000;
+								dispatch('ready');
+							});
+						}
+					}
+				});
 			}
 		});
 	}
 
 	export function play(): void {
 		if (player !== undefined) {
-			// do something
+			player.play();
 		}
-		console.log('play');
 	}
 
 	export function pause() {
 		if (player !== undefined) {
-			// do something
+			player.pause();
 		}
-		console.log('pause');
 	}
 
 	export function stop() {
-		if (player !== undefined) {
-			// do something
-		}
-		console.log('stop');
+		// do nothing, no implementation
 	}
 
-	export function seekTo(amount: number, keepPlaying?: boolean): void {
+	export function seekTo(seconds: number, _?: boolean): void {
 		if (player !== undefined) {
-			// do something
+			player.seekTo(seconds * 1000);
 		}
-		console.log('seekTo');
 	}
 
 	export function setVolume(fraction: number): void {
 		if (player !== undefined) {
-			// do something
+			player.seekTo(fraction * 100);
 		}
-		console.log('setVolume');
 	}
 
 	export function mute(): void {
-		if (player !== undefined) {
-			// do something
-		}
-		console.log('mute');
+		setVolume(0);
 	}
 
 	export function unmute(): void {
-		if (player !== undefined) {
-			// do something
+		if (volume !== null) {
+			setVolume(volume);
 		}
-		console.log('unmute');
 	}
 
 	export function setPlaybackRate(rate: number): void {
-		if (player !== undefined) {
-			// do something
-		}
-		console.log('setPlaybackRate');
+		// do nothing, no implementation
 	}
 
 	export function setLoop(loop: boolean): void {
-		if (player !== undefined) {
-			// do something
-		}
-		console.log('setLoop');
+		// do nothing, no implementation
 	}
 
 	export function getDuration(): number {
-		if (player !== undefined) {
-			return 0;
-		}
-		return 0;
+		return duration;
 	}
 
 	export function getCurrentTime(): number {
-		if (player !== undefined) {
-			return 0;
-		}
-
-		return 0;
+		return currentTime;
 	}
 
 	export function getSecondsLoaded(): number {
-		if (player !== undefined) {
-			return 0;
-		}
-
-		return 0;
+		return fractionLoaded * duration;
 	}
 
 	export function getPlayer(): GetPlayerReturn | null {
