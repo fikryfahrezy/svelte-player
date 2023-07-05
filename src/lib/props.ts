@@ -23,6 +23,11 @@ export const defaultConfig: Config = {
 			show_playcount: false
 		}
 	},
+	mixcloud: {
+		options: {
+			hide_cover: true
+		}
+	},
 	twitch: {
 		options: {},
 		playerId: null

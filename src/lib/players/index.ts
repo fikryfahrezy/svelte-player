@@ -4,7 +4,8 @@ import {
 	canPlayFile,
 	AUDIO_EXTENSIONS,
 	canPlayTwitch,
-	canPlaySoundCloud
+	canPlaySoundCloud,
+	canPlayMixcloud
 } from './patterns';
 import { supportsWebKitPresentationMode } from './utils';
 
@@ -31,6 +32,14 @@ const players = [
 		canEnablePIP: undefined,
 		loadComponent: () => {
 			return import('./Twitch.svelte');
+		}
+	},
+	{
+		key: 'twitch',
+		canPlay: canPlayMixcloud,
+		canEnablePIP: undefined,
+		loadComponent: () => {
+			return import('./Mixcloud.svelte');
 		}
 	},
 	{

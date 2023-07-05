@@ -450,6 +450,17 @@ export type SoundCloud = {
 	Widget: SoundCloudWidget;
 };
 
+// https://www.mixcloud.com/developers/widget/
+export type MixcloudPlayerLoadOptions = {
+	hide_cover: boolean;
+	hide_tracklist: boolean;
+	mini: boolean;
+	hide_artwork: boolean;
+	light: boolean;
+};
+
+export type MixcloudPlayer = Record<string, never>;
+
 export type NotImplementedPlayer = Record<string, never>;
 
 type TypeOfDashJS = typeof dashjs;
@@ -474,6 +485,7 @@ export type GlobalSDK = {
 	YT: YT;
 	SC: SoundCloud;
 	Twitch: Twitch;
+	Mixcloud: MixcloudPlayer;
 	Hls: HlsJS;
 	dashjs: DashJS;
 	flvjs: FlvJS;
@@ -484,6 +496,7 @@ export type GlobalSDKType = keyof GlobalSDK;
 export type GlobalSDKYTKey = Extract<GlobalSDKType, 'YT'>;
 export type GlobalSDKSoundCloudKey = Extract<GlobalSDKType, 'SC'>;
 export type GlobalSDKTwitchKey = Extract<GlobalSDKType, 'Twitch'>;
+export type GlobalSDKMixcloudKey = Extract<GlobalSDKType, 'Mixcloud'>;
 export type GlobalSDKHLSKey = Extract<GlobalSDKType, 'Hls'>;
 export type GlobalSDKDASHKey = Extract<GlobalSDKType, 'dashjs'>;
 export type GlobalSDKFLVKey = Extract<GlobalSDKType, 'flvjs'>;
@@ -493,6 +506,7 @@ export type GlobalSDKValue = GlobalSDK[GlobalSDKType];
 export type GlobalSDKYT = Extract<GlobalSDKValue, YT>;
 export type GlobalSDKSoundCloud = Extract<GlobalSDKValue, SoundCloud>;
 export type GlobalSDKTwitch = Extract<GlobalSDKValue, Twitch>;
+export type GlobalSDKMixcloud = Extract<GlobalSDKValue, MixcloudPlayer>;
 export type GlobalSDKHLSClass = Hls;
 export type GlobalSDKHLS = Extract<GlobalSDKValue, HlsJS>;
 export type GlobalSDKDASH = Extract<GlobalSDKValue, DashJS>;

@@ -9,7 +9,8 @@ import type {
 	GlobalSDKDASH,
 	GlobalSDKHLS,
 	GlobalSDKTwitch,
-	GlobalSDKSoundCloud
+	GlobalSDKSoundCloud,
+	GlobalSDKMixcloud
 } from './global-types';
 import type { GetSDKParams, FilePlayerUrl } from './types';
 import loadScript from 'load-script';
@@ -20,6 +21,7 @@ declare global {
 		onYouTubeIframeAPIReady: () => void;
 		SC: GlobalSDKSoundCloud;
 		Twitch: GlobalSDKTwitch;
+		Mixcloud: GlobalSDKMixcloud;
 		Hls: GlobalSDKHLS;
 		dashjs: GlobalSDKDASH;
 		flvjs: GlobalSDKFLV;
@@ -74,6 +76,12 @@ export function parseEndTime(url: FilePlayerUrl) {
 // http://stackoverflow.com/a/38622545
 export function randomString() {
 	return Math.random().toString(36).substring(2, 7);
+}
+
+export function queryString(object: Record<string, unknown>) {
+	return Object.keys(object)
+		.map((key) => `${key}=${object[key]}`)
+		.join('&');
 }
 
 function getGlobal<T extends GlobalSDKType>(key: T): GlobalSDK[T] | null {
