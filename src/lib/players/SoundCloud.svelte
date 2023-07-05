@@ -81,8 +81,8 @@
 					...config.options,
 					callback: () => {
 						if (player !== undefined) {
-							player.getDuration((duration) => {
-								duration = duration / 1000;
+							player.getDuration((durationParam) => {
+								duration = durationParam / 1000;
 								dispatch('ready');
 							});
 						}
@@ -116,7 +116,7 @@
 
 	export function setVolume(fraction: number): void {
 		if (player !== undefined) {
-			player.seekTo(fraction * 100);
+			player.setVolume(fraction * 100);
 		}
 	}
 

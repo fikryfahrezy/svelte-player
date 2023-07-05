@@ -432,13 +432,13 @@ export type SoundCloudPlayer = {
 	next(): void;
 	prev(): void;
 	skip(soundIndex: number /* starting from 0 */): void;
-	getVolume(callback: AnyFunction): number /* range 0-100 */;
-	getDuration(callback: AnyFunction): number /* in millisecond */;
-	getPosition(callback: AnyFunction): number /* in millisecond */;
-	getSounds(callback: AnyFunction): Record<string, never>[];
-	getCurrentSound(callback: AnyFunction): Record<string, never>;
-	getCurrentSoundIndex(callback: AnyFunction): number /* index of current sound */;
-	isPaused(callback: AnyFunction): boolean;
+	getVolume(callback: AnyFunction): number /* range 0-100 */; // TODO: Change AnyFunction
+	getDuration(callback: AnyFunction): number /* in millisecond */; // TODO: Change AnyFunction
+	getPosition(callback: AnyFunction): number /* in millisecond */; // TODO: Change AnyFunction
+	getSounds(callback: AnyFunction): Record<string, never>[]; // TODO: Change AnyFunction
+	getCurrentSound(callback: AnyFunction): Record<string, never>; // TODO: Change AnyFunction
+	getCurrentSoundIndex(callback: AnyFunction): number /* index of current sound */; // TODO: Change AnyFunction
+	isPaused(callback: AnyFunction): boolean; // TODO: Change AnyFunction
 };
 
 export interface SoundCloudWidget {
