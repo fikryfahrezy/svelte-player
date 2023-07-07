@@ -40,7 +40,7 @@
 		console.log('stop');
 	}
 
-	export function seekTo(amount: number, keepPlaying?: boolean): void {
+	export function seekTo(seconds: number, keepPlaying?: boolean): void {
 		console.log('seekTo');
 	}
 
@@ -56,10 +56,14 @@
 		console.log('unmute');
 	}
 
+	// This function safe to remove the function
+	// if there is no implementation
 	export function setPlaybackRate(rate: number): void {
 		console.log('setPlaybackRate');
 	}
 
+	// This function safe to remove the function
+	// if there is no implementation
 	export function setLoop(loop: boolean): void {
 		console.log('setLoop');
 	}
@@ -76,13 +80,13 @@
 		return 0;
 	}
 
-	// This function save to remove the function
+	// This function safe to remove the function
 	// if there is no implementation
 	export function enablePIP(): void {
 		console.log('enablePIP');
 	}
 
-	// This function save to remove the function
+	// This function safe to remove the function
 	// if there is no implementation
 	export function disablePIP(): void {
 		console.log('disablePIP');

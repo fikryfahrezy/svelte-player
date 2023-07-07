@@ -476,10 +476,6 @@
 		}
 	}
 
-	export function setLoop(_: boolean): void {
-		// do nothing, no implementation
-	}
-
 	export function getDuration(): number {
 		if (!player) {
 			return 0;

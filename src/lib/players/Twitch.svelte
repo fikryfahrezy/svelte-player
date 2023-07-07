@@ -154,10 +154,6 @@
 		}
 	}
 
-	export function setPlaybackRate(_: number) {
-		// do nothing, no implementation
-	}
-
 	export function setLoop(_: boolean) {
 		// do nothing, no implementation
 	}

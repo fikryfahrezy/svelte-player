@@ -9,7 +9,8 @@ import type {
 	YTPlayer,
 	TwitchPlayer,
 	NotImplementedPlayer,
-	SoundCloudPlayer
+	SoundCloudPlayer,
+	MixcloudWidget
 } from './global-types';
 
 export type PlayerInstance =
@@ -18,7 +19,8 @@ export type PlayerInstance =
 	| HTMLAudioElement
 	| HTMLVideoElement
 	| NotImplementedPlayer
-	| SoundCloudPlayer;
+	| SoundCloudPlayer
+	| MixcloudWidget;
 
 export type SDKBase<T extends keyof GlobalSDK> = {
 	url: string;

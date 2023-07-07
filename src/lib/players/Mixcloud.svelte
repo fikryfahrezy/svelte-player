@@ -1,13 +1,13 @@
 <script lang="ts">
-	import type { MixcloudPlayer } from './global-types';
+	import type { MixcloudWidget } from './global-types';
 	import type { FilePlayerUrl, Dispatcher, GetPlayerReturn } from './types';
 	import type { MixcloudConfig } from './mixcloud-types';
 
 	import { onMount, createEventDispatcher } from 'svelte';
-	import { queryString } from './utils';
+	import { queryString, getSDK } from './utils';
 	import { MATCH_URL_MIXCLOUD } from './patterns';
 
-	export const url: FilePlayerUrl | undefined = undefined;
+	export let url: FilePlayerUrl;
 	export const playing: boolean | undefined = undefined;
 	export const loop: boolean | undefined = undefined;
 	export const controls: boolean | undefined = undefined;
@@ -27,88 +27,118 @@
 
 	$: propsUrl = handlePropsUrlChange(url);
 
+	const SDK_URL = 'https://widget.mixcloud.com/media/js/widgetApi.js';
+	const SDK_GLOBAL = 'Mixcloud';
+
 	const dispatch = createEventDispatcher<Dispatcher>();
 
 	let iframeContainer: HTMLIFrameElement | undefined;
-
-	let player: MixcloudPlayer | undefined;
+	let player: MixcloudWidget | undefined;
+	let duration = 0;
+	let currentTime = 0;
+	let secondsLoaded = 0;
 
 	onMount(() => {
 		dispatch('mount');
 	});
 
-	export function load(url: FilePlayerUrl, isReady?: boolean): void {
-		console.log('load');
+	export function load(_: string, __?: boolean): void {
+		getSDK({ url: SDK_URL, sdkGlobal: SDK_GLOBAL }).then(
+			(Mixcloud) => {
+				if (iframeContainer === undefined) {
+					return;
+				}
+
+				player = Mixcloud.PlayerWidget(iframeContainer);
+				player.ready.then(() => {
+					if (player !== undefined) {
+						player.events.play.on(() => {
+							dispatch('play');
+						});
+						player.events.pause.on(() => {
+							dispatch('pause');
+						});
+						player.events.ended.on(() => {
+							dispatch('ended');
+						});
+						player.events.error.on((error) => {
+							dispatch('error', {
+								error
+							});
+						});
+						player.events.progress.on((secondsParam, durationParam) => {
+							currentTime = secondsParam;
+							duration = durationParam;
+						});
+					}
+					dispatch('ready');
+				});
+			},
+			(error) => {
+				dispatch('error', {
+					error
+				});
+			}
+		);
 	}
 
 	export function play() {
-		console.log('play');
+		if (player !== undefined) {
+			player.play();
+		}
 	}
 
 	export function pause() {
-		console.log('pause');
+		if (player !== undefined) {
+			player.pause();
+		}
 	}
 
 	export function stop() {
-		console.log('stop');
+		// Nothing to do
 	}
 
-	export function seekTo(amount: number, keepPlaying?: boolean): void {
-		console.log('seekTo');
+	export function seekTo(seconds: number, _?: boolean): void {
+		if (player !== undefined) {
+			player.seek(seconds);
+		}
 	}
 
-	export function setVolume(fraction: number): void {
-		console.log('setVolume');
+	export function setVolume(_: number): void {
+		// No volume support
 	}
 
 	export function mute() {
-		console.log('mute');
+		// No volume support
 	}
 
 	export function unmute() {
-		console.log('unmute');
-	}
-
-	export function setPlaybackRate(rate: number): void {
-		console.log('setPlaybackRate');
-	}
-
-	export function setLoop(loop: boolean): void {
-		console.log('setLoop');
+		// No volume support
 	}
 
 	export function getDuration(): number {
-		return 0;
+		return duration;
 	}
 
 	export function getCurrentTime() {
-		return 0;
+		return currentTime;
 	}
 
 	export function getSecondsLoaded(): number {
-		return 0;
-	}
-
-	// This function save to remove the function
-	// if there is no implementation
-	export function enablePIP(): void {
-		console.log('enablePIP');
-	}
-
-	// This function save to remove the function
-	// if there is no implementation
-	export function disablePIP(): void {
-		console.log('disablePIP');
+		return secondsLoaded;
 	}
 
 	export function getPlayer(): GetPlayerReturn {
+		if (player !== undefined) {
+			return player;
+		}
 		return null;
 	}
 
-	const id = (propsUrl ?? '').match(MATCH_URL_MIXCLOUD)?.[1];
-	const query = queryString({
+	$: id = (propsUrl ?? '').match(MATCH_URL_MIXCLOUD)?.[1];
+	$: query = queryString({
 		...config.options,
-		feed: id === undefined ? `/${id}/` : ''
+		feed: id !== undefined ? `/${id}/` : ''
 	});
 </script>
 

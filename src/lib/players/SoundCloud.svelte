@@ -130,14 +130,6 @@
 		}
 	}
 
-	export function setPlaybackRate(rate: number): void {
-		// do nothing, no implementation
-	}
-
-	export function setLoop(loop: boolean): void {
-		// do nothing, no implementation
-	}
-
 	export function getDuration(): number {
 		return duration;
 	}
