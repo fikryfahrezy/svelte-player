@@ -519,6 +519,64 @@ export type MixcloudPlayer = {
 	FooterWidget(url: string): Promise<MixcloudWidget>; // 7-6-23: Experimental
 };
 
+// DailyMotion types are reversed from https://github.com/cookpete/react-player
+// The DailyMotion Player API has been deprecated https://github.com/dailymotion/dailymotion-sdk-js
+// The new documentation is accessible at https://developers.dailymotion.com/sdks/#sdk-javascript
+export type DailyMotionPlayerOptionsParams = {
+	api: number;
+	'endscreen-enable': boolean;
+	controls: boolean;
+	autoplay: boolean;
+	mute: boolean;
+	start: number;
+	origin: string;
+};
+
+export type DailyMotionPlayerOptionsEvents = {
+	apiready(event: Event): void;
+	seeked(event: Event): void;
+	video_end(event: Event): void;
+	durationchange(event: Event): void;
+	pause(event: Event): void;
+	playing(event: Event): void;
+	waiting(event: Event): void;
+	error(event: Event): void;
+};
+
+export type DailyMotionPlayerOptions = {
+	width: string;
+	height: string;
+	video: string;
+	params: Partial<DailyMotionPlayerOptionsParams>;
+	events: Partial<DailyMotionPlayerOptionsEvents>;
+};
+
+export type DailyMotionPlayerLoadOptions = {
+	start: number;
+	autoplay: boolean;
+};
+
+export interface DailyMotionPlayer {
+	play(): void;
+	pause(): void;
+	seek(seconds: number): void;
+	setVolume(fraction: number): void;
+	setMuted(muted: boolean): void;
+	load(id: string, options: Partial<DailyMotionPlayerLoadOptions>): void;
+	duration: number;
+	currentTime: number;
+	bufferedTime: number;
+}
+
+export interface DailyMotionPlayerConstructor {
+	new (container: HTMLElement, options: Partial<DailyMotionPlayerOptions>): DailyMotionPlayer;
+	readonly prototype: DailyMotionPlayer;
+}
+
+export type DailyMotion = {
+	player: DailyMotionPlayerConstructor;
+};
+
 export type NotImplementedPlayer = Record<string, never>;
 
 type TypeOfDashJS = typeof dashjs;
@@ -543,6 +601,7 @@ export type GlobalSDK = {
 	YT: YT;
 	SC: SoundCloud;
 	Twitch: Twitch;
+	DM: DailyMotion;
 	Mixcloud: MixcloudPlayer;
 	Hls: HlsJS;
 	dashjs: DashJS;
@@ -554,6 +613,7 @@ export type GlobalSDKType = keyof GlobalSDK;
 export type GlobalSDKYTKey = Extract<GlobalSDKType, 'YT'>;
 export type GlobalSDKSoundCloudKey = Extract<GlobalSDKType, 'SC'>;
 export type GlobalSDKTwitchKey = Extract<GlobalSDKType, 'Twitch'>;
+export type GlobalSDKDailyMotionKey = Extract<GlobalSDKType, 'DM'>;
 export type GlobalSDKMixcloudKey = Extract<GlobalSDKType, 'Mixcloud'>;
 export type GlobalSDKHLSKey = Extract<GlobalSDKType, 'Hls'>;
 export type GlobalSDKDASHKey = Extract<GlobalSDKType, 'dashjs'>;
@@ -564,12 +624,14 @@ export type GlobalSDKValue = GlobalSDK[GlobalSDKType];
 export type GlobalSDKYT = Extract<GlobalSDKValue, YT>;
 export type GlobalSDKSoundCloud = Extract<GlobalSDKValue, SoundCloud>;
 export type GlobalSDKTwitch = Extract<GlobalSDKValue, Twitch>;
+export type GlobalSDKDailyMotion = Extract<GlobalSDKValue, DailyMotion>;
 export type GlobalSDKMixcloud = Extract<GlobalSDKValue, MixcloudPlayer>;
 export type GlobalSDKHLSClass = Hls;
 export type GlobalSDKHLS = Extract<GlobalSDKValue, HlsJS>;
 export type GlobalSDKDASH = Extract<GlobalSDKValue, DashJS>;
 export type GlobalSDKFLV = Extract<GlobalSDKValue, FlvJS>;
 
-export type GlobalSDKReady = 'onYouTubeIframeAPIReady';
+export type GlobalSDKReady = 'onYouTubeIframeAPIReady' | 'dmAsyncInit';
 
 export type GlobalSDKYTReady = Extract<GlobalSDKReady, 'onYouTubeIframeAPIReady'>;
+export type GlobalSDKDailyMotionReady = Extract<GlobalSDKReady, 'dmAsyncInit'>;

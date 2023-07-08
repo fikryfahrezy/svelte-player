@@ -1,7 +1,7 @@
 <script lang="ts">
 	import type { NotImplementedPlayer } from './global-types';
 	import type { FilePlayerUrl, Dispatcher, GetPlayerReturn } from './types';
-	import type { NotImplementedConfig } from './not-implemented-types';
+	import type { NotImplementedConfig } from './notimplemented-types';
 
 	import { onMount, createEventDispatcher } from 'svelte';
 

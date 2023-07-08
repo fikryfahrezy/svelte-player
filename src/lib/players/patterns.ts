@@ -10,6 +10,8 @@ export const MATCH_URL_YOUTUBE =
 export const MATCH_URL_SOUNDCLOUD = /(?:soundcloud\.com|snd\.sc)\/[^.]+$/;
 export const MATCH_URL_TWITCH_VIDEO = /(?:www\.|go\.)?twitch\.tv\/videos\/(\d+)($|\?)/;
 export const MATCH_URL_TWITCH_CHANNEL = /(?:www\.|go\.)?twitch\.tv\/([a-zA-Z0-9_]+)($|\?)/;
+export const MATCH_URL_DAILYMOTION =
+	/^(?:(?:https?):)?(?:\/\/)?(?:www\.)?(?:(?:dailymotion\.com(?:\/embed)?\/video)|dai\.ly)\/([a-zA-Z0-9]+)(?:_[\w_-]+)?(?:[\w.#_-]+)?/;
 export const MATCH_URL_MIXCLOUD = /mixcloud\.com\/([^/]+\/[^/]+)/;
 export const AUDIO_EXTENSIONS =
 	/\.(m4a|m4b|mp4a|mpga|mp2|mp2a|mp3|m2a|m3a|wav|weba|aac|oga|spx)($|\?)/i;
@@ -49,6 +51,13 @@ export function canPlayTwitch(url: FilePlayerUrl) {
 		return false;
 	}
 	return MATCH_URL_TWITCH_VIDEO.test(url) || MATCH_URL_TWITCH_CHANNEL.test(url);
+}
+
+export function canPlayDailyMotion(url: FilePlayerUrl) {
+	if (url instanceof Array) {
+		return false;
+	}
+	return MATCH_URL_DAILYMOTION.test(url);
 }
 
 export function canPlayMixcloud(url: FilePlayerUrl) {

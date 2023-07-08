@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { TwitchPlayer, TwitchPlayerLinkOption } from './global-types';
+	import type { GlobalSDKTwitchKey, TwitchPlayer, TwitchPlayerLinkOption } from './global-types';
 	import type { FilePlayerUrl, Dispatcher } from './types';
 	import type { TwitchConfig } from './twitch-types';
 
@@ -19,7 +19,7 @@
 	export let config: TwitchConfig;
 
 	const SDK_URL = 'https://player.twitch.tv/js/embed/v1.js';
-	const SDK_GLOBAL = 'Twitch';
+	const SDK_GLOBAL: GlobalSDKTwitchKey = 'Twitch';
 	const PLAYER_ID_PREFIX = 'twitch-player-';
 
 	const playerID = config.playerId || `${PLAYER_ID_PREFIX}${randomString()}`;

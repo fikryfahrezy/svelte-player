@@ -4,6 +4,15 @@ import type { Config } from './types';
 const noop = () => {};
 
 export const defaultConfig: Config = {
+	soundcloud: {
+		options: {
+			visual: true,
+			buying: false,
+			download: false,
+			sharing: false,
+			show_playcount: false
+		}
+	},
 	youtube: {
 		playerVars: {
 			playsinline: 1,
@@ -14,23 +23,11 @@ export const defaultConfig: Config = {
 		embedOptions: {},
 		onUnstarted: noop
 	},
-	soundcloud: {
-		options: {
-			visual: true,
-			buying: false,
-			download: false,
-			sharing: false,
-			show_playcount: false
+	dailymotion: {
+		params: {
+			api: 1,
+			'endscreen-enable': false
 		}
-	},
-	mixcloud: {
-		options: {
-			hide_cover: true
-		}
-	},
-	twitch: {
-		options: {},
-		playerId: null
 	},
 	file: {
 		attributes: {},
@@ -45,6 +42,15 @@ export const defaultConfig: Config = {
 		dashVersion: '3.1.3',
 		flvVersion: '1.5.0',
 		forceDisableHls: false
+	},
+	mixcloud: {
+		options: {
+			hide_cover: true
+		}
+	},
+	twitch: {
+		options: {},
+		playerId: null
 	},
 	'not-implemented': {}
 };

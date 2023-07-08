@@ -10,7 +10,8 @@ import type {
 	TwitchPlayer,
 	NotImplementedPlayer,
 	SoundCloudPlayer,
-	MixcloudWidget
+	MixcloudWidget,
+	DailyMotionPlayer
 } from './global-types';
 
 export type PlayerInstance =
@@ -20,6 +21,7 @@ export type PlayerInstance =
 	| HTMLVideoElement
 	| NotImplementedPlayer
 	| SoundCloudPlayer
+	| DailyMotionPlayer
 	| MixcloudWidget;
 
 export type SDKBase<T extends keyof GlobalSDK> = {

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { MixcloudWidget } from './global-types';
+	import type { GlobalSDKMixcloudKey, MixcloudWidget } from './global-types';
 	import type { FilePlayerUrl, Dispatcher, GetPlayerReturn } from './types';
 	import type { MixcloudConfig } from './mixcloud-types';
 
@@ -28,7 +28,7 @@
 	$: propsUrl = handlePropsUrlChange(url);
 
 	const SDK_URL = 'https://widget.mixcloud.com/media/js/widgetApi.js';
-	const SDK_GLOBAL = 'Mixcloud';
+	const SDK_GLOBAL: GlobalSDKMixcloudKey = 'Mixcloud';
 
 	const dispatch = createEventDispatcher<Dispatcher>();
 

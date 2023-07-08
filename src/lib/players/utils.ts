@@ -10,7 +10,8 @@ import type {
 	GlobalSDKHLS,
 	GlobalSDKTwitch,
 	GlobalSDKSoundCloud,
-	GlobalSDKMixcloud
+	GlobalSDKMixcloud,
+	GlobalSDKDailyMotion
 } from './global-types';
 import type { GetSDKParams, FilePlayerUrl } from './types';
 import loadScript from 'load-script';
@@ -18,9 +19,11 @@ import loadScript from 'load-script';
 declare global {
 	interface Window {
 		YT: GlobalSDKYT;
-		onYouTubeIframeAPIReady: () => void;
+		onYouTubeIframeAPIReady(): void;
 		SC: GlobalSDKSoundCloud;
 		Twitch: GlobalSDKTwitch;
+		DM: GlobalSDKDailyMotion;
+		dmAsyncInit(): void;
 		Mixcloud: GlobalSDKMixcloud;
 		Hls: GlobalSDKHLS;
 		dashjs: GlobalSDKDASH;

@@ -156,8 +156,8 @@
 			url: SDK_URL,
 			sdkGlobal: SDK_GLOBAL,
 			sdkReady: SDK_GLOBAL_READY,
-			isLoaded(sdk) {
-				return sdk.loaded === 1;
+			isLoaded(YT) {
+				return YT.loaded === 1;
 			}
 		}).then(
 			(YT) => {

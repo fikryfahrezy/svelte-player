@@ -5,7 +5,8 @@ import {
 	AUDIO_EXTENSIONS,
 	canPlayTwitch,
 	canPlaySoundCloud,
-	canPlayMixcloud
+	canPlayMixcloud,
+	canPlayDailyMotion
 } from './patterns';
 import { supportsWebKitPresentationMode } from './utils';
 
@@ -35,7 +36,15 @@ const players = [
 		}
 	},
 	{
-		key: 'twitch',
+		key: 'dailymotion',
+		canPlay: canPlayDailyMotion,
+		canEnablePIP: undefined,
+		loadComponent: () => {
+			return import('./DailyMotion.svelte');
+		}
+	},
+	{
+		key: 'mixcloud',
 		canPlay: canPlayMixcloud,
 		canEnablePIP: undefined,
 		loadComponent: () => {
