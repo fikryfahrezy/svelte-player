@@ -12,7 +12,8 @@ import type {
 	GlobalSDKSoundCloud,
 	GlobalSDKMixcloud,
 	GlobalSDKDailyMotion,
-	GlobalSDKFacebook
+	GlobalSDKFacebook,
+	GlobalSDKVimeo
 } from './global-types';
 import type { GetSDKParams, FilePlayerUrl } from './types';
 import loadScript from 'load-script';
@@ -22,6 +23,7 @@ declare global {
 		YT: GlobalSDKYT;
 		onYouTubeIframeAPIReady(): void;
 		SC: GlobalSDKSoundCloud;
+		Vimeo: GlobalSDKVimeo;
 		FB: GlobalSDKFacebook;
 		fbAsyncInit(): void;
 		Twitch: GlobalSDKTwitch;

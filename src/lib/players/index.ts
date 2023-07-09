@@ -7,7 +7,8 @@ import {
 	canPlaySoundCloud,
 	canPlayMixcloud,
 	canPlayDailyMotion,
-	canPlayFacebook
+	canPlayFacebook,
+	canPlayVimeo
 } from './patterns';
 import { supportsWebKitPresentationMode } from './utils';
 
@@ -26,6 +27,14 @@ const players = [
 		canEnablePIP: undefined,
 		loadComponent: () => {
 			return import('./SoundCloud.svelte');
+		}
+	},
+	{
+		key: 'vimeo',
+		canPlay: canPlayVimeo,
+		canEnablePIP: undefined,
+		loadComponent: () => {
+			return import('./Vimeo.svelte');
 		}
 	},
 	{

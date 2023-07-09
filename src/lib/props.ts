@@ -35,6 +35,15 @@ export const defaultConfig: Config = {
 			'endscreen-enable': false
 		}
 	},
+	vimeo: {
+		playerOptions: {
+			autopause: false,
+			byline: false,
+			portrait: false,
+			title: false
+		},
+		title: null
+	},
 	file: {
 		attributes: {},
 		tracks: [],

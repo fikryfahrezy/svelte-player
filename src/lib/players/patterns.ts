@@ -8,6 +8,7 @@ import { isMediaStream, isBlobUrl } from './utils';
 export const MATCH_URL_YOUTUBE =
 	/(?:youtu\.be\/|youtube(?:-nocookie|education)?\.com\/(?:embed\/|v\/|watch\/|watch\?v=|watch\?.+&v=|shorts\/|live\/))((\w|-){11})|youtube\.com\/playlist\?list=|youtube\.com\/user\//;
 export const MATCH_URL_SOUNDCLOUD = /(?:soundcloud\.com|snd\.sc)\/[^.]+$/;
+export const MATCH_URL_VIMEO = /vimeo\.com\/(?!progressive_redirect).+/;
 export const MATCH_URL_FACEBOOK =
 	/^https?:\/\/(www\.)?facebook\.com.*\/(video(s)?|watch|story)(\.php?|\/).+$/;
 export const MATCH_URL_FACEBOOK_WATCH = /^https?:\/\/fb\.watch\/.+$/;
@@ -47,6 +48,13 @@ export function canPlaySoundCloud(url: FilePlayerUrl) {
 		return false;
 	}
 	return MATCH_URL_SOUNDCLOUD.test(url) && !AUDIO_EXTENSIONS.test(url);
+}
+
+export function canPlayVimeo(url: FilePlayerUrl) {
+	if (url instanceof Array) {
+		return false;
+	}
+	return MATCH_URL_VIMEO.test(url) && !VIDEO_EXTENSIONS.test(url) && !HLS_EXTENSIONS.test(url);
 }
 
 export function canPlayFacebook(url: FilePlayerUrl) {
