@@ -23,6 +23,12 @@ export const defaultConfig: Config = {
 		embedOptions: {},
 		onUnstarted: noop
 	},
+	facebook: {
+		appId: '1309697205772819',
+		version: 'v3.3',
+		playerId: null,
+		attributes: {}
+	},
 	dailymotion: {
 		params: {
 			api: 1,

@@ -5,19 +5,19 @@ import type {
 } from 'svelte/elements';
 import type { FilePlayerUrl } from './types';
 
-export type FileConfiAttributes = Omit<HTMLVideoAttributes | HTMLAudioAttributes, `on:${string}`>;
+export type FileConfigAttributes = Omit<HTMLVideoAttributes | HTMLAudioAttributes, `on:${string}`>;
 
-export type FileConfiHlsOptions = Record<string, never>;
+export type FileConfigHlsOptions = Record<string, never>;
 
 export type FileConfig = {
-	attributes: Partial<FileConfiAttributes>;
+	attributes: Partial<FileConfigAttributes>;
 	tracks: Omit<HTMLTrackAttributes, `on:${string}`>[];
 	forceVideo: boolean;
 	forceAudio: boolean;
 	forceHLS: boolean;
 	forceDASH: boolean;
 	forceFLV: boolean;
-	hlsOptions: FileConfiHlsOptions;
+	hlsOptions: FileConfigHlsOptions;
 	hlsVersion: string;
 	dashVersion: string;
 	flvVersion: string;

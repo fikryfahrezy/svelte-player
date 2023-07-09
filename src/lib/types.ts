@@ -1,6 +1,7 @@
 import type { InternalPlayerKey, Dispatcher, PlayerUrl, PlayerInstance } from './players/types';
 import type { YouTubeConfig } from './players/youtube-types';
 import type { SoundCloudConfig } from './players/soundcloud-types';
+import type { FacebookConfig } from './players/facebook-types';
 import type { TwitchConfig } from './players/twitch-types';
 import type { DailyMotionConfig } from './players/dailymotion-types';
 import type { MixcloudConfig } from './players/mixcloud-types';
@@ -44,6 +45,7 @@ export type SveltePlayerRef = PlayerRef & {
 export type Config = {
 	youtube: YouTubeConfig;
 	soundcloud: SoundCloudConfig;
+	facebook: FacebookConfig;
 	twitch: TwitchConfig;
 	dailymotion: DailyMotionConfig;
 	mixcloud: MixcloudConfig;

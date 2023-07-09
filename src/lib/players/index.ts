@@ -6,7 +6,8 @@ import {
 	canPlayTwitch,
 	canPlaySoundCloud,
 	canPlayMixcloud,
-	canPlayDailyMotion
+	canPlayDailyMotion,
+	canPlayFacebook
 } from './patterns';
 import { supportsWebKitPresentationMode } from './utils';
 
@@ -25,6 +26,14 @@ const players = [
 		canEnablePIP: undefined,
 		loadComponent: () => {
 			return import('./SoundCloud.svelte');
+		}
+	},
+	{
+		key: 'facebook',
+		canPlay: canPlayFacebook,
+		canEnablePIP: undefined,
+		loadComponent: () => {
+			return import('./Facebook.svelte');
 		}
 	},
 	{
