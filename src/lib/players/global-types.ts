@@ -662,7 +662,6 @@ export type Facebook = {
 };
 
 // https://developer.vimeo.com/player/sdk/reference
-
 export type VimeoEmbedIDOption = {
 	id: number;
 };
@@ -671,7 +670,7 @@ export type VimeoEmbedURLOption = {
 	url: string;
 };
 
-export type VimeoEmbedOptions = (VimeoEmbedIDOption | VimeoEmbedURLOption) & {
+export type VimeoPlayerOptions = {
 	autopause: boolean; // no effect if you've disabled cookies in your browser
 	autopip: boolean;
 	autoplay: boolean;
@@ -700,6 +699,8 @@ export type VimeoEmbedOptions = (VimeoEmbedIDOption | VimeoEmbedURLOption) & {
 	width: number;
 };
 
+export type VimeoEmbedOptions = (VimeoEmbedIDOption | VimeoEmbedURLOption) & VimeoPlayerOptions;
+
 export type VimeoPlayerBUFFERENDEvent = 'bufferend';
 export type VimeoPlayerBUFFERSTARTEvent = 'bufferstart';
 export type VimeoPlayerENDEDEvent = 'ended';
@@ -716,6 +717,8 @@ export type VimeoPlayerCHAPTESRCHANGEEvent = 'chapterchange';
 export type VimeoPlayerCUECHANGEEvent = 'cuechange';
 export type VimeoPlayerCUEPOINTEvent = 'cuepoint';
 export type VimeoPlayerTEXTTRACKCHANGEEvent = 'texttrackchange';
+export type VimeoPlayerINTERACTIVEHOTSPOTCLICKEDEvent = 'interactivehotspotclicked';
+export type VimeoPlayerINTERACTIVEOVERPLAYPANELCLICKEDEvent = 'interactiveoverlaypanelclicked';
 
 export type VimeoPlayerNoDataEventEvents = VimeoPlayerBUFFERENDEvent | VimeoPlayerBUFFERSTARTEvent;
 
@@ -723,7 +726,9 @@ export type VimeoPlayerProgressEvents =
 	| VimeoPlayerENDEDEvent
 	| VimeoPlayerPAUSEEvent
 	| VimeoPlayerPLAYEvent
-	| VimeoPlayerPROGRESSEvent;
+	| VimeoPlayerPROGRESSEvent
+	| VimeoPlayerSEEKEDEvent
+	| VimeoPlayerTIMEUPDATEEvent;
 
 export type VimeoPlayerEvents =
 	| VimeoPlayerNoDataEventEvents
@@ -796,42 +801,78 @@ export type VimeoPlayerTextTrack = VimeoPlayerTEXTTRACKCHANGEEventCallbackData &
 	mode: string;
 };
 
-export type ViemoPlayerNoDataEventCallback = () => void;
+export type VimeoPlayerINTERACTIVEHOTSPOTCLICKEDActionPreference = {
+	pauseOnAction: boolean;
+	overlayId: number;
+	seekTo: number; // in seconds
+	url: string;
+};
 
-export type ViemoPlayerWithDataEventCallback<T> = (data: T) => void;
+export type VimeoPlayerINTERACTIVEHOTSPOTCLICKEDEventCallbackData = {
+	action: string;
+	actionPreference: VimeoPlayerINTERACTIVEHOTSPOTCLICKEDActionPreference;
+	currentTime: number; // in seconds
+	customPayloadData: unknown | null;
+	hotspotId: number;
+};
+
+export type VimeoPlayerINTERACTIVEOVERPLAYPANELCLICKEDActionPreference = {
+	pauseOnAction: boolean;
+	seekTo: number; // in seconds
+	url: string;
+};
+
+export type VimeoPlayerINTERACTIVEOVERPLAYPANELCLICKEDEventCallbackData = {
+	action: string;
+	actionPreference: VimeoPlayerINTERACTIVEOVERPLAYPANELCLICKEDActionPreference;
+	currentTime: number; // in seconds
+	customPayloadData: unknown | null;
+	overlayId: number;
+	panelId: string;
+};
+
+export type VimeoPlayerWithDataEventCallback<T> = (data: T) => void;
+
+export type VimeoPlayerNoDataEventCallback = VimeoPlayerWithDataEventCallback<undefined>;
 
 export type VimeoPlayerPROGRESSEventCallback =
-	ViemoPlayerWithDataEventCallback<VimeoPlayerPROGRESSEventCallbackData>;
+	VimeoPlayerWithDataEventCallback<VimeoPlayerPROGRESSEventCallbackData>;
 
 export type VimeoPlayerERROREventCallback =
-	ViemoPlayerWithDataEventCallback<VimeoPlayerERROREventCallbackData>;
+	VimeoPlayerWithDataEventCallback<VimeoPlayerERROREventCallbackData>;
 
 export type VimeoPlayerLOADEDEventCallback =
-	ViemoPlayerWithDataEventCallback<VimeoPlayerLOADEDEventCallbackData>;
+	VimeoPlayerWithDataEventCallback<VimeoPlayerLOADEDEventCallbackData>;
 
 export type VimeoPlayerPLAYBACKRATECHANGEEventCallback =
-	ViemoPlayerWithDataEventCallback<VimeoPlayerPLAYBACKRATECHANGEEventCallbackData>;
+	VimeoPlayerWithDataEventCallback<VimeoPlayerPLAYBACKRATECHANGEEventCallbackData>;
 
 export type VimeoPlayerVOLUMECHANGEEventCallback =
-	ViemoPlayerWithDataEventCallback<VimeoPlayerVOLUMECHANGEEventCallbackData>;
+	VimeoPlayerWithDataEventCallback<VimeoPlayerVOLUMECHANGEEventCallbackData>;
 
 export type VimeoPlayerCHAPTERCHANGEEventCallback =
-	ViemoPlayerWithDataEventCallback<VimeoPlayerChapter>;
+	VimeoPlayerWithDataEventCallback<VimeoPlayerChapter>;
 
 export type VimeoPlayerCUECHANGEEventCallback =
-	ViemoPlayerWithDataEventCallback<VimeoPlayerCUECHANGEEventCallbackData>;
+	VimeoPlayerWithDataEventCallback<VimeoPlayerCUECHANGEEventCallbackData>;
 
 export type VimeoPlayerCUEPOINTEventCallback =
-	ViemoPlayerWithDataEventCallback<VimeoPlayerCuePoint>;
+	VimeoPlayerWithDataEventCallback<VimeoPlayerCuePoint>;
 
 export type VimeoPlayerTEXTTRACKCHANGEEventCallback =
-	ViemoPlayerWithDataEventCallback<VimeoPlayerTEXTTRACKCHANGEEventCallbackData>;
+	VimeoPlayerWithDataEventCallback<VimeoPlayerTEXTTRACKCHANGEEventCallbackData>;
+
+export type VimeoPlayerINTERACTIVEHOTSPOTCLICKEDEventCallback =
+	VimeoPlayerWithDataEventCallback<VimeoPlayerINTERACTIVEHOTSPOTCLICKEDEventCallbackData>;
+
+export type VimeoPlayerINTERACTIVEOVERPLAYPANELCLICKEDEventCallback =
+	VimeoPlayerWithDataEventCallback<VimeoPlayerINTERACTIVEOVERPLAYPANELCLICKEDEventCallbackData>;
 
 export type VimeoPlayerSetAutopauseParams<T extends VimeoEmbedOptions['autopause']> = {
 	autopause: T;
 };
 
-export type VimeoPlayer = {
+export interface VimeoPlayer {
 	getAutopause(): Promise<VimeoEmbedOptions['autopause']>;
 	getCurrentTime(): Promise<number>;
 	getDuration(): Promise<number>;
@@ -855,12 +896,28 @@ export type VimeoPlayer = {
 	getCuePoints(): Promise<VimeoPlayerCuePoint[]>;
 	removeCuePoint<T extends string>(id: T): Promise<T>;
 	disableTextTrack(): Promise<void>;
-	enableTextTrack(language: string, kind: string): Promise<VimeoPlayerTextTrack>;
+	enableTextTrack(language: string, kind?: string): Promise<VimeoPlayerTextTrack>;
 	getTextTracks(): Promise<VimeoPlayerTextTrack[]>;
-	on(event: VimeoPlayerNoDataEventEvents, callback: ViemoPlayerNoDataEventCallback): void;
+	destroy(): Promise<void>;
+	getColor(): Promise<VimeoPlayerOptions['color']>;
+	getColors(): Promise<VimeoPlayerOptions['colors']>;
+	getVideoEmbedCode(): Promise<string>; // `embedCode` indicates the <iframe> embed code
+	getVideoHeight(): Promise<VimeoPlayerOptions['height']>;
+	getVideoId(): Promise<VimeoEmbedIDOption['id']>;
+	getVideoTitle(): Promise<string>;
+	getVideoUrl(): Promise<VimeoEmbedURLOption['url']>;
+	getVideoWidth(): Promise<VimeoPlayerOptions['width']>;
+	ready(): Promise<void>;
+	setColor<T extends VimeoPlayerOptions['color']>(color: T): T;
+	setColors<T extends VimeoPlayerOptions['colors']>(colors: T): T;
+	unload(): void;
+	loadVideo(
+		idOrUrl: VimeoEmbedIDOption['id'] | VimeoEmbedURLOption['url']
+	): Promise<VimeoEmbedIDOption['id']>;
+	on(event: VimeoPlayerNoDataEventEvents, callback: VimeoPlayerNoDataEventCallback): void;
 	on(event: VimeoPlayerProgressEvents, callback: VimeoPlayerPROGRESSEventCallback): void;
 	on(event: VimeoPlayerERROREvent, callback: VimeoPlayerERROREventCallback): void;
-	on(event: VimeoPlayerLOADEDEvent, callback: VimeoPlayerLOADEDEventCallbackData): void;
+	on(event: VimeoPlayerLOADEDEvent, callback: VimeoPlayerLOADEDEventCallback): void;
 	on(
 		event: VimeoPlayerPLAYBACKRATECHANGEEvent,
 		callback: VimeoPlayerPLAYBACKRATECHANGEEventCallback
@@ -873,6 +930,24 @@ export type VimeoPlayer = {
 		event: VimeoPlayerTEXTTRACKCHANGEEvent,
 		callback: VimeoPlayerTEXTTRACKCHANGEEventCallback
 	): void;
+	on(
+		event: VimeoPlayerINTERACTIVEHOTSPOTCLICKEDEvent,
+		callback: VimeoPlayerINTERACTIVEHOTSPOTCLICKEDEventCallback
+	): void;
+	on(
+		event: VimeoPlayerINTERACTIVEOVERPLAYPANELCLICKEDEvent,
+		callback: VimeoPlayerINTERACTIVEOVERPLAYPANELCLICKEDEventCallback
+	): void;
+	off(event: VimeoPlayerEvents, callback?: AnyFunction): void;
+}
+
+export interface VimeoPlayerConstructor {
+	new (container: HTMLElement | string, options?: Partial<VimeoEmbedOptions>): VimeoPlayer;
+	readonly prototype: VimeoPlayer;
+}
+
+export type Vimeo = {
+	Player: VimeoPlayerConstructor;
 };
 
 type TypeOfDashJS = typeof dashjs;
@@ -896,7 +971,7 @@ export type HlsJS = typeof Hls;
 export type GlobalSDK = {
 	YT: YT;
 	SC: SoundCloud;
-	Vimeo: VimeoPlayer;
+	Vimeo: Vimeo;
 	FB: Facebook;
 	Twitch: Twitch;
 	DM: DailyMotion;
@@ -923,7 +998,7 @@ export type GlobalSDKValue = GlobalSDK[GlobalSDKType];
 
 export type GlobalSDKYT = Extract<GlobalSDKValue, YT>;
 export type GlobalSDKSoundCloud = Extract<GlobalSDKValue, SoundCloud>;
-export type GlobalSDKVimeo = Extract<GlobalSDKValue, VimeoPlayer>;
+export type GlobalSDKVimeo = Extract<GlobalSDKValue, Vimeo>;
 export type GlobalSDKFacebook = Extract<GlobalSDKValue, Facebook>;
 export type GlobalSDKTwitch = Extract<GlobalSDKValue, Twitch>;
 export type GlobalSDKDailyMotion = Extract<GlobalSDKValue, DailyMotion>;

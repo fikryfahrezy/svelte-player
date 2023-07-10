@@ -12,7 +12,8 @@ import type {
 	SoundCloudPlayer,
 	MixcloudWidget,
 	DailyMotionPlayer,
-	FacebookPlayer
+	FacebookPlayer,
+	VimeoPlayer
 } from './global-types';
 
 export type PlayerInstance =
@@ -24,7 +25,8 @@ export type PlayerInstance =
 	| SoundCloudPlayer
 	| DailyMotionPlayer
 	| MixcloudWidget
-	| FacebookPlayer;
+	| FacebookPlayer
+	| VimeoPlayer;
 
 export type SDKBase<T extends keyof GlobalSDK> = {
 	url: string;
