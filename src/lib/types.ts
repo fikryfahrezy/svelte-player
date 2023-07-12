@@ -48,6 +48,7 @@ export type Config = {
 	soundcloud: SoundCloudConfig;
 	vimeo: ViemoConfig;
 	facebook: FacebookConfig;
+	streamable: undefined;
 	twitch: TwitchConfig;
 	dailymotion: DailyMotionConfig;
 	mixcloud: MixcloudConfig;

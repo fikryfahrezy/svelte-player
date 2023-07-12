@@ -12,6 +12,7 @@ export const MATCH_URL_VIMEO = /vimeo\.com\/(?!progressive_redirect).+/;
 export const MATCH_URL_FACEBOOK =
 	/^https?:\/\/(www\.)?facebook\.com.*\/(video(s)?|watch|story)(\.php?|\/).+$/;
 export const MATCH_URL_FACEBOOK_WATCH = /^https?:\/\/fb\.watch\/.+$/;
+export const MATCH_URL_STREAMABLE = /streamable\.com\/([a-z0-9]+)$/;
 export const MATCH_URL_TWITCH_VIDEO = /(?:www\.|go\.)?twitch\.tv\/videos\/(\d+)($|\?)/;
 export const MATCH_URL_TWITCH_CHANNEL = /(?:www\.|go\.)?twitch\.tv\/([a-zA-Z0-9_]+)($|\?)/;
 export const MATCH_URL_DAILYMOTION =
@@ -62,6 +63,13 @@ export function canPlayFacebook(url: FilePlayerUrl) {
 		return false;
 	}
 	return MATCH_URL_FACEBOOK.test(url) || MATCH_URL_FACEBOOK_WATCH.test(url);
+}
+
+export function canPlayStreamable(url: FilePlayerUrl) {
+	if (url instanceof Array) {
+		return false;
+	}
+	return MATCH_URL_STREAMABLE.test(url);
 }
 
 export function canPlayTwitch(url: FilePlayerUrl) {

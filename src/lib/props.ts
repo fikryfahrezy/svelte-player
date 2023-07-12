@@ -13,6 +13,7 @@ export const defaultConfig: Config = {
 			show_playcount: false
 		}
 	},
+	streamable: undefined,
 	youtube: {
 		playerVars: {
 			playsinline: 1,

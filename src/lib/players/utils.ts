@@ -13,7 +13,8 @@ import type {
 	GlobalSDKMixcloud,
 	GlobalSDKDailyMotion,
 	GlobalSDKFacebook,
-	GlobalSDKVimeo
+	GlobalSDKVimeo,
+	GlobalSDKPlayerJS
 } from './global-types';
 import type { GetSDKParams, FilePlayerUrl } from './types';
 import loadScript from 'load-script';
@@ -26,6 +27,7 @@ declare global {
 		Vimeo: GlobalSDKVimeo;
 		FB: GlobalSDKFacebook;
 		fbAsyncInit(): void;
+		playerjs: GlobalSDKPlayerJS;
 		Twitch: GlobalSDKTwitch;
 		DM: GlobalSDKDailyMotion;
 		dmAsyncInit(): void;

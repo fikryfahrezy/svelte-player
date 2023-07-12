@@ -950,6 +950,9 @@ export type Vimeo = {
 	Player: VimeoPlayerConstructor;
 };
 
+// https://github.com/embedly/player.js
+export type PlayerJS = Record<string, never>;
+
 type TypeOfDashJS = typeof dashjs;
 type DashJSLogLevel = TypeOfDashJS['LogLevel'];
 
@@ -973,6 +976,7 @@ export type GlobalSDK = {
 	SC: SoundCloud;
 	Vimeo: Vimeo;
 	FB: Facebook;
+	playerjs: PlayerJS;
 	Twitch: Twitch;
 	DM: DailyMotion;
 	Mixcloud: MixcloudPlayer;
@@ -987,6 +991,7 @@ export type GlobalSDKYTKey = Extract<GlobalSDKType, 'YT'>;
 export type GlobalSDKSoundCloudKey = Extract<GlobalSDKType, 'SC'>;
 export type GlobalSDKVimeoKey = Extract<GlobalSDKType, 'Vimeo'>;
 export type GlobalSDKFacebookKey = Extract<GlobalSDKType, 'FB'>;
+export type GlobalSDKPlayerJSKey = Extract<GlobalSDKType, 'playerjs'>;
 export type GlobalSDKTwitchKey = Extract<GlobalSDKType, 'Twitch'>;
 export type GlobalSDKDailyMotionKey = Extract<GlobalSDKType, 'DM'>;
 export type GlobalSDKMixcloudKey = Extract<GlobalSDKType, 'Mixcloud'>;
@@ -1000,6 +1005,7 @@ export type GlobalSDKYT = Extract<GlobalSDKValue, YT>;
 export type GlobalSDKSoundCloud = Extract<GlobalSDKValue, SoundCloud>;
 export type GlobalSDKVimeo = Extract<GlobalSDKValue, Vimeo>;
 export type GlobalSDKFacebook = Extract<GlobalSDKValue, Facebook>;
+export type GlobalSDKPlayerJS = Extract<GlobalSDKValue, PlayerJS>;
 export type GlobalSDKTwitch = Extract<GlobalSDKValue, Twitch>;
 export type GlobalSDKDailyMotion = Extract<GlobalSDKValue, DailyMotion>;
 export type GlobalSDKMixcloud = Extract<GlobalSDKValue, MixcloudPlayer>;

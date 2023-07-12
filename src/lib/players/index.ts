@@ -8,7 +8,8 @@ import {
 	canPlayMixcloud,
 	canPlayDailyMotion,
 	canPlayFacebook,
-	canPlayVimeo
+	canPlayVimeo,
+	canPlayStreamable
 } from './patterns';
 import { supportsWebKitPresentationMode } from './utils';
 
@@ -43,6 +44,14 @@ const players = [
 		canEnablePIP: undefined,
 		loadComponent: () => {
 			return import('./Facebook.svelte');
+		}
+	},
+	{
+		key: 'streamable',
+		canPlay: canPlayStreamable,
+		canEnablePIP: undefined,
+		loadComponent: () => {
+			return import('./Streamable.svelte');
 		}
 	},
 	{
