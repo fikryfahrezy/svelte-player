@@ -1,14 +1,14 @@
 <script lang="ts">
-	import type { PlayerJS, GlobalSDKPlayerJSKey } from './global-types';
+	import type { PlayerJSPlayer, GlobalSDKPlayerJSKey } from './global-types';
 	import type { FilePlayerUrl, Dispatcher, GetPlayerReturn } from './types';
 
 	import { onMount, createEventDispatcher } from 'svelte';
 	import { getSDK } from './utils';
 	import { MATCH_URL_STREAMABLE } from './patterns';
 
-	export const url: FilePlayerUrl | undefined = undefined;
+	export let url: FilePlayerUrl;
 	export const playing: boolean | undefined = undefined;
-	export const loop: boolean | undefined = undefined;
+	export let loop: boolean;
 	export const controls: boolean | undefined = undefined;
 	export const volume: number | null = null;
 	export const muted: boolean | undefined = undefined;
@@ -17,88 +17,157 @@
 	export const playsinline: boolean | undefined = undefined;
 	export const config: Record<string, never> | undefined = undefined;
 
+	function handlePropsUrlChange(propsUrl: typeof url) {
+		if (propsUrl instanceof Array) {
+			return '';
+		}
+		return propsUrl;
+	}
+
+	$: propsUrl = handlePropsUrlChange(url);
+
 	const SDK_URL = 'https://cdn.embed.ly/player-0.1.0.min.js';
 	const SDK_GLOBAL: GlobalSDKPlayerJSKey = 'playerjs';
 
 	const dispatch = createEventDispatcher<Dispatcher>();
 
-	let player: PlayerJS | undefined;
+	let iframeContainer: HTMLIFrameElement | undefined;
+
+	let player: PlayerJSPlayer | undefined;
+	let duration = 0;
+	let currentTime = 0;
+	let secondsLoaded = 0;
 
 	onMount(() => {
 		dispatch('mount');
 	});
 
-	export function load(url: FilePlayerUrl, isReady?: boolean): void {
-		console.log('load');
+	export function load(_: FilePlayerUrl, __?: boolean): void {
+		getSDK({ url: SDK_URL, sdkGlobal: SDK_GLOBAL }).then(
+			(playerjs) => {
+				if (!iframeContainer) {
+					return;
+				}
+
+				player = new playerjs.Player(iframeContainer);
+				if (player.setLoop !== undefined) {
+					player.setLoop(loop);
+				}
+
+				player.on('ready', () => {
+					dispatch('ready');
+				});
+				player.on('play', () => {
+					dispatch('play');
+				});
+				player.on('pause', () => {
+					dispatch('pause');
+				});
+				player.on('seeked', () => {
+					dispatch('seek', 0);
+				});
+				player.on('ended', () => {
+					dispatch('ended');
+				});
+				player.on('error', (error) => {
+					dispatch('error', {
+						error
+					});
+				});
+				player.on('timeupdate', (data) => {
+					duration = data.duration;
+					currentTime = data.seconds;
+				});
+			},
+			(error) => {
+				dispatch('error', {
+					error
+				});
+			}
+		);
 	}
 
 	export function play() {
-		console.log('play');
+		if (player !== undefined) {
+			player.play();
+		}
 	}
 
 	export function pause() {
-		console.log('pause');
+		if (player !== undefined) {
+			player.pause();
+		}
 	}
 
 	export function stop() {
-		console.log('stop');
+		// Nothing to do
 	}
 
-	export function seekTo(seconds: number, keepPlaying?: boolean): void {
-		console.log('seekTo');
+	export function seekTo(seconds: number, _?: boolean): void {
+		if (player !== undefined) {
+			player.setCurrentTime(seconds);
+		}
 	}
 
 	export function setVolume(fraction: number): void {
-		console.log('setVolume');
+		if (player !== undefined) {
+			player.setVolume(fraction * 100);
+		}
 	}
 
 	export function mute() {
-		console.log('mute');
+		if (player !== undefined) {
+			player.mute();
+		}
 	}
 
 	export function unmute() {
-		console.log('unmute');
+		if (player !== undefined) {
+			player.unmute();
+		}
 	}
 
-	// This function safe to remove the function
-	// if there is no implementation
-	export function setPlaybackRate(rate: number): void {
-		console.log('setPlaybackRate');
-	}
-
-	// This function safe to remove the function
-	// if there is no implementation
 	export function setLoop(loop: boolean): void {
-		console.log('setLoop');
+		if (player !== undefined && player.setLoop !== undefined) {
+			player.setLoop(loop);
+		}
 	}
 
 	export function getDuration(): number {
-		return 0;
+		return duration;
 	}
 
 	export function getCurrentTime() {
-		return 0;
+		return currentTime;
 	}
 
 	export function getSecondsLoaded(): number {
-		return 0;
-	}
-
-	// This function safe to remove the function
-	// if there is no implementation
-	export function enablePIP(): void {
-		console.log('enablePIP');
-	}
-
-	// This function safe to remove the function
-	// if there is no implementation
-	export function disablePIP(): void {
-		console.log('disablePIP');
+		return secondsLoaded;
 	}
 
 	export function getPlayer(): GetPlayerReturn {
+		if (player !== undefined) {
+			return player;
+		}
 		return null;
 	}
+
+	$: id = propsUrl.match(MATCH_URL_STREAMABLE)?.[1];
 </script>
 
-<p>not implemented yet.</p>
+<iframe
+	bind:this={iframeContainer}
+	src={`https://streamable.com/o/${id}`}
+	frameBorder="0"
+	scrolling="no"
+	class="streamable-player"
+	allow="encrypted-media; autoplay; fullscreen;"
+	title="Streamable Player"
+/>
+
+<style>
+	.streamable-player {
+		width: 100%;
+		height: 100%;
+	}
+</style>

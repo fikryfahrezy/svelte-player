@@ -114,7 +114,7 @@
 	}
 
 	export function stop() {
-		// do nothing, no implementation
+		// Nothing to do
 	}
 
 	export function seekTo(seconds: number, _?: boolean): void {

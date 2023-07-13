@@ -155,7 +155,7 @@
 	}
 
 	export function setLoop(_: boolean) {
-		// do nothing, no implementation
+		// Nothing to do
 	}
 
 	export function getDuration() {
@@ -173,7 +173,7 @@
 	}
 
 	export function getSecondsLoaded() {
-		// do nothing, no implementation
+		// Nothing to do
 		return 0;
 	}
 
