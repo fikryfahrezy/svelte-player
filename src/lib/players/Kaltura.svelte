@@ -4,7 +4,6 @@
 
 	import { onMount, createEventDispatcher } from 'svelte';
 	import { getSDK } from './utils';
-	import { MATCH_URL_STREAMABLE } from './patterns';
 
 	export let url: FilePlayerUrl;
 	export const playing: boolean | undefined = undefined;
@@ -55,32 +54,22 @@
 				}
 
 				player.on('ready', () => {
-					dispatch('ready');
+					// An arbitrary timeout is required otherwise
+					// the event listeners won’t work
+					setTimeout(() => {
+						if (player !== undefined) {
+							player.isReady = true;
+							if (player.setLoop !== undefined) {
+								player.setLoop(loop);
+							}
+							if (muted) {
+								player.mute();
+							}
+							addListeners(player);
+							dispatch('ready');
+						}
+					}, 500);
 				});
-				player.on('play', () => {
-					dispatch('play');
-				});
-				player.on('pause', () => {
-					dispatch('pause');
-				});
-				player.on('seeked', () => {
-					dispatch('seek', 0);
-				});
-				player.on('ended', () => {
-					dispatch('ended');
-				});
-				player.on('error', (error) => {
-					dispatch('error', {
-						error
-					});
-				});
-				player.on('timeupdate', (data) => {
-					duration = data.duration;
-					currentTime = data.seconds;
-				});
-				if (muted) {
-					player.mute();
-				}
 			},
 			(error) => {
 				dispatch('error', {
@@ -88,6 +77,27 @@
 				});
 			}
 		);
+	}
+
+	function addListeners(player: PlayerJSPlayer) {
+		player.on('play', () => {
+			dispatch('play');
+		});
+		player.on('pause', () => {
+			dispatch('pause');
+		});
+		player.on('ended', () => {
+			dispatch('ended');
+		});
+		player.on('error', (error) => {
+			dispatch('error', {
+				error
+			});
+		});
+		player.on('timeupdate', (data) => {
+			duration = data.duration;
+			currentTime = data.seconds;
+		});
 	}
 
 	export function play() {
@@ -154,22 +164,21 @@
 		}
 		return null;
 	}
-
-	$: id = propsUrl.match(MATCH_URL_STREAMABLE)?.[1];
 </script>
 
 <iframe
 	bind:this={iframeContainer}
-	src={`https://streamable.com/o/${id}`}
+	src={propsUrl}
 	frameBorder="0"
 	scrolling="no"
-	class="streamable-player"
+	class="kaltura-player"
 	allow="encrypted-media; autoplay; fullscreen;"
-	title="Streamable Player"
+	referrerPolicy="no-referrer-when-downgrade"
+	title="Kaltura Player"
 />
 
 <style>
-	.streamable-player {
+	.kaltura-player {
 		width: 100%;
 		height: 100%;
 	}

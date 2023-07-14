@@ -45,6 +45,7 @@ export const defaultConfig: Config = {
 		},
 		title: null
 	},
+	kaltura: undefined,
 	file: {
 		attributes: {},
 		tracks: [],

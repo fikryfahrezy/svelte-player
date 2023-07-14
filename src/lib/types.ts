@@ -52,6 +52,7 @@ export type Config = {
 	twitch: TwitchConfig;
 	dailymotion: DailyMotionConfig;
 	mixcloud: MixcloudConfig;
+	kaltura: undefined;
 	file: FileConfig;
 	'not-implemented': NotImplementedConfig;
 };

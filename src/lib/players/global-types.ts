@@ -1020,6 +1020,7 @@ export interface PlayerJSPlayer {
 	on(event: PlayerJSPlayerERROREvent, callback: PlayerJSTErrorEventCallback): void;
 	supports(method: string, event: string): boolean;
 	setLoop?(value: boolean): void;
+	isReady: boolean;
 }
 
 export interface PlayerJSPlayerConstructor {

@@ -9,7 +9,8 @@ import {
 	canPlayDailyMotion,
 	canPlayFacebook,
 	canPlayVimeo,
-	canPlayStreamable
+	canPlayStreamable,
+	canPlayKaltura
 } from './patterns';
 import { supportsWebKitPresentationMode } from './utils';
 
@@ -76,6 +77,14 @@ const players = [
 		canEnablePIP: undefined,
 		loadComponent: () => {
 			return import('./Mixcloud.svelte');
+		}
+	},
+	{
+		key: 'kaltura',
+		canPlay: canPlayKaltura,
+		canEnablePIP: undefined,
+		loadComponent: () => {
+			return import('./Kaltura.svelte');
 		}
 	},
 	{

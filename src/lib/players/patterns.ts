@@ -18,6 +18,8 @@ export const MATCH_URL_TWITCH_CHANNEL = /(?:www\.|go\.)?twitch\.tv\/([a-zA-Z0-9_
 export const MATCH_URL_DAILYMOTION =
 	/^(?:(?:https?):)?(?:\/\/)?(?:www\.)?(?:(?:dailymotion\.com(?:\/embed)?\/video)|dai\.ly)\/([a-zA-Z0-9]+)(?:_[\w_-]+)?(?:[\w.#_-]+)?/;
 export const MATCH_URL_MIXCLOUD = /mixcloud\.com\/([^/]+\/[^/]+)/;
+export const MATCH_URL_KALTURA =
+	/^https?:\/\/[a-zA-Z]+\.kaltura.(com|org)\/p\/([0-9]+)\/sp\/([0-9]+)00\/embedIframeJs\/uiconf_id\/([0-9]+)\/partner_id\/([0-9]+)(.*)entry_id.([a-zA-Z0-9-_].*)$/;
 export const AUDIO_EXTENSIONS =
 	/\.(m4a|m4b|mp4a|mpga|mp2|mp2a|mp3|m2a|m3a|wav|weba|aac|oga|spx)($|\?)/i;
 export const VIDEO_EXTENSIONS = /\.(mp4|og[gv]|webm|mov|m4v)(#t=[,\d+]+)?($|\?)/i;
@@ -91,6 +93,13 @@ export function canPlayMixcloud(url: FilePlayerUrl) {
 		return false;
 	}
 	return MATCH_URL_MIXCLOUD.test(url);
+}
+
+export function canPlayKaltura(url: FilePlayerUrl) {
+	if (url instanceof Array) {
+		return false;
+	}
+	return MATCH_URL_KALTURA.test(url);
 }
 
 export function canPlayFile(url: FilePlayerUrl) {
