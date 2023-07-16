@@ -35,6 +35,7 @@
 		"test:unit": "vitest run",
 		"test:unit:watch": "vitest watch",
 		"lint": "prettier --plugin-search-dir . --check . && eslint .",
+		"lint-staged": "lint-staged",
 		"format": "prettier --plugin-search-dir . --write .",
 		"prepare": "husky install"
 	},
@@ -67,6 +68,7 @@
 		"hls.js": "1.1.4",
 		"husky": "^8.0.0",
 		"jsdom": "^22.1.0",
+		"lint-staged": "^13.2.3",
 		"prettier": "^2.8.8",
 		"prettier-plugin-svelte": "^2.10.1",
 		"publint": "^0.1.12",
