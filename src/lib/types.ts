@@ -1,13 +1,13 @@
 import type { InternalPlayerKey, Dispatcher, PlayerUrl, PlayerInstance } from './players/types';
-import type { YouTubeConfig } from './players/youtube-types';
-import type { SoundCloudConfig } from './players/soundcloud-types';
-import type { ViemoConfig } from './players/vimeo-types';
-import type { FacebookConfig } from './players/facebook-types';
-import type { TwitchConfig } from './players/twitch-types';
-import type { DailyMotionConfig } from './players/dailymotion-types';
-import type { MixcloudConfig } from './players/mixcloud-types';
-import type { FileConfig } from './players/file-types';
-import type { NotImplementedConfig } from './players/notimplemented-types';
+import type { YouTubeConfig } from './players/youtube.types';
+import type { SoundCloudConfig } from './players/soundcloud.types';
+import type { ViemoConfig } from './players/vimeo.types';
+import type { FacebookConfig } from './players/facebook.types';
+import type { TwitchConfig } from './players/twitch.types';
+import type { DailyMotionConfig } from './players/dailymotion.types';
+import type { MixcloudConfig } from './players/mixcloud.types';
+import type { FileConfig } from './players/file.types';
+import type { NotImplementedConfig } from './players/notimplemented.types';
 
 // Recursive Partial<T> in TypeScript
 // https://stackoverflow.com/a/51365037/12976234

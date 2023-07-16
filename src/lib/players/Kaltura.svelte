@@ -1,5 +1,6 @@
 <script lang="ts">
-	import type { PlayerJSPlayer, GlobalSDKPlayerJSKey } from './global-types';
+	import type { GlobalSDKPlayerJSKey } from './global-types';
+	import type { PlayerJSPlayer } from './playerjs.global.types';
 	import type { FilePlayerUrl, Dispatcher, GetPlayerReturn } from './types';
 
 	import { onMount, createEventDispatcher } from 'svelte';

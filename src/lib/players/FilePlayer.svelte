@@ -6,9 +6,9 @@
 		GlobalSDKHLSClass
 	} from './global-types';
 	import type { FilePlayerUrl, Dispatcher, GetPlayerReturn } from './types';
-	import type { FileConfig, ShouldUseAudioParams } from './file-types';
-	import type { DashJSMediaPlayerClass } from './dash-types';
-	import type { FlvJSPlayer } from './flv-types';
+	import type { FileConfig, ShouldUseAudioParams } from './file.types';
+	import type { DashJSMediaPlayerClass } from './dash.types';
+	import type { FlvJSPlayer } from './flv.types';
 
 	import { onMount, createEventDispatcher } from 'svelte';
 	import { getSDK, isMediaStream, supportsWebKitPresentationMode } from './utils';

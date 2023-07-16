@@ -1,7 +1,8 @@
 <script lang="ts">
-	import type { FacebookPlayer } from './global-types';
+	import type { GlobalSDKFacebookKey, GlobalSDKFacebookReady } from './global-types';
+	import type { FacebookPlayer } from './facebook.global.types';
 	import type { FilePlayerUrl, Dispatcher, GetPlayerReturn } from './types';
-	import type { FacebookConfig } from './facebook-types';
+	import type { FacebookConfig } from './facebook.types';
 
 	import { onMount, createEventDispatcher } from 'svelte';
 	import { getSDK, randomString } from './utils';
@@ -27,8 +28,8 @@
 	$: propsUrl = handlePropsUrlChange(url);
 
 	const SDK_URL = 'https://connect.facebook.net/en_US/sdk.js';
-	const SDK_GLOBAL = 'FB';
-	const SDK_GLOBAL_READY = 'fbAsyncInit';
+	const SDK_GLOBAL: GlobalSDKFacebookKey = 'FB';
+	const SDK_GLOBAL_READY: GlobalSDKFacebookReady = 'fbAsyncInit';
 	const PLAYER_ID_PREFIX = 'facebook-player-';
 
 	const playerID = config.playerId || `${PLAYER_ID_PREFIX}${randomString()}`;

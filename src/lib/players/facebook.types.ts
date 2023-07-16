@@ -1,5 +1,5 @@
 import type { HTMLAttributes } from 'svelte/elements';
-import type { FacebookInitOptions } from './global-types';
+import type { FacebookInitOptions } from './facebook.global.types';
 
 export type FacebookConfigAttributes = Omit<HTMLAttributes<HTMLDivElement>, `on:${string}`>;
 

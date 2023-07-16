@@ -1,7 +1,8 @@
 <script lang="ts">
-	import type { GlobalSDKMixcloudKey, MixcloudWidget } from './global-types';
+	import type { GlobalSDKMixcloudKey } from './global-types';
+	import type { MixcloudWidget } from './mixcloud.global.types';
 	import type { FilePlayerUrl, Dispatcher, GetPlayerReturn } from './types';
-	import type { MixcloudConfig } from './mixcloud-types';
+	import type { MixcloudConfig } from './mixcloud.types';
 
 	import { onMount, createEventDispatcher } from 'svelte';
 	import { queryString, getSDK } from './utils';

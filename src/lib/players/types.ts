@@ -2,21 +2,20 @@ import type { SvelteComponent } from 'svelte';
 
 import type loadScript from 'load-script';
 import type {
-	YTPlayerOnPlaybackQualityChangeEvent,
 	GlobalSDK,
 	GlobalSDKReady,
 	GlobalSDKType,
-	YTPlayer,
-	TwitchPlayer,
-	NotImplementedPlayer,
-	SoundCloudPlayer,
-	MixcloudWidget,
-	DailyMotionPlayer,
-	FacebookPlayer,
-	VimeoPlayer,
-	PlayerJSPlayer,
-	WistiaPlayer
+	NotImplementedPlayer
 } from './global-types';
+import type { YTPlayerOnPlaybackQualityChangeEvent, YTPlayer } from './youtube.global.types';
+import type { TwitchPlayer } from './twitch.global.types';
+import type { SoundCloudPlayer } from './soundcloud.global.types';
+import type { MixcloudWidget } from './mixcloud.global.types';
+import type { DailyMotionPlayer } from './dailymotion.global.types';
+import type { FacebookPlayer } from './facebook.global.types';
+import type { VimeoPlayer } from './vimeo.global.types';
+import type { PlayerJSPlayer } from './playerjs.global.types';
+import type { WistiaPlayer } from './wistia.global.types';
 
 export type PlayerInstance =
 	| YTPlayer

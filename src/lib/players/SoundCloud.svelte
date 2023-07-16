@@ -1,7 +1,8 @@
 <script lang="ts">
-	import type { GlobalSDKSoundCloudKey, SoundCloudPlayer } from './global-types';
+	import type { GlobalSDKSoundCloudKey } from './global-types';
+	import type { SoundCloudPlayer } from './soundcloud.global.types';
 	import type { FilePlayerUrl, Dispatcher, GetPlayerReturn } from './types';
-	import type { SoundCloudConfig } from './soundcloud-types';
+	import type { SoundCloudConfig } from './soundcloud.types';
 
 	import { onMount, createEventDispatcher } from 'svelte';
 	import { getSDK } from './utils';

@@ -15,9 +15,9 @@ import type {
 	GlobalSDKFacebook,
 	GlobalSDKVimeo,
 	GlobalSDKPlayerJS,
-	GlobalSDKWistia,
-	WistiaWQ
+	GlobalSDKWistia
 } from './global-types';
+import type { WistiaWQ } from './wistia.global.types';
 import type { GetSDKParams, FilePlayerUrl } from './types';
 import loadScript from 'load-script';
 

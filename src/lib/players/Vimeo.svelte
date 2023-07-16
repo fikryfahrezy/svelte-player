@@ -1,7 +1,8 @@
 <script lang="ts">
-	import type { GlobalSDKVimeoKey, VimeoPlayer } from './global-types';
+	import type { GlobalSDKVimeoKey } from './global-types';
+	import type { VimeoPlayer } from './vimeo.global.types';
 	import type { FilePlayerUrl, Dispatcher, GetPlayerReturn } from './types';
-	import type { ViemoConfig } from './vimeo-types';
+	import type { ViemoConfig } from './vimeo.types';
 
 	import { onMount, createEventDispatcher } from 'svelte';
 	import { getSDK } from './utils';

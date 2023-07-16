@@ -1,7 +1,8 @@
 <script lang="ts">
-	import type { GlobalSDKTwitchKey, TwitchPlayer, TwitchPlayerLinkOption } from './global-types';
+	import type { GlobalSDKTwitchKey } from './global-types';
+	import type { TwitchPlayer, TwitchPlayerLinkOption } from './twitch.global.types';
 	import type { FilePlayerUrl, Dispatcher } from './types';
-	import type { TwitchConfig } from './twitch-types';
+	import type { TwitchConfig } from './twitch.types';
 
 	import { onMount, createEventDispatcher } from 'svelte';
 	import { getSDK, parseStartTime, randomString } from './utils';

@@ -5,7 +5,7 @@ import type {
 	YTListPlaylistType,
 	YTPlayerPlayerVars,
 	YTPlayerOptions
-} from './global-types';
+} from './youtube.global.types';
 
 export type ParsePlaylistFn = (url: PlayerUrl) =>
 	| {

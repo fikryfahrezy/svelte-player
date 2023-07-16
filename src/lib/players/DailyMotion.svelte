@@ -1,11 +1,8 @@
 <script lang="ts">
-	import type {
-		GlobalSDKDailyMotionKey,
-		GlobalSDKDailyMotionReady,
-		DailyMotionPlayer
-	} from './global-types';
+	import type { GlobalSDKDailyMotionKey, GlobalSDKDailyMotionReady } from './global-types';
+	import type { DailyMotionPlayer } from './dailymotion.global.types';
 	import type { FilePlayerUrl, Dispatcher, GetPlayerReturn } from './types';
-	import type { DailyMotionConfig } from './dailymotion-types';
+	import type { DailyMotionConfig } from './dailymotion.types';
 
 	import { onMount, createEventDispatcher } from 'svelte';
 	import { MATCH_URL_DAILYMOTION } from './patterns';
