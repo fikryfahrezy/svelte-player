@@ -6,6 +6,24 @@
 		"type": "git",
 		"url": "git+https://github.com/fikryfahrezy/svelte-player.git"
 	},
+	"keywords": [
+		"svelte",
+		"media",
+		"player",
+		"video",
+		"audio",
+		"youtube",
+		"facebook",
+		"twitch",
+		"soundcloud",
+		"streamable",
+		"vimeo",
+		"wistia",
+		"dailymotion",
+		"hls",
+		"dash",
+		"svelte-component"
+	],
 	"scripts": {
 		"dev": "vite dev",
 		"build": "vite build && npm run package",
