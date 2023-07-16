@@ -1,12 +1,8 @@
 import type { SvelteComponent } from 'svelte';
 
 import type loadScript from 'load-script';
-import type {
-	GlobalSDK,
-	GlobalSDKReady,
-	GlobalSDKType,
-	NotImplementedPlayer
-} from './global-types';
+import type { GlobalSDK, GlobalSDKReady, GlobalSDKType } from './global.types';
+import type { NotImplementedPlayer } from './notimplemented.global.types';
 import type { YTPlayerOnPlaybackQualityChangeEvent, YTPlayer } from './youtube.global.types';
 import type { TwitchPlayer } from './twitch.global.types';
 import type { SoundCloudPlayer } from './soundcloud.global.types';

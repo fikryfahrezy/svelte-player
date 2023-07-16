@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { GlobalSDKPlayerJSKey } from './global-types';
+	import type { GlobalSDKPlayerJSKey } from './global.types';
 	import type { PlayerJSPlayer } from './playerjs.global.types';
 	import type { FilePlayerUrl, Dispatcher, GetPlayerReturn } from './types';
 
@@ -7,15 +7,15 @@
 	import { getSDK } from './utils';
 
 	export let url: FilePlayerUrl;
-	export const playing: boolean | undefined = undefined;
+	export const playing: boolean | undefined = undefined; // not used yet, but for suppress the warn from svelte check
 	export let loop: boolean;
-	export const controls: boolean | undefined = undefined;
-	export const volume: number | null = null;
+	export const controls: boolean | undefined = undefined; // not used yet, but for suppress the warn from svelte check
+	export const volume: number | null = null; // not used yet, but for suppress the warn from svelte check
 	export let muted: boolean;
-	export const width: string | undefined = undefined;
-	export const height: string | undefined = undefined;
-	export const playsinline: boolean | undefined = undefined;
-	export const config: Record<string, never> | undefined = undefined;
+	export const width: string | undefined = undefined; // not used yet, but for suppress the warn from svelte check
+	export const height: string | undefined = undefined; // not used yet, but for suppress the warn from svelte check
+	export const playsinline: boolean | undefined = undefined; // not used yet, but for suppress the warn from svelte check
+	export const config: Record<string, never> | undefined = undefined; // not used yet, but for suppress the warn from svelte check
 
 	function handlePropsUrlChange(propsUrl: typeof url) {
 		if (propsUrl instanceof Array) {

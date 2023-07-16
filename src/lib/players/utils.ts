@@ -16,7 +16,7 @@ import type {
 	GlobalSDKVimeo,
 	GlobalSDKPlayerJS,
 	GlobalSDKWistia
-} from './global-types';
+} from './global.types';
 import type { WistiaWQ } from './wistia.global.types';
 import type { GetSDKParams, FilePlayerUrl } from './types';
 import loadScript from 'load-script';
@@ -31,7 +31,7 @@ declare global {
 		fbAsyncInit(): void;
 		playerjs: GlobalSDKPlayerJS;
 		Wistia: GlobalSDKWistia;
-		_wq: WistiaWQ[];
+		_wq: Partial<WistiaWQ>[];
 		Twitch: GlobalSDKTwitch;
 		DM: GlobalSDKDailyMotion;
 		dmAsyncInit(): void;

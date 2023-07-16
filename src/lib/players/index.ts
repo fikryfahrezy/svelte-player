@@ -10,7 +10,8 @@ import {
 	canPlayFacebook,
 	canPlayVimeo,
 	canPlayStreamable,
-	canPlayKaltura
+	canPlayKaltura,
+	canPlayWistia
 } from './patterns';
 import { supportsWebKitPresentationMode } from './utils';
 
@@ -19,6 +20,8 @@ const players = [
 		key: 'youtube',
 		canPlay: canPlayYoutube,
 		canEnablePIP: undefined,
+		loopOnEnded: undefined,
+		forceLoad: undefined,
 		loadComponent: () => {
 			return import('./YouTube.svelte');
 		}
@@ -27,6 +30,8 @@ const players = [
 		key: 'soundcloud',
 		canPlay: canPlaySoundCloud,
 		canEnablePIP: undefined,
+		loopOnEnded: true,
+		forceLoad: undefined,
 		loadComponent: () => {
 			return import('./SoundCloud.svelte');
 		}
@@ -35,6 +40,8 @@ const players = [
 		key: 'vimeo',
 		canPlay: canPlayVimeo,
 		canEnablePIP: undefined,
+		loopOnEnded: undefined,
+		forceLoad: true,
 		loadComponent: () => {
 			return import('./Vimeo.svelte');
 		}
@@ -43,6 +50,8 @@ const players = [
 		key: 'facebook',
 		canPlay: canPlayFacebook,
 		canEnablePIP: undefined,
+		loopOnEnded: true,
+		forceLoad: undefined,
 		loadComponent: () => {
 			return import('./Facebook.svelte');
 		}
@@ -51,14 +60,28 @@ const players = [
 		key: 'streamable',
 		canPlay: canPlayStreamable,
 		canEnablePIP: undefined,
+		loopOnEnded: undefined,
+		forceLoad: undefined,
 		loadComponent: () => {
 			return import('./Streamable.svelte');
+		}
+	},
+	{
+		key: 'wistia',
+		canPlay: canPlayWistia,
+		canEnablePIP: undefined,
+		loopOnEnded: true,
+		forceLoad: undefined,
+		loadComponent: () => {
+			return import('./Wistia.svelte');
 		}
 	},
 	{
 		key: 'twitch',
 		canPlay: canPlayTwitch,
 		canEnablePIP: undefined,
+		loopOnEnded: true,
+		forceLoad: undefined,
 		loadComponent: () => {
 			return import('./Twitch.svelte');
 		}
@@ -67,6 +90,8 @@ const players = [
 		key: 'dailymotion',
 		canPlay: canPlayDailyMotion,
 		canEnablePIP: undefined,
+		loopOnEnded: true,
+		forceLoad: undefined,
 		loadComponent: () => {
 			return import('./DailyMotion.svelte');
 		}
@@ -75,6 +100,8 @@ const players = [
 		key: 'mixcloud',
 		canPlay: canPlayMixcloud,
 		canEnablePIP: undefined,
+		loopOnEnded: true,
+		forceLoad: undefined,
 		loadComponent: () => {
 			return import('./Mixcloud.svelte');
 		}
@@ -83,6 +110,8 @@ const players = [
 		key: 'kaltura',
 		canPlay: canPlayKaltura,
 		canEnablePIP: undefined,
+		loopOnEnded: undefined,
+		forceLoad: undefined,
 		loadComponent: () => {
 			return import('./Kaltura.svelte');
 		}
@@ -90,6 +119,8 @@ const players = [
 	{
 		key: 'file',
 		canPlay: canPlayFile,
+		loopOnEnded: undefined,
+		forceLoad: undefined,
 		canEnablePIP: (url: FilePlayerUrl) => {
 			return (
 				canPlayFile(url) &&
@@ -104,6 +135,8 @@ const players = [
 	},
 	{
 		key: 'not-implemented',
+		loopOnEnded: undefined,
+		forceLoad: undefined,
 		canPlay() {
 			return false;
 		},

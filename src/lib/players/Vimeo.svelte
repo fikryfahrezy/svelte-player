@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { GlobalSDKVimeoKey } from './global-types';
+	import type { GlobalSDKVimeoKey } from './global.types';
 	import type { VimeoPlayer } from './vimeo.global.types';
 	import type { FilePlayerUrl, Dispatcher, GetPlayerReturn } from './types';
 	import type { ViemoConfig } from './vimeo.types';
@@ -7,14 +7,14 @@
 	import { onMount, createEventDispatcher } from 'svelte';
 	import { getSDK } from './utils';
 
-	export const url: FilePlayerUrl | undefined = undefined;
+	export const url: FilePlayerUrl | undefined = undefined; // not used yet, but for suppress the warn from svelte check
 	export let playing: boolean;
 	export let loop: boolean;
 	export let controls: boolean;
-	export const volume: number | null = null;
+	export const volume: number | null = null; // not used yet, but for suppress the warn from svelte check
 	export let muted: boolean;
-	export const width: string | undefined = undefined;
-	export const height: string | undefined = undefined;
+	export const width: string | undefined = undefined; // not used yet, but for suppress the warn from svelte check
+	export const height: string | undefined = undefined; // not used yet, but for suppress the warn from svelte check
 	export let playsinline: boolean;
 	export let config: ViemoConfig;
 

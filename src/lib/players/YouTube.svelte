@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { GlobalSDKYTKey, GlobalSDKYTReady } from './global-types';
+	import type { GlobalSDKYTKey, GlobalSDKYTReady } from './global.types';
 	import type { YTPlayer, YTPlayerOnStateChangeEvent } from './youtube.global.types';
 	import type { FilePlayerUrl, PlayerUrl, Dispatcher, GetPlayerReturn } from './types';
 	import type { ParsePlaylistFn, YouTubeConfig } from './youtube.types';

@@ -60,5 +60,3 @@ export type GlobalSDKReady = 'onYouTubeIframeAPIReady' | 'dmAsyncInit' | 'fbAsyn
 export type GlobalSDKYTReady = Extract<GlobalSDKReady, 'onYouTubeIframeAPIReady'>;
 export type GlobalSDKDailyMotionReady = Extract<GlobalSDKReady, 'dmAsyncInit'>;
 export type GlobalSDKFacebookReady = Extract<GlobalSDKReady, 'fbAsyncInit'>;
-
-export type NotImplementedPlayer = Record<string, never>;

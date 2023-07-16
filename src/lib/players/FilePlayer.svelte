@@ -4,7 +4,7 @@
 		GlobalSDKHLSKey,
 		GlobalSDKFLVKey,
 		GlobalSDKHLSClass
-	} from './global-types';
+	} from './global.types';
 	import type { FilePlayerUrl, Dispatcher, GetPlayerReturn } from './types';
 	import type { FileConfig, ShouldUseAudioParams } from './file.types';
 	import type { DashJSMediaPlayerClass } from './dash.types';

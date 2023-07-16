@@ -151,6 +151,8 @@
 				{pip}
 				{width}
 				{height}
+				loopOnEnded={player.loopOnEnded}
+				forceLoad={player.forceLoad}
 				config={getConfig(url, player.key)}
 				activePlayer={player.loadComponent}
 				bind:this={playerRef}

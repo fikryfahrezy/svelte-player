@@ -1,20 +1,20 @@
 <script lang="ts">
-	import type { NotImplementedPlayer } from './global-types';
+	import type { NotImplementedPlayer } from './notimplemented.global.types';
 	import type { FilePlayerUrl, Dispatcher, GetPlayerReturn } from './types';
 	import type { NotImplementedConfig } from './notimplemented.types';
 
 	import { onMount, createEventDispatcher } from 'svelte';
 
-	export const url: FilePlayerUrl | undefined = undefined;
-	export const playing: boolean | undefined = undefined;
-	export const loop: boolean | undefined = undefined;
-	export const controls: boolean | undefined = undefined;
-	export const volume: number | null = null;
-	export const muted: boolean | undefined = undefined;
-	export const width: string | undefined = undefined;
-	export const height: string | undefined = undefined;
-	export const playsinline: boolean | undefined = undefined;
-	export const config: NotImplementedConfig | undefined = undefined;
+	export const url: FilePlayerUrl | undefined = undefined; // not used yet, but for suppress the warn from svelte check
+	export const playing: boolean | undefined = undefined; // not used yet, but for suppress the warn from svelte check
+	export const loop: boolean | undefined = undefined; // not used yet, but for suppress the warn from svelte check
+	export const controls: boolean | undefined = undefined; // not used yet, but for suppress the warn from svelte check
+	export const volume: number | null = null; // not used yet, but for suppress the warn from svelte check
+	export const muted: boolean | undefined = undefined; // not used yet, but for suppress the warn from svelte check
+	export const width: string | undefined = undefined; // not used yet, but for suppress the warn from svelte check
+	export const height: string | undefined = undefined; // not used yet, but for suppress the warn from svelte check
+	export const playsinline: boolean | undefined = undefined; // not used yet, but for suppress the warn from svelte check
+	export const config: NotImplementedConfig | undefined = undefined; // not used yet, but for suppress the warn from svelte check
 
 	const dispatch = createEventDispatcher<Dispatcher>();
 

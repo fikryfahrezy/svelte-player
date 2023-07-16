@@ -1,10 +1,12 @@
+import type { AnyFunction } from './utility.types';
+
 // https://wistia.com/support/developers/embed-options
 export type WistiaTurnstileRequiredOptions = {
 	topText: string; // fill with '' if want leave blank
 	bottomText: string; // fill with '' if want leave blank
 };
 
-export type WistiaTurnstileVideoIndexUndefinedOptions = {
+export type WistiaTurnstileVideoIndexOptionsPartial = {
 	sectionIndex?: undefined; // this must be used in conjunction with `videoIndex`
 	videoIndex?: undefined; // this must be used in conjunction with `sectionIndex`
 };
@@ -29,7 +31,7 @@ export type WistiaTurnstileOptionalOptions = {
 };
 
 export type WistiaTurnstileOptions = (
-	| WistiaTurnstileVideoIndexUndefinedOptions
+	| WistiaTurnstileVideoIndexOptionsPartial
 	| WistiaTurnstileVideoIndexOptions
 ) &
 	WistiaTurnstileRequiredOptions &
@@ -231,63 +233,350 @@ export type WistiaEmbedOptions = {
 	plugin: WistiaEmbedOptionsPlugin;
 };
 
+export type WistiaBEFOREREMOVEEvent = 'beforeremove';
+export type WistiaBEFOREREPLACEEvent = 'beforereplace';
+export type WistiaBETWEENTIMESEvent = 'betweentimes';
+export type WistiaCANCELFULLSCREENEvent = 'cancelfullscreen';
+export type WistiaCAPTIONSCHANGEEvent = 'captionschange';
+export type WistiaCONVERSIONEvent = 'conversion';
+export type WistiaCROSSTIMEEvent = 'crosstime';
+export type WistiaENDEvent = 'end';
+export type WistiaENTERFULLSCREEEvent = 'enterfullcreen';
+export type WistiaHEIGHTCHANGEEvent = 'heightchange';
+export type WistiaLOOKCHANGEEvent = 'lookchange';
+export type WistiaMUTECHANGEEvent = 'mutechange';
+export type WistiaPAUSEEvent = 'pause';
+export type WistiaPERCENTWATCHEDCHANGEDEvent = 'percentwatchedchanged';
+export type WistiaPLAYEvent = 'play';
+export type WistiaPLAYBACKRATECHANGEEvent = 'playbackratechange';
+export type WistiaSECONDSCHANGEEvent = 'secondschange';
+export type WistiaSEEKEvent = 'seek';
+export type WistiaSILENTPLAYBACKMODECHANGEEvent = 'silentplaybackmodechange';
+export type WistiaTIMECHANGEEvent = 'timechange';
+export type WistiaVOLUMECHANGEEvent = 'volumechnage';
+export type WistiaWIDTHCHANGEEvent = 'widthchange';
+
+export type WistiaNoDataEvent =
+	| WistiaBEFOREREMOVEEvent
+	| WistiaBEFOREREPLACEEvent
+	| WistiaCANCELFULLSCREENEvent
+	| WistiaENDEvent
+	| WistiaENTERFULLSCREEEvent
+	| WistiaHEIGHTCHANGEEvent
+	| WistiaPAUSEEvent
+	| WistiaPLAYEvent
+	| WistiaWIDTHCHANGEEvent;
+
+export type WistiaEvents =
+	| WistiaNoDataEvent
+	| WistiaBETWEENTIMESEvent
+	| WistiaCAPTIONSCHANGEEvent
+	| WistiaCONVERSIONEvent
+	| WistiaCROSSTIMEEvent
+	| WistiaLOOKCHANGEEvent
+	| WistiaMUTECHANGEEvent
+	| WistiaPERCENTWATCHEDCHANGEDEvent
+	| WistiaPLAYBACKRATECHANGEEvent
+	| WistiaSECONDSCHANGEEvent
+	| WistiaSEEKEvent
+	| WistiaSILENTPLAYBACKMODECHANGEEvent
+	| WistiaTIMECHANGEEvent
+	| WistiaVOLUMECHANGEEvent;
+
+export type WistiaWithDataEventCallback<T> = (data: T) => void;
+export type WistiaBETWEENTIMESEventCallback = WistiaWithDataEventCallback<boolean>;
+
+export type WistiaCAPTIONSCHANGEEventCallbackData = {
+	visible: boolean;
+	language: string;
+};
+export type WistiaCAPTIONSCHANGEEventCallback =
+	WistiaWithDataEventCallback<WistiaCAPTIONSCHANGEEventCallbackData>;
+
+export type WistiaCONVERSIONEventCallbackTypeData =
+	| 'pre-roll-email'
+	| 'mid-roll-email'
+	| 'post-roll-email';
+export type WistiaCONVERSIONEventCallback = (
+	type: WistiaCONVERSIONEventCallbackTypeData,
+	email: string,
+	firstName: string,
+	lastName: string
+) => void;
+
+export type WistiaLOOKCHANGEEventCallbackData = {
+	heading: number;
+	pitch: number;
+	fov: number;
+};
+export type WistiaLOOKCHANGEEventCallback =
+	WistiaWithDataEventCallback<WistiaLOOKCHANGEEventCallbackData>;
+
+export type WistiaMUTECHANGEEventCallback = WistiaWithDataEventCallback<boolean>;
+
+export type WistiaPERCENTWATCHEDCHANGEDEventCallback = (
+	percent: number,
+	lastPercent: number
+) => void;
+
+export type WistiaPLAYBACKRATECHANGEEventCallback = WistiaWithDataEventCallback<number>;
+
+export type WistiaSECONDSCHANGEEventCallback = WistiaWithDataEventCallback<number>;
+
+export type WistiaSEEKEventCallback = (currentTime: number, lastTime: number) => void;
+
+export type WistiaSILENTPLAYBACKMODECHANGEEventCallback = WistiaWithDataEventCallback<boolean>;
+
+export type WistiaTIMECHANGEEventCallback = WistiaWithDataEventCallback<number>;
+
+export type WistiaVOLUMECHANGEEventCallback = (volume: number, isMuted: boolean) => void;
+
+export type WistiaAddToPlaylistBeforeHashedIdPosition = {
+	before: string;
+};
+
+export type WistiaAddToPlaylistAfterHashedIdPosition = {
+	after: string;
+};
+
+export type WistiaAddToPlaylistIndexPosition = {
+	index: number;
+};
+
+export type WistiaAddToPlaylistPosition =
+	| WistiaAddToPlaylistBeforeHashedIdPosition
+	| WistiaAddToPlaylistAfterHashedIdPosition
+	| WistiaAddToPlaylistIndexPosition;
+
+export type WistiaHeightOption = {
+	constrain: boolean;
+};
+
+export type WistiaLookOption = WistiaLOOKCHANGEEventCallbackData & {
+	tween: boolean;
+};
+
+export type WistiaPlayerState = 'beforeplay' | 'playing' | 'paused' | 'ended';
+
 // https://wistia.com/support/developers/player-api
 export type WistiaPlayer = {
-	addToPlaylist(): any;
-	aspect(): any;
-	bind(): any;
-	cancelFullscreen(): any;
-	duration(): any;
-	email(): any;
-	email(): any;
-	embedded(): any;
-	eventKey(): any;
-	getSubtitlesScale(): any;
-	hasData(): any;
-	hashedId(): any;
-	height(): any;
-	height(): any;
-	inFullscreen(): any;
-	isMuted(): any;
-	isMuted(): any;
-	look(): any;
-	mute(): any;
-	name(): any;
-	pause(): any;
-	percentWatched(): any;
-	play(): any;
-	playbackRate(): any;
-	ready(): any;
-	remove(): any;
-	replaceWith(): any;
-	requestFullscreen(): any;
-	revoke(): any;
-	secondsWatched(): any;
-	secondsWatchedVector(): any;
-	setSubtitlesScale(): any;
-	state(): any;
-	time(): any;
-	time(): any;
-	unbind(): any;
-	unbind(): any;
-	videoHeight(): any;
-	videoHeight(): any;
-	videoQuality(): any;
-	videoQuality(): any;
-	videoWidth(): any;
-	videoWidth(): any;
-	visitorKey(): any;
-	volume(): any;
-	volume(): any;
-	width(): any;
-	width(): any;
+	addToPlaylist(
+		hashedId: string,
+		options?: Partial<WistiaEmbedOptions>,
+		position?: WistiaAddToPlaylistPosition
+	): void;
+	aspect(): number; // ratio (width/height) originally uploaded video
+	bind(event: WistiaNoDataEvent, callback: AnyFunction): void | AnyFunction;
+	bind(
+		event: WistiaBETWEENTIMESEvent,
+		timeStart: number,
+		timeEnd: number,
+		callback: WistiaBETWEENTIMESEventCallback
+	): void | AnyFunction;
+	bind(
+		event: WistiaCAPTIONSCHANGEEvent,
+		callback: WistiaCAPTIONSCHANGEEventCallback
+	): void | AnyFunction;
+	bind(event: WistiaCONVERSIONEvent, callback: WistiaCONVERSIONEventCallback): void | AnyFunction;
+	bind(event: WistiaCROSSTIMEEvent, time: number, callback: AnyFunction): void | AnyFunction;
+	bind(event: WistiaLOOKCHANGEEvent, callback: WistiaLOOKCHANGEEventCallback): void | AnyFunction;
+	bind(event: WistiaMUTECHANGEEvent, callback: WistiaMUTECHANGEEventCallback): void | AnyFunction;
+	bind(
+		event: WistiaPERCENTWATCHEDCHANGEDEvent,
+		callback: WistiaPERCENTWATCHEDCHANGEDEventCallback
+	): void | AnyFunction;
+	bind(
+		event: WistiaPLAYBACKRATECHANGEEvent,
+		callback: WistiaPLAYBACKRATECHANGEEventCallback
+	): void | AnyFunction;
+	bind(
+		event: WistiaSECONDSCHANGEEvent,
+		callback: WistiaSECONDSCHANGEEventCallback
+	): void | AnyFunction;
+	bind(event: WistiaSEEKEvent, callback: WistiaSEEKEventCallback): void | AnyFunction;
+	bind(
+		event: WistiaSILENTPLAYBACKMODECHANGEEvent,
+		callback: WistiaSILENTPLAYBACKMODECHANGEEventCallback
+	): void | AnyFunction;
+	bind(event: WistiaTIMECHANGEEvent, callback: WistiaTIMECHANGEEventCallback): void | AnyFunction;
+	bind(
+		event: WistiaVOLUMECHANGEEvent,
+		callback: WistiaVOLUMECHANGEEventCallback
+	): void | AnyFunction;
+	cancelFullscreen(): void;
+	duration(): number;
+	email(): string | null; // return null if hasData() is true
+	email(email: string): void;
+	embedded(): boolean;
+	eventKey(): string;
+	getSubtitlesScale(): number;
+	hasData(): boolean;
+	hashedId(): string;
+	height(): number;
+	height(height: number, options?: Partial<WistiaHeightOption>): void;
+	inFullscreen(): boolean;
+	isMuted(): boolean;
+	look(): WistiaLOOKCHANGEEventCallbackData;
+	look(options: Partial<WistiaLookOption>): void;
+	mute(): void;
+	name(): string | null; // return null if hasData() is true
+	pause(): void;
+	percentWatched(): number; // range between 0-1
+	play(): void;
+	playbackRate(rate: number /* 0 to infinity */): void;
+	ready(): boolean;
+	remove(): void;
+	replaceWith(hasedId: string, options?: Partial<SpecialEmbedLinkOptions>): void;
+	requestFullscreen(): void;
+	secondsWatched(): number;
+	secondsWatchedVector(): number[];
+	setSubtitlesScale(scale: number): void;
+	state(): WistiaPlayerState;
+	time(): number; // in seconds
+	time(seconds: number): void;
+	unbind(event: WistiaEvents, callback: AnyFunction): void;
+	unbind(
+		event: WistiaBETWEENTIMESEvent,
+		timeStart: number,
+		timeEnd: number,
+		callback: WistiaBETWEENTIMESEventCallback
+	): void;
+	unbind(event: WistiaCROSSTIMEEvent, time: number, callback: AnyFunction): void;
+	unmute(): void;
+	videoHeight(): number; // in pixels
+	videoHeight(pixels: number, options?: Partial<WistiaHeightOption>): void;
+	videoQuality(): WistiaQualityOption;
+	videoQuality(quality: WistiaQualityOption): void;
+	videoWidth(): number; // in pixels
+	videoWidth(pixels: number, options?: Partial<WistiaHeightOption>): void;
+	visitorKey(): string;
+	volume(): number; // range between 0-1
+	volume(volume: number /* range between 0-1 */): void;
+	width(): number; // in pixels
+	width(pixels: number): void;
 };
+
+// TODO: the types are not defined in API reference page
+// these `unknown` typs just placehlder
+export type WistiaPlayerControllVideo = Record<string, unknown> & {
+	requestControls(requesterName: unknown): unknown;
+	releaseControls(requesterName: unknown): unknown;
+	enterInputContext(context: string): void;
+	exitInputContext(context: string): void;
+	getInputContext(): string;
+	setControlEnabled(handle: string, enabled: boolean): void;
+	whenControlMounted: Promise<string>;
+	getControl(handle: string): unknown;
+};
+
+export type WistiaPlayerControlType =
+	| 'control-bar-left'
+	| 'control-bar-right'
+	| 'background'
+	| 'foreground'
+	| 'above-control-bar'
+	| 'right-flyout'
+	| 'left-flyout';
+
+export type WistiaPlayerControlClassRequiredProperties = {
+	handle: string;
+	type: WistiaPlayerControlType;
+};
+
+export type WistiaPlayerControlClassOptionalProperties = {
+	isVideoChrome: boolean;
+	sortValue: number;
+	width: string | number;
+};
+
+export type WistiaPlayerControlClassOptionalFunctions = {
+	shouldMount(video: WistiaPlayerControllVideo): boolean; // TODO: fix `any` type
+};
+
+export type WistiaPlayerControlClassProperties = WistiaPlayerControlClassRequiredProperties &
+	Partial<WistiaPlayerControlClassOptionalProperties>;
+export type WistiaPlayerControlClassFunctions = Partial<WistiaPlayerControlClassOptionalFunctions>;
+
+export type WistiaPlayerControlTypeControlPropsPartial = {
+	width?: undefined;
+	height?: undefined;
+	left?: undefined;
+	top?: undefined;
+};
+
+export type WistiaPlayerControlTypeControlProps = {
+	width: number;
+	height: number;
+	left: number;
+	top: number;
+};
+
+// TODO: the values type is not defined in API reference page
+// these values type may be incorrect
+export type WistiaPlayerControlSharedProps = {
+	chromeless: boolean;
+	controlBarHeight: number;
+	controlsAreVisible: boolean;
+	playerLanguage: string;
+	scale: number;
+	videoHeight: number;
+	videoWidth: number;
+};
+
+export type WistiaPlayerControlDefaultProps = (
+	| WistiaPlayerControlTypeControlPropsPartial
+	| WistiaPlayerControlTypeControlProps
+) &
+	WistiaPlayerControlSharedProps &
+	Record<string, unknown>;
+
+export type WistiaPlayerControlCustomInstanceOptionalProperties = {
+	buttonElement: HTMLElement;
+	mounted: Promise<unknown>;
+	props: WistiaPlayerControlDefaultProps;
+};
+
+export type WistiaPlayerControlCustomInstanceProperties =
+	Partial<WistiaPlayerControlCustomInstanceOptionalProperties>;
+
+export type WistiaPlayerControlCustomInstanceOptionalFunctions = {
+	mount(controlRoot: HTMLElement): void;
+	buttonMount(buttonRoot: HTMLElement): void;
+	mountDialog(dialogRoot: HTMLElement): void;
+	onControlPropsUpdated(prevProps: WistiaPlayerControlDefaultProps): void;
+	destroy(): void;
+	onClickButton(event: Event): void; // TODO: fix `Event` type
+	setButtonLabel(label: string): void;
+	controlDialogWillOpen(): void;
+	controlDialogOpened(): void;
+	controlDialogWillClose(): void;
+	controlDialogClosed(): void;
+};
+
+export type WistiaPlayerControlCustomInstanceFunctions =
+	Partial<WistiaPlayerControlCustomInstanceOptionalFunctions>;
+
+export type WistiaPlayerControlProperties = WistiaPlayerControlClassProperties &
+	WistiaPlayerControlCustomInstanceProperties;
+
+export type WistiaPlayerControlFunctions = WistiaPlayerControlClassFunctions &
+	WistiaPlayerControlCustomInstanceFunctions;
+
+export interface WistiaPlayerControl
+	extends WistiaPlayerControlProperties,
+		WistiaPlayerControlFunctions {}
 
 export type WistiaWQ = {
 	id: string;
-	options?: Partial<WistiaEmbedOptions>;
-	onReady?(video: WistiaPlayer): void;
-	onHasData?(video: WistiaPlayer): void;
+	options: Partial<WistiaEmbedOptions>;
+	onReady(video: WistiaPlayer): void;
+	onHasData(video: WistiaPlayer): void;
+	// this method stated in doc, but don't find the reference
+	// so not sure if the types correct or not
+	onEmbedded(video: WistiaPlayer): void;
+	revoke: WistiaWQ;
 };
 
-export type Wistia = Record<string, never>;
+export type Wistia = {
+	defineControl(control: WistiaPlayerControl): void;
+};

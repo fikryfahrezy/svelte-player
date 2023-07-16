@@ -29,7 +29,7 @@
 	export let progressFrequency: number | undefined = undefined;
 
 	export let loopOnEnded: boolean | undefined = undefined;
-	// export let forceLoad: boolean | undefined = undefined;
+	export let forceLoad: boolean | undefined = undefined;
 	export let activePlayer: Player['loadComponent'];
 
 	let mounted = false;
@@ -69,7 +69,7 @@
 
 	function handlePropsUrlChange(propsUrl: typeof url) {
 		if (player !== undefined && isReady) {
-			if (isLoading && !isMediaStream(propsUrl)) {
+			if (isLoading && !forceLoad && !isMediaStream(propsUrl)) {
 				console.warn(
 					`SveltePlayer: the attempt to load ${propsUrl} is being deferred until the player has loaded`
 				);

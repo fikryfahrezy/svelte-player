@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { GlobalSDKDailyMotionKey, GlobalSDKDailyMotionReady } from './global-types';
+	import type { GlobalSDKDailyMotionKey, GlobalSDKDailyMotionReady } from './global.types';
 	import type { DailyMotionPlayer } from './dailymotion.global.types';
 	import type { FilePlayerUrl, Dispatcher, GetPlayerReturn } from './types';
 	import type { DailyMotionConfig } from './dailymotion.types';
@@ -8,15 +8,15 @@
 	import { MATCH_URL_DAILYMOTION } from './patterns';
 	import { getSDK, parseStartTime } from './utils';
 
-	export const url: FilePlayerUrl | undefined = undefined;
+	export const url: FilePlayerUrl | undefined = undefined; // not used yet, but for suppress the warn from svelte check
 	export let playing: boolean;
-	export const loop: boolean | undefined = undefined;
+	export const loop: boolean | undefined = undefined; // not used yet, but for suppress the warn from svelte check
 	export let controls: boolean;
-	export const volume: number | null = null;
+	export const volume: number | null = null; // not used yet, but for suppress the warn from svelte check
 	export let muted: boolean;
-	export const width: string | undefined = undefined;
-	export const height: string | undefined = undefined;
-	export const playsinline: boolean | undefined = undefined;
+	export const width: string | undefined = undefined; // not used yet, but for suppress the warn from svelte check
+	export const height: string | undefined = undefined; // not used yet, but for suppress the warn from svelte check
+	export const playsinline: boolean | undefined = undefined; // not used yet, but for suppress the warn from svelte check
 	export let config: DailyMotionConfig;
 
 	const SDK_URL = 'https://api.dmcdn.net/all.js';

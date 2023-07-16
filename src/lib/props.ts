@@ -60,6 +60,11 @@ export const defaultConfig: Config = {
 		flvVersion: '1.5.0',
 		forceDisableHls: false
 	},
+	wistia: {
+		options: {},
+		playerId: null,
+		customControls: null
+	},
 	mixcloud: {
 		options: {
 			hide_cover: true

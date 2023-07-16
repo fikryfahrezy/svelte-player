@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { GlobalSDKTwitchKey } from './global-types';
+	import type { GlobalSDKTwitchKey } from './global.types';
 	import type { TwitchPlayer, TwitchPlayerLinkOption } from './twitch.global.types';
 	import type { FilePlayerUrl, Dispatcher } from './types';
 	import type { TwitchConfig } from './twitch.types';
@@ -8,14 +8,14 @@
 	import { getSDK, parseStartTime, randomString } from './utils';
 	import { MATCH_URL_TWITCH_CHANNEL, MATCH_URL_TWITCH_VIDEO } from './patterns';
 
-	export const url: FilePlayerUrl | undefined = undefined;
+	export const url: FilePlayerUrl | undefined = undefined; // not used yet, but for suppress the warn from svelte check
 	export let playing: boolean;
-	export const loop: boolean | undefined = undefined;
+	export const loop: boolean | undefined = undefined; // not used yet, but for suppress the warn from svelte check
 	export let controls: boolean;
 	export const volume: number | null = null; // not used yet, but for suppress the warn from svelte check
 	export let muted: boolean;
-	export const width: string | undefined = undefined;
-	export const height: string | undefined = undefined;
+	export const width: string | undefined = undefined; // not used yet, but for suppress the warn from svelte check
+	export const height: string | undefined = undefined; // not used yet, but for suppress the warn from svelte check
 	export let playsinline: boolean;
 	export let config: TwitchConfig;
 
@@ -23,7 +23,7 @@
 	const SDK_GLOBAL: GlobalSDKTwitchKey = 'Twitch';
 	const PLAYER_ID_PREFIX = 'twitch-player-';
 
-	const playerID = config.playerId || `${PLAYER_ID_PREFIX}${randomString()}`;
+	$: playerID = config.playerId || `${PLAYER_ID_PREFIX}${randomString()}`;
 
 	const dispatch = createEventDispatcher<Dispatcher>();
 
