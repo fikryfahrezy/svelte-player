@@ -81,3 +81,5 @@ export type Facebook = {
 	Event: FacebookEvent;
 	XFBML: FacebookXFBML;
 };
+
+export type FacebookSDKReady = 'fbAsyncInit';

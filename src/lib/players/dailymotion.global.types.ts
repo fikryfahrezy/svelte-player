@@ -55,3 +55,5 @@ export interface DailyMotionPlayerConstructor {
 export type DailyMotion = {
 	player: DailyMotionPlayerConstructor;
 };
+
+export type DailyMotionSDKReady = 'dmAsyncInit' | 'fbAsyncInit';

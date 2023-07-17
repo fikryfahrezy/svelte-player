@@ -205,3 +205,5 @@ export type YT = {
 	subscribe: AnyFunction; // TODO: to impelment corrent type
 	unsubscribe: AnyFunction; // TODO: to impelment corrent type
 };
+
+export type YTSDKReady = 'onYouTubeIframeAPIReady';

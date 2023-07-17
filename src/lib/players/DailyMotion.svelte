@@ -1,6 +1,6 @@
 <script lang="ts">
-	import type { GlobalSDKDailyMotionKey, GlobalSDKDailyMotionReady } from './global.types';
-	import type { DailyMotionPlayer } from './dailymotion.global.types';
+	import type { GlobalSDKDailyMotionKey } from './global.types';
+	import type { DailyMotionPlayer, DailyMotionSDKReady } from './dailymotion.global.types';
 	import type { FilePlayerUrl, Dispatcher, GetPlayerReturn } from './types';
 	import type { DailyMotionConfig } from './dailymotion.types';
 
@@ -21,7 +21,7 @@
 
 	const SDK_URL = 'https://api.dmcdn.net/all.js';
 	const SDK_GLOBAL: GlobalSDKDailyMotionKey = 'DM';
-	const SDK_GLOBAL_READY: GlobalSDKDailyMotionReady = 'dmAsyncInit';
+	const SDK_GLOBAL_READY: DailyMotionSDKReady = 'dmAsyncInit';
 
 	const dispatch = createEventDispatcher<Dispatcher>();
 

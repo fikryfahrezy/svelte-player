@@ -1,6 +1,6 @@
 <script lang="ts">
-	import type { GlobalSDKYTKey, GlobalSDKYTReady } from './global.types';
-	import type { YTPlayer, YTPlayerOnStateChangeEvent } from './youtube.global.types';
+	import type { GlobalSDKYTKey } from './global.types';
+	import type { YTPlayer, YTPlayerOnStateChangeEvent, YTSDKReady } from './youtube.global.types';
 	import type { FilePlayerUrl, PlayerUrl, Dispatcher, GetPlayerReturn } from './types';
 	import type { ParsePlaylistFn, YouTubeConfig } from './youtube.types';
 
@@ -25,7 +25,7 @@
 
 	const SDK_URL = 'https://www.youtube.com/iframe_api';
 	const SDK_GLOBAL: GlobalSDKYTKey = 'YT';
-	const SDK_GLOBAL_READY: GlobalSDKYTReady = 'onYouTubeIframeAPIReady';
+	const SDK_GLOBAL_READY: YTSDKReady = 'onYouTubeIframeAPIReady';
 	const MATCH_PLAYLIST = /[?&](?:list|channel)=([a-zA-Z0-9_-]+)/;
 	const MATCH_USER_UPLOADS = /user\/([a-zA-Z0-9_-]+)\/?/;
 

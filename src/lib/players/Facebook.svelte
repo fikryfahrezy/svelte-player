@@ -1,6 +1,6 @@
 <script lang="ts">
-	import type { GlobalSDKFacebookKey, GlobalSDKFacebookReady } from './global.types';
-	import type { FacebookPlayer } from './facebook.global.types';
+	import type { GlobalSDKFacebookKey } from './global.types';
+	import type { FacebookPlayer, FacebookSDKReady } from './facebook.global.types';
 	import type { FilePlayerUrl, Dispatcher, GetPlayerReturn } from './types';
 	import type { FacebookConfig } from './facebook.types';
 
@@ -29,7 +29,7 @@
 
 	const SDK_URL = 'https://connect.facebook.net/en_US/sdk.js';
 	const SDK_GLOBAL: GlobalSDKFacebookKey = 'FB';
-	const SDK_GLOBAL_READY: GlobalSDKFacebookReady = 'fbAsyncInit';
+	const SDK_GLOBAL_READY: FacebookSDKReady = 'fbAsyncInit';
 	const PLAYER_ID_PREFIX = 'facebook-player-';
 
 	$: playerID = config.playerId || `${PLAYER_ID_PREFIX}${randomString()}`;

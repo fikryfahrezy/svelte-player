@@ -1,3 +1,4 @@
 {
+	"*.{html,json,yml,yaml,md,mdx}": "prettier --write",
 	"*.{ts,svelte}": ["prettier --write", "eslint"]
 }

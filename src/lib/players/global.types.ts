@@ -1,9 +1,9 @@
-import type { YT } from './youtube.global.types';
+import type { YT, YTSDKReady } from './youtube.global.types';
 import type { Twitch } from './twitch.global.types';
 import type { SoundCloud } from './soundcloud.global.types';
 import type { MixcloudPlayer } from './mixcloud.global.types';
-import type { DailyMotion } from './dailymotion.global.types';
-import type { Facebook } from './facebook.global.types';
+import type { DailyMotion, DailyMotionSDKReady } from './dailymotion.global.types';
+import type { Facebook, FacebookSDKReady } from './facebook.global.types';
 import type { Vimeo } from './vimeo.global.types';
 import type { PlayerJS } from './playerjs.global.types';
 import type { Wistia } from './wistia.global.types';
@@ -55,8 +55,8 @@ export type GlobalSDKHLS = Extract<GlobalSDKValue, HlsJS>;
 export type GlobalSDKDASH = Extract<GlobalSDKValue, DashJS>;
 export type GlobalSDKFLV = Extract<GlobalSDKValue, FlvJS>;
 
-export type GlobalSDKReady = 'onYouTubeIframeAPIReady' | 'dmAsyncInit' | 'fbAsyncInit';
+export type GlobalSDKReady = YTSDKReady | DailyMotionSDKReady | FacebookSDKReady;
 
-export type GlobalSDKYTReady = Extract<GlobalSDKReady, 'onYouTubeIframeAPIReady'>;
-export type GlobalSDKDailyMotionReady = Extract<GlobalSDKReady, 'dmAsyncInit'>;
-export type GlobalSDKFacebookReady = Extract<GlobalSDKReady, 'fbAsyncInit'>;
+export type GlobalSDKYTReady = Extract<GlobalSDKReady, YTSDKReady>;
+export type GlobalSDKDailyMotionReady = Extract<GlobalSDKReady, DailyMotionSDKReady>;
+export type GlobalSDKFacebookReady = Extract<GlobalSDKReady, FacebookSDKReady>;
