@@ -11,7 +11,8 @@ import {
 	canPlayVimeo,
 	canPlayStreamable,
 	canPlayKaltura,
-	canPlayWistia
+	canPlayWistia,
+	canPlayVidyard
 } from './patterns';
 import { supportsWebKitPresentationMode } from './utils';
 
@@ -104,6 +105,16 @@ const players = [
 		forceLoad: undefined,
 		loadComponent: () => {
 			return import('./Mixcloud.svelte');
+		}
+	},
+	{
+		key: 'vidyard',
+		canPlay: canPlayVidyard,
+		canEnablePIP: undefined,
+		loopOnEnded: undefined,
+		forceLoad: undefined,
+		loadComponent: () => {
+			return import('./Vidyard.svelte');
 		}
 	},
 	{

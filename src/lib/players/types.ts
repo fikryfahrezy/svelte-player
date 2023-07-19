@@ -12,6 +12,7 @@ import type { FacebookPlayer } from './facebook.global.types';
 import type { VimeoPlayer } from './vimeo.global.types';
 import type { PlayerJSPlayer } from './playerjs.global.types';
 import type { WistiaPlayer } from './wistia.global.types';
+import type { VidyardPlayer } from './vidyard.global.types';
 
 export type PlayerInstance =
 	| YTPlayer
@@ -25,7 +26,8 @@ export type PlayerInstance =
 	| FacebookPlayer
 	| VimeoPlayer
 	| PlayerJSPlayer
-	| WistiaPlayer;
+	| WistiaPlayer
+	| VidyardPlayer;
 
 export type SDKBase<T extends keyof GlobalSDK> = {
 	url: string;
@@ -102,7 +104,7 @@ export type Dispatcher = {
 	pause: undefined | Event;
 	buffer: undefined | Event;
 	bufferEnd: undefined | Event;
-	seek: number;
+	seek: number | [number, number];
 	ended: undefined | Event;
 	error: OnErrorProps;
 	clickPreview: unknown; // TODO: to implement corrent type

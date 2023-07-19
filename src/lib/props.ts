@@ -74,5 +74,8 @@ export const defaultConfig: Config = {
 		options: {},
 		playerId: null
 	},
+	vidyard: {
+		options: {}
+	},
 	'not-implemented': {}
 };

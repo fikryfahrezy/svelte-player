@@ -15,7 +15,8 @@ import type {
 	GlobalSDKFacebook,
 	GlobalSDKVimeo,
 	GlobalSDKPlayerJS,
-	GlobalSDKWistia
+	GlobalSDKWistia,
+	GlobalSDKVidyard
 } from './global.types';
 import type { WistiaWQ } from './wistia.global.types';
 import type { GetSDKParams, FilePlayerUrl } from './types';
@@ -36,6 +37,8 @@ declare global {
 		DM: GlobalSDKDailyMotion;
 		dmAsyncInit(): void;
 		Mixcloud: GlobalSDKMixcloud;
+		VidyardV4: GlobalSDKVidyard;
+		onVidyardAPI(): void;
 		Hls: GlobalSDKHLS;
 		dashjs: GlobalSDKDASH;
 		flvjs: GlobalSDKFLV;

@@ -118,7 +118,7 @@ export type VidyardPlayerAddEventRequiredOptions = {
 export type VidyardPlayerAddEventOptions = VidyardPlayerAddEventRequiredOptions &
 	Partial<VidyardPlayerAddEventOptionalOptions>;
 
-export type VidyardPlayerSetPlaybackSpeedValues = 2 | 1.5 | 1.25 | 1 | 0.5;
+export type VidyardPlayerSetPlaybackSpeedValues = number; // 2 | 1.5 | 1.25 | 1 | 0.5;
 
 export type VidyardPlayer = {
 	play(): void;
@@ -149,6 +149,7 @@ export type VidyardPlayer = {
 	on(event: VidyardPlayerTIMEUPDATEEvent, callback: VidyardPlayerTIMEUPDATEEventCallback): void;
 	on(event: VidyardPlayerVOLUMECHANGEEvent, callback: VidyardPlayerVOLUMECHANGEEventCallback): void;
 	on(event: VidyardPlayerMETADATAEvent, callback: VidyardPlayerMETADATAEventCallback): void;
+	metadata: VidyardPlayerMetadata | null;
 };
 
 export type VidyardGDPRHasConsentOnReadyCallback = (consent: boolean) => void;
@@ -175,6 +176,7 @@ export type VidyardAPIRenderPlayerOptionalOptions = {
 	type: string;
 	aspect: string;
 	vydata: string;
+	autoplay: number; // can't find on API reference page, but there is
 };
 
 export type VidyardAPIRenderPlayerRequiredOptions = {
@@ -194,8 +196,8 @@ export type VidyardAPI = {
 	renderDOMPlayers(container?: HTMLElement): void;
 	renderPlayer(options: HTMLElement | VidyardAPIRenderPlayerOptions): void;
 	destroyPlayer(player: VidyardPlayer): void;
+	getPlayerMetadata(): Promise<VidyardPlayerMetadata>; // can't find on API reference page, but there is
 	players: VidyardPlayer[];
-	metadata: VidyardPlayerMetadata;
 };
 
 export type Vidyard = {

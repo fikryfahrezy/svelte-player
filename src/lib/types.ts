@@ -7,6 +7,7 @@ import type { WistiaConfig } from './players/wistia.types';
 import type { TwitchConfig } from './players/twitch.types';
 import type { DailyMotionConfig } from './players/dailymotion.types';
 import type { MixcloudConfig } from './players/mixcloud.types';
+import type { VidyardConfig } from './players/vidyard.types';
 import type { FileConfig } from './players/file.types';
 import type { NotImplementedConfig } from './players/notimplemented.types';
 
@@ -54,6 +55,7 @@ export type Config = {
 	twitch: TwitchConfig;
 	dailymotion: DailyMotionConfig;
 	mixcloud: MixcloudConfig;
+	vidyard: VidyardConfig;
 	kaltura: undefined;
 	file: FileConfig;
 	'not-implemented': NotImplementedConfig;
