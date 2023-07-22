@@ -1,4 +1,5 @@
 import type { YTPlayerState } from '../../lib/players/youtube.global.types';
+import type { YouTubeConfig } from '../../lib/players/youtube.types';
 
 import { test, describe, beforeAll, afterAll, vi, expect } from 'vitest';
 import { render } from '@testing-library/svelte';
@@ -8,7 +9,7 @@ import * as utils from '../../lib/players/utils';
 import YouTube from '../../lib/players/YouTube.svelte';
 
 const TEST_URL = 'https://www.youtube.com/watch?v=oUFJJNQGwhk';
-const TEST_CONFIG = {
+const TEST_CONFIG: YouTubeConfig = {
 	playerVars: {},
 	embedOptions: {},
 	onUnstarted: utils.noop

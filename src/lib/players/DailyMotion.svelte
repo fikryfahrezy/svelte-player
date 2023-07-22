@@ -6,7 +6,7 @@
 
 	import { onMount, createEventDispatcher } from 'svelte';
 	import { MATCH_URL_DAILYMOTION } from './patterns';
-	import { getSDK, parseStartTime } from './utils';
+	import { getSDK, parseStartTime, callPlayer } from './utils';
 
 	export let playing: boolean;
 	export let controls: boolean;
@@ -103,14 +103,16 @@
 	}
 
 	export function play() {
-		if (player !== undefined) {
-			return player.play();
+		const calledPlayer = callPlayer(player);
+		if (calledPlayer !== null) {
+			return calledPlayer('play');
 		}
 	}
 
 	export function pause() {
-		if (player !== undefined) {
-			return player.pause();
+		const calledPlayer = callPlayer(player);
+		if (calledPlayer !== null) {
+			return calledPlayer('pause');
 		}
 	}
 
@@ -119,26 +121,30 @@
 	}
 
 	export function seekTo(seconds: number, _?: boolean): void {
-		if (player !== undefined) {
-			return player.seek(seconds);
+		const calledPlayer = callPlayer(player);
+		if (calledPlayer !== null) {
+			return calledPlayer('seek', seconds);
 		}
 	}
 
 	export function setVolume(fraction: number): void {
-		if (player !== undefined) {
-			return player.setVolume(fraction);
+		const calledPlayer = callPlayer(player);
+		if (calledPlayer !== null) {
+			return calledPlayer('setVolume', fraction);
 		}
 	}
 
 	export function mute() {
-		if (player !== undefined) {
-			return player.setMuted(true);
+		const calledPlayer = callPlayer(player);
+		if (calledPlayer !== null) {
+			return calledPlayer('setMuted', true);
 		}
 	}
 
 	export function unmute() {
-		if (player !== undefined) {
-			return player.setMuted(false);
+		const calledPlayer = callPlayer(player);
+		if (calledPlayer !== null) {
+			return calledPlayer('setMuted', false);
 		}
 	}
 

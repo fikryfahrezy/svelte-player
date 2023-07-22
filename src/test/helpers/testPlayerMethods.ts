@@ -8,7 +8,7 @@ import * as utils from '../../lib/players/utils';
 type Constructor<T> = new (...args: any[]) => T;
 
 type Methods = {
-	[k in keyof Partial<Omit<PlayerMedia, 'load'>>]: string;
+	[k in keyof Partial<Omit<PlayerMedia, 'load'>>]: string | null;
 };
 
 export default function (
