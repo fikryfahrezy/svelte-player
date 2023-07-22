@@ -1,21 +1,16 @@
 <script lang="ts">
 	import type { GlobalSDKYTKey } from './global.types';
 	import type { YTPlayer, YTPlayerOnStateChangeEvent, YTSDKReady } from './youtube.global.types';
-	import type { FilePlayerUrl, PlayerUrl, Dispatcher, GetPlayerReturn } from './types';
+	import type { PlayerUrl, Dispatcher } from './types';
 	import type { ParsePlaylistFn, YouTubeConfig } from './youtube.types';
 
 	import { createEventDispatcher, onMount } from 'svelte';
 	import { MATCH_URL_YOUTUBE } from './patterns';
-	import { getSDK, parseEndTime, parseStartTime } from './utils';
+	import { getSDK, parseEndTime, parseStartTime, callPlayer } from './utils';
 
-	export const url: FilePlayerUrl | undefined = undefined; // not used yet, but for suppress the warn from svelte check
 	export let playing: boolean;
 	export let loop: boolean;
 	export let controls: boolean;
-	export const volume: number | null = null; // not used yet, but for suppress the warn from svelte check
-	export const muted: boolean | undefined = undefined; // not used yet, but for suppress the warn from svelte check
-	export const width: string | undefined = undefined; // not used yet, but for suppress the warn from svelte check
-	export const height: string | undefined = undefined; // not used yet, but for suppress the warn from svelte check
 	export let playsinline: boolean;
 	export let config: YouTubeConfig;
 
@@ -31,7 +26,6 @@
 
 	const dispatch = createEventDispatcher<Dispatcher>();
 
-	let isPlayerReady = false;
 	let container: HTMLDivElement | undefined;
 	let player: YTPlayer | undefined;
 
@@ -88,7 +82,7 @@
 		return {};
 	}
 
-	function onStateChange(event: YTPlayerOnStateChangeEvent) {
+	export function onStateChange(event: YTPlayerOnStateChangeEvent) {
 		const { data } = event;
 
 		const { UNSTARTED, PLAYING, PAUSED, BUFFERING, ENDED, CUED } = window[SDK_GLOBAL].PlayerState;
@@ -108,11 +102,11 @@
 		if (data === ENDED) {
 			const isPlaylist = !!player?.getPlaylist();
 			// Only loop manually if not playing a playlist
-			if (player !== undefined && isPlayerReady && loop && !isPlaylist) {
+			if (loop && !isPlaylist) {
 				if (playerVars?.start) {
-					player.seekTo(playerVars.start);
+					seekTo(playerVars.start);
 				} else {
-					player.playVideo();
+					play();
 				}
 			}
 			dispatch('ended');
@@ -133,13 +127,13 @@
 				url instanceof Array
 			) {
 				const { list, listType } = parsePlaylist(url);
-				if (player !== undefined && isPlayerReady && list !== undefined && listType !== undefined) {
+				if (player !== undefined && list !== undefined && listType !== undefined) {
 					player.loadPlaylist({ list, listType });
 					return;
 				}
 			}
 
-			if (player !== undefined && isPlayerReady) {
+			if (player !== undefined) {
 				player.cueVideoById({
 					videoId: id,
 					startSeconds: parseStartTime(url) || playerVars?.start,
@@ -176,8 +170,7 @@
 					},
 					events: {
 						onReady: () => {
-							isPlayerReady = true;
-							if (player !== undefined && isPlayerReady && loop) {
+							if (player !== undefined && loop) {
 								player.setLoop(true);
 							}
 							dispatch('ready');
@@ -213,30 +206,34 @@
 	}
 
 	export function play(): void {
-		if (player !== undefined && isPlayerReady) {
-			player.playVideo();
+		const calledPlayer = callPlayer(player);
+		if (calledPlayer !== null) {
+			calledPlayer('playVideo');
 		}
 	}
 
 	export function pause(): void {
-		if (player !== undefined && isPlayerReady) {
-			player.pauseVideo();
+		const calledPlayer = callPlayer(player);
+		if (calledPlayer !== null) {
+			calledPlayer('pauseVideo');
 		}
 	}
 
 	export function stop(): void {
-		if (player !== undefined && isPlayerReady) {
-			const youtubeIframe = player.getIframe();
+		const calledPlayer = callPlayer(player);
+		if (calledPlayer !== null) {
+			const youtubeIframe = calledPlayer('getIframe');
 			if (youtubeIframe !== null && !document.body.contains(youtubeIframe)) {
 				return;
 			}
-			player.stopVideo();
+			calledPlayer('stopVideo');
 		}
 	}
 
 	export function seekTo(amount: number, keepPlaying?: boolean): void {
-		if (player !== undefined && isPlayerReady) {
-			player.seekTo(amount);
+		const calledPlayer = callPlayer(player);
+		if (calledPlayer !== null) {
+			calledPlayer('seekTo', amount);
 			if (!keepPlaying && !playing) {
 				pause();
 			}
@@ -244,57 +241,65 @@
 	}
 
 	export function setVolume(fraction: number): void {
-		if (player !== undefined && isPlayerReady) {
-			player.setVolume(fraction * 100);
+		const calledPlayer = callPlayer(player);
+		if (calledPlayer !== null) {
+			calledPlayer('setVolume', fraction * 100);
 		}
 	}
 
 	export function mute(): void {
-		if (player !== undefined && isPlayerReady) {
-			player.mute();
+		const calledPlayer = callPlayer(player);
+		if (calledPlayer !== null) {
+			calledPlayer('mute');
 		}
 	}
 
 	export function unmute(): void {
-		if (player !== undefined && isPlayerReady) {
-			player.unMute();
+		const calledPlayer = callPlayer(player);
+		if (calledPlayer !== null) {
+			calledPlayer('unMute');
 		}
 	}
 
 	export function setPlaybackRate(rate: number): void {
-		if (player !== undefined && isPlayerReady) {
-			player.setPlaybackRate(rate);
+		const calledPlayer = callPlayer(player);
+		if (calledPlayer !== null) {
+			calledPlayer('setPlaybackRate', rate);
 		}
 	}
 
 	export function setLoop(loop: boolean): void {
-		if (player !== undefined && isPlayerReady) {
-			player.setLoop(loop);
+		const calledPlayer = callPlayer(player);
+		if (calledPlayer !== null) {
+			calledPlayer('setLoop', loop);
 		}
 	}
 
 	export function getDuration(): number {
-		if (player !== undefined && isPlayerReady) {
-			return player.getDuration();
+		const calledPlayer = callPlayer(player);
+		if (calledPlayer !== null) {
+			return calledPlayer('getDuration');
 		}
 		return 0;
 	}
 
 	export function getCurrentTime(): number {
-		if (player !== undefined && isPlayerReady) {
-			return player.getCurrentTime();
+		const calledPlayer = callPlayer(player);
+		if (calledPlayer !== null) {
+			return calledPlayer('getCurrentTime');
 		}
 		return 0;
 	}
 	export function getSecondsLoaded(): number {
 		let loadedFraction = 0;
-		if (player !== undefined && isPlayerReady) {
-			loadedFraction = player.getVideoLoadedFraction();
+		const calledPlayer = callPlayer(player);
+		if (calledPlayer !== null) {
+			loadedFraction = calledPlayer('getVideoLoadedFraction');
 		}
 		return loadedFraction * getDuration();
 	}
 
-	export function getPlayer(): GetPlayerReturn | null {
+	export function getPlayer(): YTPlayer | null {
 		if (player !== undefined) {
 			return player;
 		}

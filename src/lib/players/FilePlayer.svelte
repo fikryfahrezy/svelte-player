@@ -18,11 +18,10 @@
 	export let playing: boolean;
 	export let loop: boolean;
 	export let controls: boolean;
-	export const volume: number | null = null; // not used yet, but for suppress the warn from svelte check
 	export let muted: boolean;
 	export let width: string;
 	export let height: string;
-	export const playsinline: boolean | undefined = undefined; // not used yet, but for suppress the warn from svelte check ;
+	export let playsinline: boolean;
 	export let config: FileConfig;
 
 	const HAS_NAVIGATOR = typeof navigator !== 'undefined';
@@ -525,7 +524,7 @@
 		return url;
 	}
 
-	export function getPlayer(): GetPlayerReturn | null {
+	export function getPlayer(): PlayerElement | null {
 		if (player !== undefined) {
 			return player;
 		}

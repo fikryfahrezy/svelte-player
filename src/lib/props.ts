@@ -1,7 +1,5 @@
 import type { Config } from './types';
-
-// eslint-disable-next-line @typescript-eslint/no-empty-function
-const noop = () => {};
+import { noop } from './players/utils';
 
 export const defaultConfig: Config = {
 	soundcloud: {

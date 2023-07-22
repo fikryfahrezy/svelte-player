@@ -1,7 +1,7 @@
 <script lang="ts">
 	import type { GlobalSDKSoundCloudKey } from './global.types';
 	import type { SoundCloudPlayer } from './soundcloud.global.types';
-	import type { FilePlayerUrl, Dispatcher, GetPlayerReturn } from './types';
+	import type { FilePlayerUrl, Dispatcher } from './types';
 	import type { SoundCloudConfig } from './soundcloud.types';
 
 	import { onMount, createEventDispatcher } from 'svelte';
@@ -143,7 +143,7 @@
 		return fractionLoaded * duration;
 	}
 
-	export function getPlayer(): GetPlayerReturn | null {
+	export function getPlayer(): SoundCloudPlayer | null {
 		if (player !== undefined) {
 			return player;
 		}

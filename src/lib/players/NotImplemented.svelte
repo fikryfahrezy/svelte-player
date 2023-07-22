@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { NotImplementedPlayer } from './notimplemented.global.types';
-	import type { FilePlayerUrl, Dispatcher, GetPlayerReturn } from './types';
+	import type { FilePlayerUrl, Dispatcher } from './types';
 	import type { NotImplementedConfig } from './notimplemented.types';
 
 	import { onMount, createEventDispatcher } from 'svelte';
@@ -92,7 +92,7 @@
 		console.log('disablePIP');
 	}
 
-	export function getPlayer(): GetPlayerReturn {
+	export function getPlayer(): NotImplementedPlayer | null {
 		return null;
 	}
 </script>

@@ -1,4 +1,11 @@
-import type { InternalPlayerKey, Dispatcher, PlayerUrl, PlayerInstance } from './players/types';
+import type {
+	InternalPlayerKey,
+	Dispatcher,
+	PlayerUrl,
+	PlayerInstance,
+	FilePlayerUrl,
+	GetPlayerReturn
+} from './players/types';
 import type { YouTubeConfig } from './players/youtube.types';
 import type { SoundCloudConfig } from './players/soundcloud.types';
 import type { ViemoConfig } from './players/vimeo.types';
@@ -63,3 +70,45 @@ export type Config = {
 
 export type PlayerKey = keyof Config;
 export type PlayerConfig = Config[keyof Config];
+
+export type PlayerProps = {
+	url: FilePlayerUrl;
+	playing: boolean;
+	loop: boolean;
+	controls: boolean;
+	light: boolean | string;
+	volume: number | null;
+	muted: boolean;
+	playbackRate: number;
+	width: string;
+	height: string;
+	progressInterval: number;
+	playsinline: boolean;
+	pip: boolean;
+	stopOnUnmount: boolean;
+	previewTabIndex: number;
+	config: RecursivePartial<Config[keyof Config]>;
+	oEmbedUrl: string;
+};
+
+export type PlayerMedia = {
+	load(url: FilePlayerUrl, isReady?: boolean): void;
+	stop(): void;
+	play(): void;
+	pause(): void;
+	setVolume(fraction: number): void;
+	mute(): void;
+	unmute(): void;
+	getDuration(): number;
+	getCurrentTime(): number;
+	getSecondsLoaded(): number;
+	seekTo(amount: number, keepPlaying?: boolean): void;
+	setPlaybackRate?(rate: number): void;
+	setLoop?(loop: boolean): void;
+	enablePIP?(): void;
+	disablePIP?(): void;
+	getPlayer?(): GetPlayerReturn;
+	setPlayer?(palyer: GetPlayerReturn): void;
+};
+
+export type PlayerMediaRef = PlayerMedia & Partial<PlayerProps>;

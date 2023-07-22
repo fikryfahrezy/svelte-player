@@ -51,33 +51,7 @@ export type GetSDKParams<T extends keyof GlobalSDK = GlobalSDKType> = SDKBase<T>
 	fetchScript?: typeof loadScript;
 };
 
-export type PlayerProps = {
-	playing?: boolean;
-	controls?: boolean;
-	playsinline?: boolean;
-	loop?: boolean;
-};
-
 export type GetPlayerReturn = PlayerInstance | null;
-
-export type PlayerMedia = {
-	load(url: FilePlayerUrl, isReady?: boolean): void;
-	stop(): void;
-	play(): void;
-	pause(): void;
-	setVolume(fraction: number): void;
-	mute(): void;
-	unmute(): void;
-	getDuration(): number;
-	getCurrentTime(): number;
-	getSecondsLoaded(): number;
-	seekTo(amount: number, keepPlaying?: boolean): void;
-	setPlaybackRate?(rate: number): void;
-	setLoop?(loop: boolean): void;
-	enablePIP?(): void;
-	disablePIP?(): void;
-	getPlayer?(): GetPlayerReturn;
-};
 
 export type OnProgressProps = {
 	played: number;
@@ -114,8 +88,6 @@ export type Dispatcher = {
 	playbackQualityChange: YTPlayerOnPlaybackQualityChangeEvent;
 	loaded: undefined;
 };
-
-export type PlayerMediaRef = PlayerMedia & PlayerProps;
 
 export type InternalPlayerKey = 'player' | 'hls' | 'dash';
 

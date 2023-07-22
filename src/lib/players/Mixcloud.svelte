@@ -1,7 +1,7 @@
 <script lang="ts">
 	import type { GlobalSDKMixcloudKey } from './global.types';
 	import type { MixcloudWidget } from './mixcloud.global.types';
-	import type { FilePlayerUrl, Dispatcher, GetPlayerReturn } from './types';
+	import type { FilePlayerUrl, Dispatcher } from './types';
 	import type { MixcloudConfig } from './mixcloud.types';
 
 	import { onMount, createEventDispatcher } from 'svelte';
@@ -9,14 +9,6 @@
 	import { MATCH_URL_MIXCLOUD } from './patterns';
 
 	export let url: FilePlayerUrl;
-	export const playing: boolean | undefined = undefined; // not used yet, but for suppress the warn from svelte check
-	export const loop: boolean | undefined = undefined; // not used yet, but for suppress the warn from svelte check
-	export const controls: boolean | undefined = undefined; // not used yet, but for suppress the warn from svelte check
-	export const volume: number | null = null; // not used yet, but for suppress the warn from svelte check
-	export const muted: boolean | undefined = undefined; // not used yet, but for suppress the warn from svelte check
-	export const width: string | undefined = undefined; // not used yet, but for suppress the warn from svelte check
-	export const height: string | undefined = undefined; // not used yet, but for suppress the warn from svelte check
-	export const playsinline: boolean | undefined = undefined; // not used yet, but for suppress the warn from svelte check
 	export let config: MixcloudConfig;
 
 	function handlePropsUrlChange(propsUrl: typeof url) {
@@ -129,7 +121,7 @@
 		return secondsLoaded;
 	}
 
-	export function getPlayer(): GetPlayerReturn {
+	export function getPlayer(): MixcloudWidget | null {
 		if (player !== undefined) {
 			return player;
 		}

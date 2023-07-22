@@ -19,7 +19,7 @@ import type {
 	GlobalSDKVidyard
 } from './global.types';
 import type { WistiaWQ } from './wistia.global.types';
-import type { GetSDKParams, FilePlayerUrl } from './types';
+import type { GetSDKParams, FilePlayerUrl, PlayerInstance } from './types';
 import loadScript from 'load-script';
 
 declare global {
@@ -159,6 +159,21 @@ export function getSDK<T extends GlobalSDKType>({
 	});
 }
 
+export function callPlayer<TPlayer extends PlayerInstance>(player?: TPlayer) {
+	if (player === undefined) {
+		return null;
+	}
+
+	return function <TMethod extends keyof TPlayer>(
+		method: TMethod,
+		...args: Parameters<TPlayer[TMethod]>
+	) {
+		return (
+			player[method] as (...args: Parameters<TPlayer[TMethod]>) => ReturnType<TPlayer[TMethod]>
+		)(...args);
+	};
+}
+
 export function isMediaStream(url: FilePlayerUrl) {
 	return (
 		typeof window !== 'undefined' &&
@@ -185,3 +200,7 @@ export function supportsWebKitPresentationMode(
 		notMobile
 	);
 }
+
+export const noop = () => {
+	// this comment to suppress warning from eslint
+};

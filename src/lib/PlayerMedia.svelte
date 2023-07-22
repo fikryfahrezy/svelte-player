@@ -1,9 +1,8 @@
 <script lang="ts">
-	import type { SeekToType, PlayerDispatcher } from './types';
+	import type { SeekToType, PlayerDispatcher, PlayerMediaRef } from './types';
 	import type { Player } from './players';
 	import type {
 		OnProgressProps,
-		PlayerMediaRef,
 		InternalPlayerKey,
 		OnErrorProps,
 		FilePlayerUrl

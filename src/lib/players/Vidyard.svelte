@@ -1,22 +1,15 @@
 <script lang="ts">
 	import type { GlobalSDKVidyardKey } from './global.types';
 	import type { VidyardSDKReady, VidyardPlayer } from './vidyard.global.types';
-	import type { FilePlayerUrl, Dispatcher, GetPlayerReturn } from './types';
+	import type { FilePlayerUrl, Dispatcher } from './types';
 	import type { VidyardConfig } from './vidyard.types';
 
 	import { onMount, createEventDispatcher } from 'svelte';
 	import { getSDK } from './utils';
 	import { MATCH_URL_VIDYARD } from './patterns';
 
-	export const url: FilePlayerUrl | undefined = undefined; // not used yet, but for suppress the warn from svelte check
-	export let playing: boolean; // not used yet, but for suppress the warn from svelte check
-	export const loop: boolean | undefined = undefined; // not used yet, but for suppress the warn from svelte check
-	export const controls: boolean | undefined = undefined; // not used yet, but for suppress the warn from svelte check
+	export let playing: boolean;
 	export let volume: number | null;
-	export const muted: boolean | undefined = undefined; // not used yet, but for suppress the warn from svelte check
-	export const width: string | undefined = undefined; // not used yet, but for suppress the warn from svelte check
-	export const height: string | undefined = undefined; // not used yet, but for suppress the warn from svelte check
-	export const playsinline: boolean | undefined = undefined; // not used yet, but for suppress the warn from svelte check
 	export let config: VidyardConfig;
 
 	const SDK_URL = 'https://play.vidyard.com/embed/v4.js';
@@ -145,7 +138,7 @@
 		return 0;
 	}
 
-	export function getPlayer(): GetPlayerReturn {
+	export function getPlayer(): VidyardPlayer | null {
 		if (player !== undefined) {
 			return player;
 		}
