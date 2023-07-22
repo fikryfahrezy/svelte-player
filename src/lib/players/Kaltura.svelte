@@ -4,7 +4,7 @@
 	import type { FilePlayerUrl, Dispatcher } from './types';
 
 	import { onMount, createEventDispatcher } from 'svelte';
-	import { getSDK } from './utils';
+	import { getSDK, callPlayer } from './utils';
 
 	export let url: FilePlayerUrl;
 	export let loop: boolean;
@@ -95,14 +95,16 @@
 	}
 
 	export function play() {
-		if (player !== undefined) {
-			player.play();
+		const calledPlayer = callPlayer(player);
+		if (calledPlayer !== null) {
+			calledPlayer('play');
 		}
 	}
 
 	export function pause() {
-		if (player !== undefined) {
-			player.pause();
+		const calledPlayer = callPlayer(player);
+		if (calledPlayer !== null) {
+			calledPlayer('pause');
 		}
 	}
 
@@ -111,32 +113,37 @@
 	}
 
 	export function seekTo(seconds: number, _?: boolean): void {
-		if (player !== undefined) {
-			player.setCurrentTime(seconds);
+		const calledPlayer = callPlayer(player);
+		if (calledPlayer !== null) {
+			calledPlayer('setCurrentTime', seconds);
 		}
 	}
 
 	export function setVolume(fraction: number): void {
-		if (player !== undefined) {
-			player.setVolume(fraction * 100);
+		const calledPlayer = callPlayer(player);
+		if (calledPlayer !== null) {
+			calledPlayer('setVolume', fraction * 100);
 		}
 	}
 
 	export function mute() {
-		if (player !== undefined) {
-			player.mute();
+		const calledPlayer = callPlayer(player);
+		if (calledPlayer !== null) {
+			calledPlayer('mute');
 		}
 	}
 
 	export function unmute() {
-		if (player !== undefined) {
-			player.unmute();
+		const calledPlayer = callPlayer(player);
+		if (calledPlayer !== null) {
+			calledPlayer('unmute');
 		}
 	}
 
 	export function setLoop(loop: boolean): void {
-		if (player !== undefined && player.setLoop !== undefined) {
-			player.setLoop(loop);
+		const calledPlayer = callPlayer(player);
+		if (calledPlayer !== null) {
+			calledPlayer('setLoop', loop);
 		}
 	}
 
