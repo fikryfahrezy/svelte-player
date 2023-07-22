@@ -1,5 +1,3 @@
-import type { DailyMotionConfig } from '../../lib/players/dailymotion.types';
-
 import { describe } from 'vitest';
 import testPlayerMethods from '../helpers/testPlayerMethods';
 
