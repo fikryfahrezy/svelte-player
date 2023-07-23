@@ -191,7 +191,6 @@ export interface YTPlayer {
 
 export interface YTPlayerConstructor {
 	new (container: string | HTMLElement, options?: Partial<YTPlayerOptions>): YTPlayer;
-	readonly prototype: YTPlayer;
 }
 
 export type YT = {

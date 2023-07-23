@@ -1,12 +1,18 @@
-import type { YTPlayerState } from '../../lib/players/youtube.global.types';
+import type {
+	YTPlayerState,
+	YT,
+	YTPlayer,
+	YTPlaybackRate,
+	YTPlayerStateValue
+} from '../../lib/players/youtube.global.types';
 import type { YouTubeConfig } from '../../lib/players/youtube.types';
 
 import { test, describe, beforeAll, afterAll, vi, expect } from 'vitest';
 import { render } from '@testing-library/svelte';
-import testPlayerMethods from '../helpers/testPlayerMethods';
 
 import * as utils from '../../lib/players/utils';
 import YouTube from '../../lib/players/YouTube.svelte';
+import testPlayerMethods from '../helpers/testPlayerMethods';
 
 const TEST_URL = 'https://www.youtube.com/watch?v=oUFJJNQGwhk';
 const TEST_CONFIG: YouTubeConfig = {
@@ -23,13 +29,153 @@ const TEST_PROPS = {
 	config: TEST_CONFIG
 };
 
-const playerState: YTPlayerState = {
+const PLAYER_STATE: YTPlayerState = {
 	UNSTARTED: -1,
 	ENDED: 0,
 	PLAYING: 1,
 	PAUSED: 2,
 	BUFFERING: 3,
 	CUED: 5
+};
+
+class YouTubePlayerMock implements YTPlayer {
+	constructor() {
+		// do nothiing
+	}
+
+	cueVideoById() {
+		// do nothing
+	}
+
+	loadVideoById() {
+		// do nothing
+	}
+
+	cueVideoByUrl() {
+		// do nothing
+	}
+
+	loadVideoByUrl() {
+		// do nothing
+	}
+
+	cuePlaylist() {
+		// do nothing
+	}
+
+	loadPlaylist() {
+		// do nothing
+	}
+
+	playVideo() {
+		// do nothing
+	}
+	pauseVideo() {
+		// do nothing
+	}
+	stopVideo() {
+		// do nothing
+	}
+	seekTo() {
+		// do nothing
+	}
+	getSphericalProperties() {
+		return {};
+	}
+
+	setSphericalProperties() {
+		// do nothing
+	}
+	nextVideo() {
+		// do nothing
+	}
+	previousVideo() {
+		// do nothing
+	}
+	playVideoAt() {
+		// do nothing
+	}
+	mute() {
+		// do nothing
+	}
+	unMute() {
+		// do nothing
+	}
+	isMuted() {
+		return false;
+	}
+	setVolume() {
+		// do nothing
+	}
+	getVolume() {
+		return 0;
+	}
+	setSize() {
+		return {};
+	}
+	getPlaybackRate(): YTPlaybackRate {
+		return 1;
+	}
+	setPlaybackRate() {
+		// do nothing
+	}
+	getAvailablePlaybackRates(): YTPlaybackRate[] {
+		return [1];
+	}
+	setLoop() {
+		// do nothing
+	}
+	setShuffle() {
+		// do nothing
+	}
+	getVideoLoadedFraction() {
+		return 0;
+	}
+	getPlayerState(): YTPlayerStateValue {
+		return 0;
+	}
+	getCurrentTime() {
+		return 0;
+	}
+	getDuration() {
+		return 0;
+	}
+	getVideoUrl() {
+		return '';
+	}
+	getVideoEmbedCode() {
+		return '';
+	}
+	getPlaylist() {
+		return [''];
+	}
+	getPlaylistIndex() {
+		return 0;
+	}
+	addEventListener() {
+		// do nothing
+	}
+	removeEventListener() {
+		// do nothing
+	}
+	getIframe() {
+		return document.createElement('iframe');
+	}
+	destroy() {
+		// do nothing
+	}
+}
+
+const YOUTUBE_SDK: YT = {
+	loaded: 1,
+	loading: 0,
+	Player: YouTubePlayerMock,
+	PlayerState: PLAYER_STATE,
+	ready: utils.noop,
+	setConfig: utils.noop,
+	scan: utils.noop,
+	subscribe: utils.noop,
+	unsubscribe: utils.noop
 };
 
 describe('testPlayerMethods', () => {
@@ -40,7 +186,7 @@ describe('testPlayerMethods', () => {
 		});
 
 		vi.stubGlobal('YT', {
-			PlayerState: playerState
+			PlayerState: PLAYER_STATE
 		});
 
 		vi.spyOn(document.body, 'contains').mockImplementation(() => true);
@@ -50,30 +196,29 @@ describe('testPlayerMethods', () => {
 		vi.unstubAllGlobals();
 	});
 
-	testPlayerMethods(YouTube, {
-		play: 'playVideo',
-		pause: 'pauseVideo',
-		stop: 'stopVideo',
-		seekTo: 'seekTo',
-		setVolume: 'setVolume',
-		mute: 'mute',
-		unmute: 'unMute',
-		getDuration: 'getDuration',
-		getCurrentTime: 'getCurrentTime',
-		getSecondsLoaded: 'getVideoLoadedFraction',
-		setPlaybackRate: 'setPlaybackRate'
+	testPlayerMethods({
+		Player: YouTube,
+		playerSDK: YOUTUBE_SDK,
+		loadParameters: [TEST_URL, false],
+		methods: {
+			play: 'playVideo',
+			pause: 'pauseVideo',
+			stop: 'stopVideo',
+			seekTo: 'seekTo',
+			setVolume: 'setVolume',
+			mute: 'mute',
+			unmute: 'unMute',
+			getDuration: 'getDuration',
+			getCurrentTime: 'getCurrentTime',
+			getSecondsLoaded: 'getVideoLoadedFraction',
+			setPlaybackRate: 'setPlaybackRate'
+		}
 	});
 });
 
 test('load()', (t) => {
-	class Player {
-		constructor() {
-			// do nothing
-		}
-	}
-
 	const getSDK = vi.spyOn(utils, 'getSDK').mockImplementation(async () => {
-		return { Player } as any;
+		return YOUTUBE_SDK;
 	});
 
 	const instance = new YouTube({
@@ -87,7 +232,7 @@ test('load()', (t) => {
 
 test('load() when ready', (t) => {
 	const getSDK = vi.spyOn(utils, 'getSDK').mockImplementation(async () => {
-		return {} as any;
+		return YOUTUBE_SDK;
 	});
 
 	const instance = new YouTube({
@@ -102,7 +247,7 @@ test('load() when ready', (t) => {
 describe('onStateChange()', () => {
 	beforeAll(() => {
 		vi.stubGlobal('YT', {
-			PlayerState: playerState
+			PlayerState: PLAYER_STATE
 		});
 	});
 
@@ -125,7 +270,7 @@ describe('onStateChange()', () => {
 		});
 		instance.$on('play', onPlay);
 		instance.$on('bufferEnd', onBufferEnd);
-		instance.onStateChange({ data: playerState.PLAYING, target: expect.anything() });
+		instance.onStateChange({ data: PLAYER_STATE.PLAYING, target: expect.anything() });
 		t.expect(calledPlay && calledBufferEnd).toStrictEqual(true);
 	});
 
@@ -136,7 +281,7 @@ describe('onStateChange()', () => {
 			props: TEST_PROPS
 		});
 		instance.$on('pause', onPause);
-		instance.onStateChange({ data: playerState.PAUSED, target: expect.anything() });
+		instance.onStateChange({ data: PLAYER_STATE.PAUSED, target: expect.anything() });
 		t.expect(onPause).toBeCalled();
 	});
 
@@ -147,7 +292,7 @@ describe('onStateChange()', () => {
 			props: TEST_PROPS
 		});
 		instance.$on('buffer', onBuffer);
-		instance.onStateChange({ data: playerState.BUFFERING, target: expect.anything() });
+		instance.onStateChange({ data: PLAYER_STATE.BUFFERING, target: expect.anything() });
 		t.expect(onBuffer).toBeCalled();
 	});
 
@@ -158,7 +303,7 @@ describe('onStateChange()', () => {
 			props: TEST_PROPS
 		});
 		instance.$on('ended', onEnded);
-		instance.onStateChange({ data: playerState.ENDED, target: expect.anything() });
+		instance.onStateChange({ data: PLAYER_STATE.ENDED, target: expect.anything() });
 		t.expect(onEnded).toBeCalled();
 	});
 
@@ -169,7 +314,7 @@ describe('onStateChange()', () => {
 			props: TEST_PROPS
 		});
 		instance.$on('ready', onReady);
-		instance.onStateChange({ data: playerState.CUED, target: expect.anything() });
+		instance.onStateChange({ data: PLAYER_STATE.CUED, target: expect.anything() });
 		t.expect(onReady).toBeCalled();
 	});
 });

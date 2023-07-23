@@ -282,7 +282,6 @@ export interface VimeoPlayer {
 
 export interface VimeoPlayerConstructor {
 	new (container: HTMLElement | string, options?: Partial<VimeoEmbedOptions>): VimeoPlayer;
-	readonly prototype: VimeoPlayer;
 }
 
 export type Vimeo = {

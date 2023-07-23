@@ -49,7 +49,6 @@ export interface DailyMotionPlayer {
 
 export interface DailyMotionPlayerConstructor {
 	new (container: HTMLElement, options: Partial<DailyMotionPlayerOptions>): DailyMotionPlayer;
-	readonly prototype: DailyMotionPlayer;
 }
 
 export type DailyMotion = {

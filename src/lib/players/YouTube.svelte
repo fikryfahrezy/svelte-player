@@ -6,7 +6,7 @@
 
 	import { createEventDispatcher, onMount } from 'svelte';
 	import { MATCH_URL_YOUTUBE } from './patterns';
-	import { getSDK, parseEndTime, parseStartTime, callPlayer } from './utils';
+	import { getSDK, parseEndTime, parseStartTime } from './utils';
 
 	export let playing: boolean;
 	export let loop: boolean;
@@ -206,34 +206,30 @@
 	}
 
 	export function play(): void {
-		const calledPlayer = callPlayer(player);
-		if (calledPlayer !== null) {
-			calledPlayer('playVideo');
+		if (player !== undefined) {
+			player.playVideo();
 		}
 	}
 
 	export function pause(): void {
-		const calledPlayer = callPlayer(player);
-		if (calledPlayer !== null) {
-			calledPlayer('pauseVideo');
+		if (player !== undefined) {
+			player.pauseVideo();
 		}
 	}
 
 	export function stop(): void {
-		const calledPlayer = callPlayer(player);
-		if (calledPlayer !== null) {
-			const youtubeIframe = calledPlayer('getIframe');
+		if (player !== undefined) {
+			const youtubeIframe = player.getIframe();
 			if (youtubeIframe !== null && !document.body.contains(youtubeIframe)) {
 				return;
 			}
-			calledPlayer('stopVideo');
+			player.stopVideo();
 		}
 	}
 
 	export function seekTo(amount: number, keepPlaying?: boolean): void {
-		const calledPlayer = callPlayer(player);
-		if (calledPlayer !== null) {
-			calledPlayer('seekTo', amount);
+		if (player !== undefined) {
+			player.seekTo(amount);
 			if (!keepPlaying && !playing) {
 				pause();
 			}
@@ -241,60 +237,52 @@
 	}
 
 	export function setVolume(fraction: number): void {
-		const calledPlayer = callPlayer(player);
-		if (calledPlayer !== null) {
-			calledPlayer('setVolume', fraction * 100);
+		if (player !== undefined) {
+			player.setVolume(fraction * 100);
 		}
 	}
 
 	export function mute(): void {
-		const calledPlayer = callPlayer(player);
-		if (calledPlayer !== null) {
-			calledPlayer('mute');
+		if (player !== undefined) {
+			player.mute();
 		}
 	}
 
 	export function unmute(): void {
-		const calledPlayer = callPlayer(player);
-		if (calledPlayer !== null) {
-			calledPlayer('unMute');
+		if (player !== undefined) {
+			player.unMute();
 		}
 	}
 
 	export function setPlaybackRate(rate: number): void {
-		const calledPlayer = callPlayer(player);
-		if (calledPlayer !== null) {
-			calledPlayer('setPlaybackRate', rate);
+		if (player !== undefined) {
+			player.setPlaybackRate(rate);
 		}
 	}
 
 	export function setLoop(loop: boolean): void {
-		const calledPlayer = callPlayer(player);
-		if (calledPlayer !== null) {
-			calledPlayer('setLoop', loop);
+		if (player !== undefined) {
+			player.setLoop(loop);
 		}
 	}
 
 	export function getDuration(): number {
-		const calledPlayer = callPlayer(player);
-		if (calledPlayer !== null) {
-			return calledPlayer('getDuration');
+		if (player !== undefined) {
+			return player.getDuration();
 		}
 		return 0;
 	}
 
 	export function getCurrentTime(): number {
-		const calledPlayer = callPlayer(player);
-		if (calledPlayer !== null) {
-			return calledPlayer('getCurrentTime');
+		if (player !== undefined) {
+			return player.getCurrentTime();
 		}
 		return 0;
 	}
 	export function getSecondsLoaded(): number {
 		let loadedFraction = 0;
-		const calledPlayer = callPlayer(player);
-		if (calledPlayer !== null) {
-			loadedFraction = calledPlayer('getVideoLoadedFraction');
+		if (player !== undefined) {
+			loadedFraction = player.getVideoLoadedFraction();
 		}
 		return loadedFraction * getDuration();
 	}

@@ -118,7 +118,6 @@ export interface TwitchPlayer {
 
 export interface TwitchPlayerConstructor {
 	new (container: string, options: Partial<TwitchPlayerOptions>): TwitchPlayer;
-	readonly prototype: TwitchPlayer;
 	CAPTIONS: TwitchPlayerCAPTIONSEvent;
 	ENDED: TwitchPlayerENDEDEvent;
 	PAUSE: TwitchPlayerPAUSEEvent;

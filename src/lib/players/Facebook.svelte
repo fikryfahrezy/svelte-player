@@ -5,7 +5,7 @@
 	import type { FacebookConfig } from './facebook.types';
 
 	import { onMount, createEventDispatcher } from 'svelte';
-	import { getSDK, randomString, callPlayer } from './utils';
+	import { getSDK, randomString } from './utils';
 
 	export let url: FilePlayerUrl;
 	export let playing: boolean;
@@ -76,13 +76,10 @@
 					player.subscribe('error', (error) => {
 						dispatch('error', { error });
 					});
-					const calledPlayer = callPlayer(player);
-					if (calledPlayer !== null) {
-						if (muted) {
-							calledPlayer('mute');
-						} else {
-							calledPlayer('unmute');
-						}
+					if (muted) {
+						player.mute();
+					} else {
+						player.unmute();
 					}
 					dispatch('ready');
 
@@ -101,16 +98,14 @@
 	}
 
 	export function play() {
-		const calledPlayer = callPlayer(player);
-		if (calledPlayer !== null) {
-			calledPlayer('play');
+		if (player !== undefined) {
+			player.play();
 		}
 	}
 
 	export function pause() {
-		const calledPlayer = callPlayer(player);
-		if (calledPlayer !== null) {
-			calledPlayer('pause');
+		if (player !== undefined) {
+			player.pause();
 		}
 	}
 
@@ -119,45 +114,39 @@
 	}
 
 	export function seekTo(seconds: number, _?: boolean): void {
-		const calledPlayer = callPlayer(player);
-		if (calledPlayer !== null) {
-			calledPlayer('seek', seconds);
+		if (player !== undefined) {
+			player.seek(seconds);
 		}
 	}
 
 	export function setVolume(fraction: number): void {
-		const calledPlayer = callPlayer(player);
-		if (calledPlayer !== null) {
-			calledPlayer('setVolume', fraction);
+		if (player !== undefined) {
+			player.setVolume(fraction);
 		}
 	}
 
 	export function mute() {
-		const calledPlayer = callPlayer(player);
-		if (calledPlayer !== null) {
-			calledPlayer('mute');
+		if (player !== undefined) {
+			player.mute();
 		}
 	}
 
 	export function unmute() {
-		const calledPlayer = callPlayer(player);
-		if (calledPlayer !== null) {
-			calledPlayer('unmute');
+		if (player !== undefined) {
+			player.unmute();
 		}
 	}
 
 	export function getDuration(): number {
-		const calledPlayer = callPlayer(player);
-		if (calledPlayer !== null) {
-			return calledPlayer('getDuration');
+		if (player !== undefined) {
+			return player.getDuration();
 		}
 		return 0;
 	}
 
 	export function getCurrentTime() {
-		const calledPlayer = callPlayer(player);
-		if (calledPlayer !== null) {
-			return calledPlayer('getCurrentPosition');
+		if (player !== undefined) {
+			return player.getCurrentPosition();
 		}
 		return 0;
 	}

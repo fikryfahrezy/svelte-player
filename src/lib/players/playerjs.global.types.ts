@@ -75,7 +75,6 @@ export interface PlayerJSPlayer {
 
 export interface PlayerJSPlayerConstructor {
 	new (container: HTMLIFrameElement): PlayerJSPlayer;
-	readonly prototype: PlayerJSPlayer;
 }
 
 export type PlayerJS = {
