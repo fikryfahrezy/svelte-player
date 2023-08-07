@@ -64,5 +64,5 @@ export type MixcloudWidget = {
 export type MixcloudPlayer = {
 	PlayerWidget(iframe: HTMLIFrameElement): MixcloudWidget;
 	noConflict(mixcloudApiObject: MixcloudPlayer): void;
-	FooterWidget(url: string): Promise<MixcloudWidget>; // 7-6-23: Experimental
+	FooterWidget(url: string): Promise<MixcloudWidget>; // Still Experimental in date 7-6-23
 };

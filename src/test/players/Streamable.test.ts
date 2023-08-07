@@ -3,10 +3,9 @@ import type { PlayerJS, PlayerJSPlayer } from '../../lib/players/playerjs.global
 import { describe } from 'vitest';
 import testPlayerMethods from '../helpers/testPlayerMethods';
 
-import KalturaSvelte from '../../lib/players/Kaltura.svelte';
+import StreamableSvelte from '../../lib/players/Streamable.svelte';
 
-const TEST_URL =
-	'https://cdnapisec.kaltura.com/p/2507381/sp/250738100/embedIframeJs/uiconf_id/44372392/partner_id/2507381?iframeembed=true&playerId=kaltura_player_1605622336&entry_id=1_i1jmzcn3';
+const TEST_URL = 'https://streamable.com/moo';
 const TEST_PROPS = {
 	loop: false,
 	muted: false,
@@ -72,9 +71,9 @@ const PLAYERJS_SDK: PlayerJS = {
 
 describe('testPlayerMethods', () => {
 	testPlayerMethods({
-		Player: KalturaSvelte,
+		Player: StreamableSvelte,
 		playerSDK: PLAYERJS_SDK,
-		loadParameters: [TEST_URL],
+		loadParameters: [TEST_URL, false],
 		methods: {
 			play: 'play',
 			pause: 'pause',
