@@ -11,7 +11,7 @@ import { test, describe, beforeAll, afterAll, vi, expect } from 'vitest';
 import { render } from '@testing-library/svelte';
 
 import * as utils from '../../lib/players/utils';
-import YouTube from '../../lib/players/YouTube.svelte';
+import YouTubeSvelte from '../../lib/players/YouTube.svelte';
 import testPlayerMethods from '../helpers/testPlayerMethods';
 
 const TEST_URL = 'https://www.youtube.com/watch?v=oUFJJNQGwhk';
@@ -197,7 +197,7 @@ describe('testPlayerMethods', () => {
 	});
 
 	testPlayerMethods({
-		Player: YouTube,
+		Player: YouTubeSvelte,
 		playerSDK: YOUTUBE_SDK,
 		loadParameters: [TEST_URL, false],
 		methods: {
@@ -221,7 +221,7 @@ test('load()', (t) => {
 		return YOUTUBE_SDK;
 	});
 
-	const instance = new YouTube({
+	const instance = new YouTubeSvelte({
 		target: document.body,
 		props: TEST_PROPS
 	});
@@ -235,7 +235,7 @@ test('load() when ready', (t) => {
 		return YOUTUBE_SDK;
 	});
 
-	const instance = new YouTube({
+	const instance = new YouTubeSvelte({
 		target: document.body,
 		props: TEST_PROPS
 	});
@@ -264,7 +264,7 @@ describe('onStateChange()', () => {
 		const onBufferEnd = () => {
 			calledBufferEnd = true;
 		};
-		const instance = new YouTube({
+		const instance = new YouTubeSvelte({
 			target: document.body,
 			props: TEST_PROPS
 		});
@@ -276,7 +276,7 @@ describe('onStateChange()', () => {
 
 	test('onStateChange() - pause', async (t) => {
 		const onPause = vi.fn();
-		const instance = new YouTube({
+		const instance = new YouTubeSvelte({
 			target: document.body,
 			props: TEST_PROPS
 		});
@@ -287,7 +287,7 @@ describe('onStateChange()', () => {
 
 	test('onStateChange() - buffer', async (t) => {
 		const onBuffer = vi.fn();
-		const instance = new YouTube({
+		const instance = new YouTubeSvelte({
 			target: document.body,
 			props: TEST_PROPS
 		});
@@ -298,7 +298,7 @@ describe('onStateChange()', () => {
 
 	test('onStateChange() - ended', async (t) => {
 		const onEnded = vi.fn();
-		const instance = new YouTube({
+		const instance = new YouTubeSvelte({
 			target: document.body,
 			props: TEST_PROPS
 		});
@@ -309,7 +309,7 @@ describe('onStateChange()', () => {
 
 	test('onStateChange() - ready', async (t) => {
 		const onReady = vi.fn();
-		const instance = new YouTube({
+		const instance = new YouTubeSvelte({
 			target: document.body,
 			props: TEST_PROPS
 		});
@@ -320,6 +320,6 @@ describe('onStateChange()', () => {
 });
 
 test('render()', (t) => {
-	const wrapper = render(YouTube, TEST_PROPS);
+	const wrapper = render(YouTubeSvelte, TEST_PROPS);
 	t.expect(wrapper.container.querySelector('.youtube-player')).not.toStrictEqual(null);
 });
