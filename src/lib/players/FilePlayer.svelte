@@ -5,7 +5,7 @@
 		GlobalSDKFLVKey,
 		GlobalSDKHLSClass
 	} from './global.types';
-	import type { FilePlayerUrl, Dispatcher, GetPlayerReturn } from './types';
+	import type { FilePlayerUrl, Dispatcher } from './types';
 	import type { FileConfig, ShouldUseAudioParams } from './file.types';
 	import type { DashJSMediaPlayerClass } from './dash.types';
 	import type { FlvJSPlayer } from './flv.types';
