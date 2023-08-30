@@ -123,7 +123,7 @@
 {#if showPreviewState}
 	{#if url}
 		<Preview
-			url={url instanceof Array ? '' : url}
+			url={typeof url !== 'string' ? '' : url}
 			{light}
 			{previewTabIndex}
 			{oEmbedUrl}

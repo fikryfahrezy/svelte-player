@@ -53,7 +53,7 @@ const MATCH_NUMERIC = /^\d+$/;
 // Parse YouTube URL for a start time param, ie ?t=1h14m30s
 // and return the start time in seconds
 function parseTimeParam(url: FilePlayerUrl, pattern: RegExp) {
-	if (url instanceof Array) {
+	if (typeof url !== 'string') {
 		return undefined;
 	}
 	const match = url.match(pattern);

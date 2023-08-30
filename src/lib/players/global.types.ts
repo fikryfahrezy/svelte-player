@@ -8,7 +8,9 @@ import type { Vimeo } from './vimeo.global.types';
 import type { PlayerJS } from './playerjs.global.types';
 import type { Wistia } from './wistia.global.types';
 import type { Vidyard, VidyardSDKReady } from './vidyard.global.types';
-import type { HlsJS, DashJS, FlvJS, Hls } from './fileplayer.global.types';
+import type { HlsJS, Hls } from './hls.types';
+import type { DashJS } from './dash.types';
+import type { FlvJS } from './flv.types';
 
 export type GlobalSDK = {
 	YT: YT;

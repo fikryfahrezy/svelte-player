@@ -237,7 +237,9 @@
 			return false;
 		}
 
-		return AUDIO_EXTENSIONS.test(props.url) || props.config.forceAudio;
+		return (
+			(typeof props.url === 'string' && AUDIO_EXTENSIONS.test(props.url)) || props.config.forceAudio
+		);
 	}
 
 	function shouldUseHLS(url: FilePlayerUrl) {
@@ -251,21 +253,23 @@
 			return false;
 		}
 
-		return HLS_EXTENSIONS.test(url) || MATCH_CLOUDFLARE_STREAM.test(url);
+		return (
+			typeof url === 'string' && (HLS_EXTENSIONS.test(url) || MATCH_CLOUDFLARE_STREAM.test(url))
+		);
 	}
 
 	function shouldUseDASH(url: FilePlayerUrl) {
 		if (url instanceof Array) {
 			return false;
 		}
-		return DASH_EXTENSIONS.test(url) || config.forceDASH;
+		return (typeof url === 'string' && DASH_EXTENSIONS.test(url)) || config.forceDASH;
 	}
 
 	function shouldUseFLV(url: FilePlayerUrl) {
 		if (url instanceof Array) {
 			return false;
 		}
-		return FLV_EXTENSIONS.test(url) || config.forceFLV;
+		return (typeof url === 'string' && FLV_EXTENSIONS.test(url)) || config.forceFLV;
 	}
 
 	export function load(url: FilePlayerUrl, _?: boolean): void {
@@ -518,10 +522,10 @@
 		if (url instanceof Array || isMediaStream(url) || useHLS || useDASH || useFLV) {
 			return undefined;
 		}
-		if (MATCH_DROPBOX_URL.test(url)) {
+		if (typeof url === 'string' && MATCH_DROPBOX_URL.test(url)) {
 			return url.replace('www.dropbox.com', 'dl.dropboxusercontent.com');
 		}
-		return url;
+		return typeof url === 'string' ? url : undefined;
 	}
 
 	export function getPlayer(): PlayerElement | null {

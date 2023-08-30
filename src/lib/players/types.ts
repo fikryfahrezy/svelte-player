@@ -93,4 +93,4 @@ export type InternalPlayerKey = 'player' | 'hls' | 'dash';
 
 export type FileMediaUrl = { src: string; type: string };
 
-export type FilePlayerUrl = PlayerUrl | FileMediaUrl[];
+export type FilePlayerUrl = PlayerUrl | FileMediaUrl[] | MediaStream;

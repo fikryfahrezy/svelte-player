@@ -15,7 +15,7 @@
 	export let config: WistiaConfig;
 
 	function handlePropsUrlChange(propsUrl: typeof url) {
-		if (propsUrl instanceof Array) {
+		if (typeof propsUrl !== 'string') {
 			return '';
 		}
 		return propsUrl;

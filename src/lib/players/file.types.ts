@@ -5,7 +5,7 @@ import type {
 } from 'svelte/elements';
 import type { FilePlayerUrl } from './types';
 
-import type { HlsConfig } from './fileplayer.global.types';
+import type { HlsConfig } from './hls.types';
 
 export type FileConfigAttributes = Omit<HTMLVideoAttributes | HTMLAudioAttributes, `on:${string}`>;
 
