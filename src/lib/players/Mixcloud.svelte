@@ -8,25 +8,16 @@
 	import { queryString, getSDK } from './utils';
 	import { MATCH_URL_MIXCLOUD } from './patterns';
 
-	export let url: FilePlayerUrl;
 	export let config: MixcloudConfig;
-
-	function handlePropsUrlChange(propsUrl: typeof url) {
-		if (typeof propsUrl !== 'string') {
-			return '';
-		}
-		return propsUrl;
-	}
-
-	$: propsUrl = handlePropsUrlChange(url);
 
 	const SDK_URL = 'https://widget.mixcloud.com/media/js/widgetApi.js';
 	const SDK_GLOBAL: GlobalSDKMixcloudKey = 'Mixcloud';
 
 	const dispatch = createEventDispatcher<Dispatcher>();
 
-	let iframeContainer: HTMLIFrameElement | undefined;
-	let player: MixcloudWidget | undefined;
+	let url: string;
+	let iframeContainer: HTMLIFrameElement;
+	let player: MixcloudWidget;
 	let duration = 0;
 	let currentTime = 0;
 	let secondsLoaded = 0;
@@ -35,35 +26,30 @@
 		dispatch('mount');
 	});
 
-	export function load(_: string, __?: boolean): void {
+	export function load(loadUrl: string) {
+		url = loadUrl;
 		getSDK({ url: SDK_URL, sdkGlobal: SDK_GLOBAL }).then(
 			(Mixcloud) => {
-				if (iframeContainer === undefined) {
-					return;
-				}
-
 				player = Mixcloud.PlayerWidget(iframeContainer);
 				player.ready.then(() => {
-					if (player !== undefined) {
-						player.events.play.on(() => {
-							dispatch('play');
+					player.events.play.on(() => {
+						dispatch('play');
+					});
+					player.events.pause.on(() => {
+						dispatch('pause');
+					});
+					player.events.ended.on(() => {
+						dispatch('ended');
+					});
+					player.events.error.on((error) => {
+						dispatch('error', {
+							error
 						});
-						player.events.pause.on(() => {
-							dispatch('pause');
-						});
-						player.events.ended.on(() => {
-							dispatch('ended');
-						});
-						player.events.error.on((error) => {
-							dispatch('error', {
-								error
-							});
-						});
-						player.events.progress.on((secondsParam, durationParam) => {
-							currentTime = secondsParam;
-							duration = durationParam;
-						});
-					}
+					});
+					player.events.progress.on((secondsParam, durationParam) => {
+						currentTime = secondsParam;
+						duration = durationParam;
+					});
 					dispatch('ready');
 				});
 			},
@@ -76,28 +62,22 @@
 	}
 
 	export function play() {
-		if (player !== undefined) {
-			player.play();
-		}
+		player.play();
 	}
 
 	export function pause() {
-		if (player !== undefined) {
-			player.pause();
-		}
+		player.pause();
 	}
 
 	export function stop() {
 		// Nothing to do
 	}
 
-	export function seekTo(seconds: number, _?: boolean): void {
-		if (player !== undefined) {
-			player.seek(seconds);
-		}
+	export function seekTo(seconds: number) {
+		player.seek(seconds);
 	}
 
-	export function setVolume(_: number): void {
+	export function setVolume(_: number) {
 		// No volume support
 	}
 
@@ -109,7 +89,7 @@
 		// No volume support
 	}
 
-	export function getDuration(): number {
+	export function getDuration() {
 		return duration;
 	}
 
@@ -117,21 +97,22 @@
 		return currentTime;
 	}
 
-	export function getSecondsLoaded(): number {
+	export function getSecondsLoaded() {
 		return secondsLoaded;
 	}
 
-	export function getPlayer(): MixcloudWidget | null {
-		if (player !== undefined) {
-			return player;
-		}
-		return null;
+	export function getPlayer() {
+		return player;
 	}
 
-	$: id = (propsUrl ?? '').match(MATCH_URL_MIXCLOUD)?.[1];
+	export function setPlayer(newPlayer: MixcloudWidget) {
+		player = newPlayer;
+	}
+
+	$: id = url.match(MATCH_URL_MIXCLOUD)?.[1];
 	$: query = queryString({
 		...config.options,
-		feed: id !== undefined ? `/${id}/` : ''
+		feed: `/${id}/`
 	});
 </script>
 

@@ -99,9 +99,9 @@ export type PlayerMedia = {
 	setVolume(fraction: number): void;
 	mute(): void;
 	unmute(): void;
-	getDuration(): number;
-	getCurrentTime(): number;
-	getSecondsLoaded(): number;
+	getDuration(): number | null;
+	getCurrentTime(): number | null;
+	getSecondsLoaded(): number | null;
 	seekTo(amount: number, keepPlaying?: boolean): void;
 	setPlaybackRate?(rate: number): void;
 	setLoop?(loop: boolean): void;

@@ -29,3 +29,5 @@ export type ShouldUseAudioParams = {
 	url: FilePlayerUrl;
 	config: FileConfig;
 };
+
+export type PlayerElement = HTMLAudioElement | HTMLVideoElement;

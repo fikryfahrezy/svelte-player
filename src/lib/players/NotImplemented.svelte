@@ -18,7 +18,7 @@
 
 	const dispatch = createEventDispatcher<Dispatcher>();
 
-	let player: NotImplementedPlayer | undefined;
+	let player: NotImplementedPlayer;
 
 	onMount(() => {
 		dispatch('mount');
@@ -76,7 +76,7 @@
 		return 0;
 	}
 
-	export function getSecondsLoaded(): number {
+	export function getSecondsLoaded(): number | null {
 		return 0;
 	}
 
@@ -92,8 +92,12 @@
 		console.log('disablePIP');
 	}
 
-	export function getPlayer(): NotImplementedPlayer | null {
-		return null;
+	export function getPlayer(): NotImplementedPlayer {
+		return player;
+	}
+
+	export function setPlayer(newPlayer: NotImplementedPlayer) {
+		player = newPlayer;
 	}
 </script>
 

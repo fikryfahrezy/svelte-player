@@ -74,7 +74,7 @@ export type Dispatcher = {
 	start: undefined;
 	play: undefined | Event;
 	progress: OnProgressProps;
-	duration: number;
+	duration: number | null;
 	pause: undefined | Event;
 	buffer: undefined | Event;
 	bufferEnd: undefined | Event;

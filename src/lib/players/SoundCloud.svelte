@@ -7,7 +7,6 @@
 	import { onMount, createEventDispatcher } from 'svelte';
 	import { getSDK } from './utils';
 
-	export let url: FilePlayerUrl;
 	export const playing: boolean | undefined = undefined;
 	export const loop: boolean | undefined = undefined;
 	export const controls: boolean | undefined = undefined;
@@ -16,24 +15,18 @@
 	export const width: string | undefined = undefined;
 	export const height: string | undefined = undefined;
 	export const playsinline: boolean | undefined = undefined;
+	export let display: string | undefined = undefined;
+
 	export let config: SoundCloudConfig;
-
-	function handlePropsUrlChange(propsUrl: typeof url) {
-		if (typeof propsUrl !== 'string') {
-			return '';
-		}
-		return propsUrl;
-	}
-
-	$: propsUrl = handlePropsUrlChange(url);
 
 	const SDK_URL = 'https://w.soundcloud.com/player/api.js';
 	const SDK_GLOBAL: GlobalSDKSoundCloudKey = 'SC';
 
 	const dispatch = createEventDispatcher<Dispatcher>();
 
-	let iframeContainer: HTMLIFrameElement | undefined;
-	let player: SoundCloudPlayer | undefined;
+	let iframeContainer: HTMLIFrameElement;
+	let player: SoundCloudPlayer;
+	let url: string;
 
 	let duration = 0;
 	let currentTime = 0;
@@ -43,7 +36,7 @@
 		dispatch('mount');
 	});
 
-	export function load(url: string, isReady?: boolean): void {
+	export function load(url: string, isReady?: boolean) {
 		getSDK({
 			url: SDK_URL,
 			sdkGlobal: SDK_GLOBAL
@@ -77,78 +70,66 @@
 				});
 			}
 
-			if (player !== undefined) {
-				player.load(url, {
-					...config.options,
-					callback: () => {
-						if (player !== undefined) {
-							player.getDuration((durationParam) => {
-								duration = durationParam / 1000;
-								dispatch('ready');
-							});
-						}
-					}
-				});
-			}
+			player.load(url, {
+				...config.options,
+				callback: () => {
+					player.getDuration((durationParam) => {
+						duration = durationParam / 1000;
+						dispatch('ready');
+					});
+				}
+			});
 		});
 	}
 
-	export function play(): void {
-		if (player !== undefined) {
-			player.play();
-		}
+	export function play() {
+		player.play();
 	}
 
 	export function pause() {
-		if (player !== undefined) {
-			player.pause();
-		}
+		player.pause();
 	}
 
 	export function stop() {
 		// Nothing to do
 	}
 
-	export function seekTo(seconds: number, _?: boolean): void {
-		if (player !== undefined) {
-			player.seekTo(seconds * 1000);
-		}
+	export function seekTo(seconds: number) {
+		player.seekTo(seconds * 1000);
 	}
 
-	export function setVolume(fraction: number): void {
-		if (player !== undefined) {
-			player.setVolume(fraction * 100);
-		}
+	export function setVolume(fraction: number) {
+		player.setVolume(fraction * 100);
 	}
 
-	export function mute(): void {
+	export function mute() {
 		setVolume(0);
 	}
 
-	export function unmute(): void {
+	export function unmute() {
 		if (volume !== null) {
 			setVolume(volume);
 		}
 	}
 
-	export function getDuration(): number {
+	export function getDuration() {
 		return duration;
 	}
 
-	export function getCurrentTime(): number {
+	export function getCurrentTime() {
 		return currentTime;
 	}
 
-	export function getSecondsLoaded(): number {
+	export function getSecondsLoaded() {
 		return fractionLoaded * duration;
 	}
 
-	export function getPlayer(): SoundCloudPlayer | null {
-		if (player !== undefined) {
-			return player;
-		}
+	export function getPlayer() {
+		return player;
+	}
 
-		return null;
+	export function setPlayer(newPlayer: SoundCloudPlayer) {
+		player = newPlayer;
 	}
 </script>
 
@@ -156,9 +137,10 @@
 	bind:this={iframeContainer}
 	title="Sound Cloud Player"
 	class="soundcloud-player"
-	src={`https://w.soundcloud.com/player/?url=${encodeURIComponent(propsUrl)}`}
+	src={`https://w.soundcloud.com/player/?url=${encodeURIComponent(url)}`}
 	frameborder={0}
 	allow="autoplay"
+	style:display
 />
 
 <style>

@@ -159,7 +159,7 @@ export function getSDK<T extends GlobalSDKType>({
 	});
 }
 
-export function isMediaStream(url: FilePlayerUrl) {
+export function isMediaStream(url: FilePlayerUrl): url is MediaStream {
 	return (
 		typeof window !== 'undefined' &&
 		typeof window.MediaStream !== 'undefined' &&
@@ -171,14 +171,23 @@ export function isBlobUrl(url: string) {
 	return /^blob:/.test(url);
 }
 
+type VideoPresentationMode = 'inline' | 'picture-in-picture' | 'fullscreen';
+
+type WebkitHTMLVideoElement = HTMLMediaElement & {
+	webkitSupportsPresentationMode: boolean;
+	webkitSetPresentationMode: (mode: VideoPresentationMode) => void;
+	webkitPresentationMode: VideoPresentationMode;
+};
+
 export function supportsWebKitPresentationMode(
 	video: HTMLMediaElement = document.createElement('video')
-) {
+): video is WebkitHTMLVideoElement {
 	// Check if Safari supports PiP, and is not on mobile (other than iPad)
 	// iPhone safari appears to "support" PiP through the check, however PiP does not function
 	const notMobile = /iPhone|iPod/.test(navigator.userAgent) === false;
 	return (
 		'webkitSupportsPresentationMode' in video &&
+		typeof video.webkitSupportsPresentationMode === 'boolean' &&
 		video.webkitSupportsPresentationMode &&
 		'webkitSetPresentationMode' in video &&
 		typeof video.webkitSetPresentationMode === 'function' &&

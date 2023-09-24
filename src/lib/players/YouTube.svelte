@@ -13,6 +13,7 @@
 	export let controls: boolean;
 	export let playsinline: boolean;
 	export let config: YouTubeConfig;
+	export let display: string | undefined = undefined;
 
 	const playerVars = config?.playerVars;
 	const embedOptions = config?.embedOptions;
@@ -26,8 +27,8 @@
 
 	const dispatch = createEventDispatcher<Dispatcher>();
 
-	let container: HTMLDivElement | undefined;
-	let player: YTPlayer | undefined;
+	let container: HTMLDivElement;
+	let player: YTPlayer;
 
 	onMount(() => {
 		dispatch('mount');
@@ -40,106 +41,21 @@
 		return url.match(MATCH_URL_YOUTUBE)?.[1] ?? null;
 	}
 
-	function parsePlaylist(url: PlayerUrl): ReturnType<ParsePlaylistFn> {
-		if (url instanceof Array) {
-			const urls = new Array(url.length);
-			for (let i = 0; i < url.length; i++) {
-				const urlItem = url[i];
-				if (typeof urlItem === 'string') {
-					urls[i] = getID(urlItem);
-				}
-			}
+	export function load(url: PlayerUrl, isReady?: boolean) {
+		const id = String(getID(url));
 
-			return {
-				listType: 'playlist',
-				list: url.join(',')
-			};
-		}
-		if (MATCH_PLAYLIST.test(url)) {
-			const mathedUrl = url.match(MATCH_PLAYLIST);
-			if (mathedUrl === null) {
-				return {};
-			}
-
-			const [, playlistId] = mathedUrl;
-			return {
-				listType: 'playlist',
-				list: playlistId.replace(/^UC/, 'UU')
-			};
-		}
-		if (MATCH_USER_UPLOADS.test(url)) {
-			const matchedUrl = url.match(MATCH_USER_UPLOADS);
-			if (matchedUrl === null) {
-				return {};
-			}
-
-			const [, username] = matchedUrl;
-			return {
-				listType: 'user_uploads',
-				list: username
-			};
-		}
-		return {};
-	}
-
-	export function onStateChange(event: YTPlayerOnStateChangeEvent) {
-		const { data } = event;
-
-		const { UNSTARTED, PLAYING, PAUSED, BUFFERING, ENDED, CUED } = window[SDK_GLOBAL].PlayerState;
-		if (data === UNSTARTED) {
-			onUnstarted?.();
-		}
-		if (data === PLAYING) {
-			dispatch('play');
-			dispatch('bufferEnd');
-		}
-		if (data === PAUSED) {
-			dispatch('pause');
-		}
-		if (data === BUFFERING) {
-			dispatch('buffer');
-		}
-		if (data === ENDED) {
-			const isPlaylist = !!player?.getPlaylist();
-			// Only loop manually if not playing a playlist
-			if (loop && !isPlaylist) {
-				if (playerVars?.start) {
-					seekTo(playerVars.start);
-				} else {
-					play();
-				}
-			}
-			dispatch('ended');
-		}
-		if (data === CUED) {
-			dispatch('ready');
-		}
-	}
-
-	export function load(url: PlayerUrl, isReady?: boolean): void {
-		const id = getID(url);
-		if (id === null) {
-			return;
-		}
 		if (isReady) {
-			if (
-				(typeof url === 'string' && (MATCH_PLAYLIST.test(url) || MATCH_USER_UPLOADS.test(url))) ||
-				url instanceof Array
-			) {
-				const { list, listType } = parsePlaylist(url);
-				if (player !== undefined && list !== undefined && listType !== undefined) {
-					player.loadPlaylist({ list, listType });
-					return;
-				}
+			if (url instanceof Array || MATCH_PLAYLIST.test(url) || MATCH_USER_UPLOADS.test(url)) {
+				const { list = '', listType } = parsePlaylist(url);
+				player.loadPlaylist({ list, listType });
+				return;
 			}
 
-			if (player !== undefined) {
-				player.cueVideoById({
-					videoId: id,
-					startSeconds: parseStartTime(url) || playerVars?.start,
-					endSeconds: parseEndTime(url) || playerVars?.end
-				});
-			}
+			player.cueVideoById({
+				videoId: id,
+				startSeconds: parseStartTime(url) || playerVars?.start,
+				endSeconds: parseEndTime(url) || playerVars?.end
+			});
 			return;
 		}
 		getSDK({
@@ -170,7 +86,7 @@
 					},
 					events: {
 						onReady: () => {
-							if (player !== undefined && loop) {
+							if (loop) {
 								player.setLoop(true);
 							}
 							dispatch('ready');
@@ -205,98 +121,127 @@
 		}
 	}
 
-	export function play(): void {
-		if (player !== undefined) {
-			player.playVideo();
+	function parsePlaylist(url: PlayerUrl): ReturnType<ParsePlaylistFn> {
+		if (url instanceof Array) {
+			return {
+				listType: 'playlist',
+				list: url.map(getID).join(',')
+			};
 		}
+		if (MATCH_PLAYLIST.test(url)) {
+			const playlistId = String(url.match(MATCH_PLAYLIST)?.[1]);
+			return {
+				listType: 'playlist',
+				list: playlistId.replace(/^UC/, 'UU')
+			};
+		}
+		if (MATCH_USER_UPLOADS.test(url)) {
+			const username = String(url.match(MATCH_USER_UPLOADS)?.[1]);
+			return {
+				listType: 'user_uploads',
+				list: username
+			};
+		}
+		return {};
 	}
 
-	export function pause(): void {
-		if (player !== undefined) {
-			player.pauseVideo();
-		}
-	}
+	export function onStateChange(event: YTPlayerOnStateChangeEvent) {
+		const { data } = event;
 
-	export function stop(): void {
-		if (player !== undefined) {
-			const youtubeIframe = player.getIframe();
-			if (youtubeIframe !== null && !document.body.contains(youtubeIframe)) {
-				return;
+		const { UNSTARTED, PLAYING, PAUSED, BUFFERING, ENDED, CUED } = window[SDK_GLOBAL].PlayerState;
+		if (data === UNSTARTED) {
+			onUnstarted?.();
+		}
+		if (data === PLAYING) {
+			dispatch('play');
+			dispatch('bufferEnd');
+		}
+		if (data === PAUSED) {
+			dispatch('pause');
+		}
+		if (data === BUFFERING) {
+			dispatch('buffer');
+		}
+		if (data === ENDED) {
+			const isPlaylist = !!player.getPlaylist();
+			// Only loop manually if not playing a playlist
+			if (loop && !isPlaylist) {
+				if (playerVars?.start) {
+					seekTo(playerVars.start);
+				} else {
+					play();
+				}
 			}
-			player.stopVideo();
+			dispatch('ended');
+		}
+		if (data === CUED) {
+			dispatch('ready');
 		}
 	}
 
-	export function seekTo(amount: number, keepPlaying?: boolean): void {
-		if (player !== undefined) {
-			player.seekTo(amount);
-			if (!keepPlaying && !playing) {
-				pause();
-			}
+	export function play() {
+		player.playVideo();
+	}
+
+	export function pause() {
+		player.pauseVideo();
+	}
+
+	export function stop() {
+		if (!document.body.contains(player.getIframe())) {
+			return;
+		}
+		player.stopVideo();
+	}
+
+	export function seekTo(amount: number, keepPlaying?: boolean) {
+		player.seekTo(amount);
+		if (!keepPlaying && !playing) {
+			pause();
 		}
 	}
 
-	export function setVolume(fraction: number): void {
-		if (player !== undefined) {
-			player.setVolume(fraction * 100);
-		}
+	export function setVolume(fraction: number) {
+		player.setVolume(fraction * 100);
 	}
 
-	export function mute(): void {
-		if (player !== undefined) {
-			player.mute();
-		}
+	export function mute() {
+		player.mute();
 	}
 
-	export function unmute(): void {
-		if (player !== undefined) {
-			player.unMute();
-		}
+	export function unmute() {
+		player.unMute();
 	}
 
-	export function setPlaybackRate(rate: number): void {
-		if (player !== undefined) {
-			player.setPlaybackRate(rate);
-		}
+	export function setPlaybackRate(rate: number) {
+		player.setPlaybackRate(rate);
 	}
 
-	export function setLoop(loop: boolean): void {
-		if (player !== undefined) {
-			player.setLoop(loop);
-		}
+	export function setLoop(loop: boolean) {
+		player.setLoop(loop);
 	}
 
-	export function getDuration(): number {
-		if (player !== undefined) {
-			return player.getDuration();
-		}
-		return 0;
+	export function getDuration() {
+		return player.getDuration();
 	}
 
-	export function getCurrentTime(): number {
-		if (player !== undefined) {
-			return player.getCurrentTime();
-		}
-		return 0;
+	export function getCurrentTime() {
+		return player.getCurrentTime();
 	}
-	export function getSecondsLoaded(): number {
-		let loadedFraction = 0;
-		if (player !== undefined) {
-			loadedFraction = player.getVideoLoadedFraction();
-		}
-		return loadedFraction * getDuration();
+	export function getSecondsLoaded() {
+		return player.getVideoLoadedFraction() * getDuration();
 	}
 
-	export function getPlayer(): YTPlayer | null {
-		if (player !== undefined) {
-			return player;
-		}
+	export function getPlayer() {
+		return player;
+	}
 
-		return null;
+	export function setPlayer(newPlayer: YTPlayer) {
+		player = newPlayer;
 	}
 </script>
 
-<div class="youtube-player">
+<div class="youtube-player" style:display>
 	<div bind:this={container} />
 </div>
 

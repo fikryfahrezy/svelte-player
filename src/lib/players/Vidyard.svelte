@@ -1,7 +1,7 @@
 <script lang="ts">
 	import type { GlobalSDKVidyardKey } from './global.types';
 	import type { VidyardSDKReady, VidyardPlayer } from './vidyard.global.types';
-	import type { FilePlayerUrl, Dispatcher } from './types';
+	import type { Dispatcher } from './types';
 	import type { VidyardConfig } from './vidyard.types';
 
 	import { onMount, createEventDispatcher } from 'svelte';
@@ -11,6 +11,7 @@
 	export let playing: boolean;
 	export let volume: number | null;
 	export let config: VidyardConfig;
+	export let display: string | undefined = undefined;
 
 	const SDK_URL = 'https://play.vidyard.com/embed/v4.js';
 	const SDK_GLOBAL: GlobalSDKVidyardKey = 'VidyardV4';
@@ -18,19 +19,16 @@
 
 	const dispatch = createEventDispatcher<Dispatcher>();
 
-	let player: VidyardPlayer | undefined;
-	let container: HTMLDivElement | undefined;
+	let player: VidyardPlayer;
+	let container: HTMLDivElement;
 	let duration = 0;
 
 	onMount(() => {
 		dispatch('mount');
 	});
 
-	export function load(url: string, _?: boolean): void {
+	export function load(url: string) {
 		const id = url && url.match(MATCH_URL_VIDYARD)?.[1];
-		if (id === undefined) {
-			return;
-		}
 		if (player) {
 			stop();
 		}
@@ -65,7 +63,7 @@
 					}
 				}, id);
 				Vidyard.api.renderPlayer({
-					uuid: id,
+					uuid: String(id),
 					container: container,
 					autoplay: playing ? 1 : 0,
 					...config.options
@@ -78,33 +76,23 @@
 	}
 
 	export function play() {
-		if (player !== undefined) {
-			player.play();
-		}
+		player.play();
 	}
 
 	export function pause() {
-		if (player !== undefined) {
-			player.pause();
-		}
+		player.pause();
 	}
 
 	export function stop() {
-		if (player !== undefined) {
-			window.VidyardV4.api.destroyPlayer(player);
-		}
+		window.VidyardV4.api.destroyPlayer(player);
 	}
 
-	export function seekTo(seconds: number, _?: boolean): void {
-		if (player !== undefined) {
-			player.seek(seconds);
-		}
+	export function seekTo(seconds: number) {
+		player.seek(seconds);
 	}
 
-	export function setVolume(fraction: number): void {
-		if (player !== undefined) {
-			player.setVolume(fraction);
-		}
+	export function setVolume(fraction: number) {
+		player.setVolume(fraction);
 	}
 
 	export function mute() {
@@ -117,36 +105,32 @@
 		}
 	}
 
-	export function setPlaybackRate(rate: number): void {
-		if (player !== undefined) {
-			player.setPlaybackSpeed(rate);
-		}
+	export function setPlaybackRate(rate: number) {
+		player.setPlaybackSpeed(rate);
 	}
 
-	export function getDuration(): number {
+	export function getDuration() {
 		return duration;
 	}
 
 	export function getCurrentTime() {
-		if (player !== undefined) {
-			return player.currentTime();
-		}
-		return 0;
+		return player.currentTime();
 	}
 
-	export function getSecondsLoaded(): number {
-		return 0;
-	}
-
-	export function getPlayer(): VidyardPlayer | null {
-		if (player !== undefined) {
-			return player;
-		}
+	export function getSecondsLoaded() {
 		return null;
+	}
+
+	export function getPlayer() {
+		return player;
+	}
+
+	export function setPlayer(newPlayer: VidyardPlayer) {
+		player = newPlayer;
 	}
 </script>
 
-<div class="vidyard-player">
+<div class="vidyard-player" style:display>
 	<div bind:this={container} />
 </div>
 

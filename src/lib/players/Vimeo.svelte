@@ -1,7 +1,7 @@
 <script lang="ts">
 	import type { GlobalSDKVimeoKey } from './global.types';
 	import type { VimeoPlayer } from './vimeo.global.types';
-	import type { FilePlayerUrl, Dispatcher } from './types';
+	import type { Dispatcher } from './types';
 	import type { ViemoConfig } from './vimeo.types';
 
 	import { onMount, createEventDispatcher } from 'svelte';
@@ -13,6 +13,7 @@
 	export let muted: boolean;
 	export let playsinline: boolean;
 	export let config: ViemoConfig;
+	export let display: string | undefined = undefined;
 
 	const SDK_URL = 'https://player.vimeo.com/api/player.js';
 	const SDK_GLOBAL: GlobalSDKVimeoKey = 'Vimeo';
@@ -23,8 +24,8 @@
 
 	const dispatch = createEventDispatcher<Dispatcher>();
 
-	let container: HTMLDivElement | undefined;
-	let player: VimeoPlayer | undefined;
+	let container: HTMLDivElement;
+	let player: VimeoPlayer;
 	let duration = 0;
 	let currentTime = 0;
 	let secondsLoaded = 0;
@@ -34,7 +35,7 @@
 		dispatch('mount');
 	});
 
-	export function load(url: string, _?: boolean): void {
+	export function load(url: string) {
 		duration = 0;
 		getSDK({ url: SDK_URL, sdkGlobal: SDK_GLOBAL }).then(
 			(Vimeo) => {
@@ -54,9 +55,6 @@
 				player
 					.ready()
 					.then(() => {
-						if (container === undefined) {
-							return;
-						}
 						const iframe = container.querySelector('iframe');
 						if (iframe !== null) {
 							iframe.style.width = '100%';
@@ -115,46 +113,34 @@
 	}
 
 	function refreshDuration() {
-		if (player !== undefined) {
-			player.getDuration().then((durationParam) => {
-				duration = durationParam;
+		player.getDuration().then((durationParam) => {
+			duration = durationParam;
+		});
+	}
+
+	export function play() {
+		const promise = player.play();
+		if (promise) {
+			promise.catch((error) => {
+				dispatch('error', { error });
 			});
 		}
 	}
 
-	export function play() {
-		if (player !== undefined) {
-			const promise = player.play();
-			if (promise) {
-				promise.catch((error) => {
-					dispatch('error', { error });
-				});
-			}
-		}
-	}
-
 	export function pause() {
-		if (player !== undefined) {
-			player.pause();
-		}
+		player.pause();
 	}
 
 	export function stop() {
-		if (player !== undefined) {
-			player.unload();
-		}
+		player.unload();
 	}
 
-	export function seekTo(seconds: number, _?: boolean): void {
-		if (player !== undefined) {
-			player.setCurrentTime(seconds);
-		}
+	export function seekTo(seconds: number) {
+		player.setCurrentTime(seconds);
 	}
 
-	export function setVolume(fraction: number): void {
-		if (player !== undefined) {
-			player.setVolume(fraction);
-		}
+	export function setVolume(fraction: number) {
+		player.setVolume(fraction);
 	}
 
 	export function mute() {
@@ -165,19 +151,15 @@
 		setVolume(playervolume);
 	}
 
-	export function setPlaybackRate(rate: number): void {
-		if (player !== undefined) {
-			player.setPlaybackRate(rate);
-		}
+	export function setPlaybackRate(rate: number) {
+		player.setPlaybackRate(rate);
 	}
 
-	export function setLoop(loop: boolean): void {
-		if (player !== undefined) {
-			player.setLoop(loop);
-		}
+	export function setLoop(loop: boolean) {
+		player.setLoop(loop);
 	}
 
-	export function getDuration(): number {
+	export function getDuration() {
 		return duration;
 	}
 
@@ -185,19 +167,20 @@
 		return currentTime;
 	}
 
-	export function getSecondsLoaded(): number {
+	export function getSecondsLoaded() {
 		return secondsLoaded;
 	}
 
-	export function getPlayer(): VimeoPlayer | null {
-		if (player !== undefined) {
-			return player;
-		}
-		return null;
+	export function getPlayer() {
+		return player;
+	}
+
+	export function setPlayer(newPlayer: VimeoPlayer) {
+		player = newPlayer;
 	}
 </script>
 
-<div bind:this={container} class="vimeo-player" />
+<div bind:this={container} class="vimeo-player" style:display />
 
 <style>
 	.vimeo-player {

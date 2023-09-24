@@ -12,6 +12,7 @@
 	export let controls: boolean;
 	export let muted: boolean;
 	export let config: DailyMotionConfig;
+	export let display: string | undefined = undefined;
 
 	const SDK_URL = 'https://api.dmcdn.net/all.js';
 	const SDK_GLOBAL: GlobalSDKDailyMotionKey = 'DM';
@@ -19,18 +20,15 @@
 
 	const dispatch = createEventDispatcher<Dispatcher>();
 
-	let container: HTMLDivElement | undefined;
-	let player: DailyMotionPlayer | undefined;
+	let container: HTMLDivElement;
+	let player: DailyMotionPlayer;
 
 	onMount(() => {
 		dispatch('mount');
 	});
 
-	export function load(url: string, _?: boolean): void {
-		const [, id] = url.match(MATCH_URL_DAILYMOTION) ?? [];
-		if (id === undefined) {
-			return;
-		}
+	export function load(url: string) {
+		const id = String(url.match(MATCH_URL_DAILYMOTION)?.[1]);
 		if (player) {
 			player.load(id, {
 				start: parseStartTime(url),
@@ -68,9 +66,7 @@
 							dispatch('ready');
 						},
 						seeked() {
-							if (player !== undefined) {
-								dispatch('seek', player.currentTime);
-							}
+							dispatch('seek', player.currentTime);
 						},
 						video_end() {
 							dispatch('ended');
@@ -103,75 +99,55 @@
 	}
 
 	export function play() {
-		if (player !== undefined) {
-			player.play();
-		}
+		player.play();
 	}
 
 	export function pause() {
-		if (player !== undefined) {
-			player.pause();
-		}
+		player.pause();
 	}
 
 	export function stop() {
 		// Nothing to do
 	}
 
-	export function seekTo(seconds: number, _?: boolean): void {
-		if (player !== undefined) {
-			player.seek(seconds);
-		}
+	export function seekTo(seconds: number) {
+		player.seek(seconds);
 	}
 
-	export function setVolume(fraction: number): void {
-		if (player !== undefined) {
-			player.setVolume(fraction);
-		}
+	export function setVolume(fraction: number) {
+		player.setVolume(fraction);
 	}
 
 	export function mute() {
-		if (player !== undefined) {
-			player.setMuted(true);
-		}
+		player.setMuted(true);
 	}
 
 	export function unmute() {
-		if (player !== undefined) {
-			player.setMuted(false);
-		}
+		player.setMuted(false);
 	}
 
-	export function getDuration(): number {
-		if (player !== undefined) {
-			return player.duration || 0;
-		}
-		return 0;
+	export function getDuration() {
+		return player.duration || null;
 	}
 
 	export function getCurrentTime() {
-		if (player !== undefined) {
-			return player.currentTime;
-		}
-		return 0;
+		return player.currentTime;
 	}
 
-	export function getSecondsLoaded(): number {
-		if (player !== undefined) {
-			return player.bufferedTime;
-		}
-		return 0;
+	export function getSecondsLoaded() {
+		return player.bufferedTime;
 	}
 
-	export function getPlayer(): DailyMotionPlayer | null {
-		if (player !== undefined) {
-			return player;
-		}
-		return null;
+	export function getPlayer() {
+		return player;
+	}
+
+	export function setPlayer(newPlayer: DailyMotionPlayer) {
+		player = newPlayer;
 	}
 </script>
 
-<div class="dailymotion-player">
+<div class="dailymotion-player" style:display>
 	<div bind:this={container} />
 </div>
 

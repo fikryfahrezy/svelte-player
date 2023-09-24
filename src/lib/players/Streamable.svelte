@@ -1,33 +1,23 @@
 <script lang="ts">
 	import type { GlobalSDKPlayerJSKey } from './global.types';
 	import type { PlayerJSPlayer } from './playerjs.global.types';
-	import type { FilePlayerUrl, Dispatcher } from './types';
+	import type { Dispatcher } from './types';
 
 	import { onMount, createEventDispatcher } from 'svelte';
 	import { getSDK } from './utils';
 	import { MATCH_URL_STREAMABLE } from './patterns';
 
-	export let url: FilePlayerUrl;
 	export let loop: boolean;
 	export let muted: boolean;
-
-	function handlePropsUrlChange(propsUrl: typeof url) {
-		if (typeof propsUrl !== 'string') {
-			return '';
-		}
-		return propsUrl;
-	}
-
-	$: propsUrl = handlePropsUrlChange(url);
 
 	const SDK_URL = 'https://cdn.embed.ly/player-0.1.0.min.js';
 	const SDK_GLOBAL: GlobalSDKPlayerJSKey = 'playerjs';
 
 	const dispatch = createEventDispatcher<Dispatcher>();
 
-	let iframeContainer: HTMLIFrameElement | undefined;
-
-	let player: PlayerJSPlayer | undefined;
+	let url: string;
+	let iframeContainer: HTMLIFrameElement;
+	let player: PlayerJSPlayer;
 	let duration = 0;
 	let currentTime = 0;
 	let secondsLoaded = 0;
@@ -36,7 +26,8 @@
 		dispatch('mount');
 	});
 
-	export function load(_: FilePlayerUrl, __?: boolean): void {
+	export function load(loadUrl: string): void {
+		url = loadUrl;
 		getSDK({ url: SDK_URL, sdkGlobal: SDK_GLOBAL }).then(
 			(playerjs) => {
 				if (!iframeContainer) {
@@ -44,9 +35,7 @@
 				}
 
 				player = new playerjs.Player(iframeContainer);
-				if (player.setLoop !== undefined) {
-					player.setLoop(loop);
-				}
+				player.setLoop?.(loop);
 
 				player.on('ready', () => {
 					dispatch('ready');
@@ -72,6 +61,11 @@
 					duration = data.duration;
 					currentTime = data.seconds;
 				});
+				player.on('buffered', ({ percent }) => {
+					if (duration) {
+						secondsLoaded = duration * percent;
+					}
+				});
 				if (muted) {
 					player.mute();
 				}
@@ -85,49 +79,35 @@
 	}
 
 	export function play() {
-		if (player !== undefined) {
-			player.play();
-		}
+		player.play();
 	}
 
 	export function pause() {
-		if (player !== undefined) {
-			player.pause();
-		}
+		player.pause();
 	}
 
 	export function stop() {
 		// Nothing to do
 	}
 
-	export function seekTo(seconds: number, _?: boolean): void {
-		if (player !== undefined) {
-			player.setCurrentTime(seconds);
-		}
+	export function seekTo(seconds: number): void {
+		player.setCurrentTime(seconds);
 	}
 
 	export function setVolume(fraction: number): void {
-		if (player !== undefined) {
-			player.setVolume(fraction * 100);
-		}
+		player.setVolume(fraction * 100);
 	}
 
 	export function mute() {
-		if (player !== undefined) {
-			player.mute();
-		}
+		player.mute();
 	}
 
 	export function unmute() {
-		if (player !== undefined) {
-			player.unmute();
-		}
+		player.unmute();
 	}
 
 	export function setLoop(loop: boolean): void {
-		if (player !== undefined && player.setLoop !== undefined) {
-			player.setLoop(loop);
-		}
+		player.setLoop?.(loop);
 	}
 
 	export function getDuration(): number {
@@ -143,13 +123,14 @@
 	}
 
 	export function getPlayer(): PlayerJSPlayer | null {
-		if (player !== undefined) {
-			return player;
-		}
-		return null;
+		return player;
 	}
 
-	$: id = propsUrl.match(MATCH_URL_STREAMABLE)?.[1];
+	export function setPlayer(newPlayer: PlayerJSPlayer) {
+		player = newPlayer;
+	}
+
+	$: id = url.match(MATCH_URL_STREAMABLE)?.[1];
 </script>
 
 <iframe

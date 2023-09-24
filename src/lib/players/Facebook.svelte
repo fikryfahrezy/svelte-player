@@ -1,26 +1,16 @@
 <script lang="ts">
 	import type { GlobalSDKFacebookKey } from './global.types';
 	import type { FacebookPlayer, FacebookSDKReady } from './facebook.global.types';
-	import type { FilePlayerUrl, Dispatcher } from './types';
+	import type { Dispatcher } from './types';
 	import type { FacebookConfig } from './facebook.types';
 
 	import { onMount, createEventDispatcher } from 'svelte';
 	import { getSDK, randomString } from './utils';
 
-	export let url: FilePlayerUrl;
 	export let playing: boolean;
 	export let controls: boolean;
 	export let muted: boolean;
 	export let config: FacebookConfig;
-
-	function handlePropsUrlChange(propsUrl: typeof url) {
-		if (typeof propsUrl !== 'string') {
-			return '';
-		}
-		return propsUrl;
-	}
-
-	$: propsUrl = handlePropsUrlChange(url);
 
 	const SDK_URL = 'https://connect.facebook.net/en_US/sdk.js';
 	const SDK_GLOBAL: GlobalSDKFacebookKey = 'FB';
@@ -31,13 +21,15 @@
 
 	const dispatch = createEventDispatcher<Dispatcher>();
 
-	let player: FacebookPlayer | undefined;
+	let url: string;
+	let player: FacebookPlayer;
 
 	onMount(() => {
 		dispatch('mount');
 	});
 
-	export function load(_: string, isReady?: boolean): void {
+	export function load(loadUrl: string, isReady?: boolean) {
+		url = loadUrl;
 		if (isReady) {
 			getSDK({ url: SDK_URL, sdkGlobal: SDK_GLOBAL, sdkReady: SDK_GLOBAL_READY }).then((FB) => {
 				return FB.XFBML.parse();
@@ -98,75 +90,58 @@
 	}
 
 	export function play() {
-		if (player !== undefined) {
-			player.play();
-		}
+		player.play();
 	}
 
 	export function pause() {
-		if (player !== undefined) {
-			player.pause();
-		}
+		player.pause();
 	}
 
 	export function stop() {
 		// Nothing to do
 	}
 
-	export function seekTo(seconds: number, _?: boolean): void {
-		if (player !== undefined) {
-			player.seek(seconds);
-		}
+	export function seekTo(seconds: number) {
+		player.seek(seconds);
 	}
 
-	export function setVolume(fraction: number): void {
-		if (player !== undefined) {
-			player.setVolume(fraction);
-		}
+	export function setVolume(fraction: number) {
+		player.setVolume(fraction);
 	}
 
 	export function mute() {
-		if (player !== undefined) {
-			player.mute();
-		}
+		player.mute();
 	}
 
 	export function unmute() {
-		if (player !== undefined) {
-			player.unmute();
-		}
+		player.unmute();
 	}
 
-	export function getDuration(): number {
-		if (player !== undefined) {
-			return player.getDuration();
-		}
-		return 0;
+	export function getDuration() {
+		return player.getDuration();
 	}
 
 	export function getCurrentTime() {
-		if (player !== undefined) {
-			return player.getCurrentPosition();
-		}
+		return player.getCurrentPosition();
+	}
+
+	export function getSecondsLoaded() {
 		return 0;
 	}
 
-	export function getSecondsLoaded(): number {
-		return 0;
+	export function getPlayer() {
+		return player;
 	}
 
-	export function getPlayer(): FacebookPlayer | null {
-		if (player !== undefined) {
-			return player;
-		}
-		return null;
+	export function setPlayer(newPlayer: FacebookPlayer) {
+		player = newPlayer;
 	}
 </script>
 
 <div
 	id={playerID}
 	class="facebook-player fb-video"
-	data-href={propsUrl}
+	data-href={url}
 	data-autoplay={playing ? 'true' : 'false'}
 	data-allowfullscreen="true"
 	data-controls={controls ? 'true' : 'false'}

@@ -1,7 +1,7 @@
 <script lang="ts">
 	import type { GlobalSDKTwitchKey } from './global.types';
 	import type { TwitchPlayer, TwitchPlayerLinkOption } from './twitch.global.types';
-	import type { FilePlayerUrl, Dispatcher } from './types';
+	import type { Dispatcher } from './types';
 	import type { TwitchConfig } from './twitch.types';
 
 	import { onMount, createEventDispatcher } from 'svelte';
@@ -22,7 +22,7 @@
 
 	const dispatch = createEventDispatcher<Dispatcher>();
 
-	let player: TwitchPlayer | undefined;
+	let player: TwitchPlayer;
 
 	onMount(() => {
 		dispatch('mount');
@@ -32,12 +32,9 @@
 		const isChannel = MATCH_URL_TWITCH_CHANNEL.test(url);
 		const channelUrl = url.match(MATCH_URL_TWITCH_CHANNEL)?.[1];
 		const videoUrl = url.match(MATCH_URL_TWITCH_VIDEO)?.[1];
-		const id = isChannel ? channelUrl : videoUrl;
-		if (id === undefined) {
-			return;
-		}
+		const id = String(isChannel ? channelUrl : videoUrl);
 
-		if (isReady && player !== undefined) {
+		if (isReady) {
 			if (isChannel) {
 				player.setChannel(id);
 			} else {
@@ -50,7 +47,7 @@
 			sdkGlobal: SDK_GLOBAL
 		}).then(
 			(Twitch) => {
-				let linkOption: TwitchPlayerLinkOption = isChannel
+				const linkOption: TwitchPlayerLinkOption = isChannel
 					? {
 							collection: undefined,
 							channel: id,
@@ -109,76 +106,51 @@
 	}
 
 	export function play() {
-		if (player !== undefined) {
-			player.play();
-		}
+		player.play();
 	}
 
 	export function pause() {
-		if (player !== undefined) {
-			player.pause();
-		}
+		player.pause();
 	}
 
 	export function stop() {
-		if (player !== undefined) {
-			player.pause();
-		}
+		player.pause();
 	}
 
-	export function seekTo(seconds: number, _?: boolean) {
-		if (player !== undefined) {
-			player.seek(seconds);
-		}
+	export function seekTo(seconds: number) {
+		player.seek(seconds);
 	}
 
 	export function setVolume(fraction: number) {
-		if (player !== undefined) {
-			player.setVolume(fraction);
-		}
+		player.setVolume(fraction);
 	}
 
 	export function mute() {
-		if (player !== undefined) {
-			player.setMuted(true);
-		}
+		player.setMuted(true);
 	}
 
 	export function unmute() {
-		if (player !== undefined) {
-			player.setMuted(false);
-		}
-	}
-
-	export function setLoop(_: boolean) {
-		// Nothing to do
+		player.setMuted(false);
 	}
 
 	export function getDuration() {
-		if (player !== undefined) {
-			return player.getDuration();
-		}
-		return 0;
+		return player.getDuration();
 	}
 
 	export function getCurrentTime() {
-		if (player !== undefined) {
-			return player.getCurrentTime();
-		}
-		return 0;
+		return player.getCurrentTime();
 	}
 
 	export function getSecondsLoaded() {
-		// Nothing to do
-		return 0;
+		return null;
 	}
 
-	export function getPlayer(): TwitchPlayer | null {
-		if (player !== undefined) {
-			return player;
-		}
+	export function getPlayer() {
+		return player;
+	}
 
-		return null;
+	export function setPlayer(newPlayer: TwitchPlayer) {
+		player = newPlayer;
 	}
 </script>
 

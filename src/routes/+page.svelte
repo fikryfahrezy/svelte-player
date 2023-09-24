@@ -93,9 +93,9 @@
 		playing = loop;
 	}
 
-	function handleDuration(event: CustomEvent<number>) {
+	function handleDuration(event: CustomEvent<number | null>) {
 		console.log('onDuration', event.detail);
-		duration = event.detail;
+		duration = event.detail ?? 0;
 	}
 
 	function handleClickFullscreen() {
