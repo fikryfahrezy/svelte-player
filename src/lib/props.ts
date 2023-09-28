@@ -1,4 +1,4 @@
-import type { Config } from './types';
+import type { Config } from './players/types';
 import { noop } from './players/utils';
 
 export const defaultConfig: Config = {

@@ -7,6 +7,7 @@
 	import { onMount, createEventDispatcher } from 'svelte';
 	import { getSDK } from './utils';
 
+	export let url: string;
 	export const playing: boolean | undefined = undefined;
 	export const loop: boolean | undefined = undefined;
 	export const controls: boolean | undefined = undefined;
@@ -26,7 +27,6 @@
 
 	let iframeContainer: HTMLIFrameElement;
 	let player: SoundCloudPlayer;
-	let url: string;
 
 	let duration = 0;
 	let currentTime = 0;

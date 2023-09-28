@@ -1,13 +1,14 @@
 <script lang="ts">
 	import type { GlobalSDKMixcloudKey } from './global.types';
 	import type { MixcloudWidget } from './mixcloud.global.types';
-	import type { FilePlayerUrl, Dispatcher } from './types';
+	import type { Dispatcher } from './types';
 	import type { MixcloudConfig } from './mixcloud.types';
 
 	import { onMount, createEventDispatcher } from 'svelte';
 	import { queryString, getSDK } from './utils';
 	import { MATCH_URL_MIXCLOUD } from './patterns';
 
+	export let url: string;
 	export let config: MixcloudConfig;
 
 	const SDK_URL = 'https://widget.mixcloud.com/media/js/widgetApi.js';
@@ -15,7 +16,6 @@
 
 	const dispatch = createEventDispatcher<Dispatcher>();
 
-	let url: string;
 	let iframeContainer: HTMLIFrameElement;
 	let player: MixcloudWidget;
 	let duration = 0;
@@ -26,8 +26,7 @@
 		dispatch('mount');
 	});
 
-	export function load(loadUrl: string) {
-		url = loadUrl;
+	export function load() {
 		getSDK({ url: SDK_URL, sdkGlobal: SDK_GLOBAL }).then(
 			(Mixcloud) => {
 				player = Mixcloud.PlayerWidget(iframeContainer);

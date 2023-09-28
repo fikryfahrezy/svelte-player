@@ -8,6 +8,7 @@
 	import { MATCH_URL_WISTIA } from './patterns';
 	import { randomString, getSDK } from './utils';
 
+	export let url: string;
 	export let playing: boolean;
 	export let controls: boolean;
 	export let muted: boolean;
@@ -22,14 +23,12 @@
 	const dispatch = createEventDispatcher<Dispatcher>();
 
 	let player: WistiaPlayer;
-	let url: string;
 
 	onMount(() => {
 		dispatch('mount');
 	});
 
-	export function load(loadUrl: string) {
-		url = loadUrl;
+	export function load() {
 		getSDK({ url: SDK_URL, sdkGlobal: SDK_GLOBAL }).then(
 			(Wistia) => {
 				if (config.customControls) {

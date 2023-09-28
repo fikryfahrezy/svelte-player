@@ -1,11 +1,11 @@
 <script lang="ts">
 	import type { SeekToType, PlayerDispatcher, PlayerMediaRef } from './types';
-	import type { Player } from './players';
 	import type {
 		OnProgressProps,
 		InternalPlayerKey,
 		OnErrorProps,
-		FilePlayerUrl
+		FilePlayerUrl,
+		Player
 	} from './players/types';
 	import { onMount, createEventDispatcher } from 'svelte';
 	import { isMediaStream } from './players/utils';
@@ -26,9 +26,10 @@
 	export let config: any; // Expect this type is `PlayerConfig` but, can't figure it out how
 
 	export let progressFrequency: number | undefined = undefined;
-
+	export let disableDeferredLoading: boolean | undefined = undefined;
 	export let loopOnEnded: boolean | undefined = undefined;
 	export let forceLoad: boolean | undefined = undefined;
+	export let display: string | undefined = undefined;
 	export let activePlayer: Player['loadComponent'];
 
 	let mounted = false;
@@ -68,17 +69,17 @@
 
 	function handlePropsUrlChange(propsUrl: typeof url) {
 		if (player !== undefined && isReady) {
-			if (isLoading && !forceLoad && !isMediaStream(propsUrl)) {
+			if (isLoading && !forceLoad && !disableDeferredLoading && !isMediaStream(propsUrl)) {
 				console.warn(
 					`SveltePlayer: the attempt to load ${propsUrl} is being deferred until the player has loaded`
 				);
 				loadOnReady = propsUrl;
-			} else {
-				isLoading = true;
-				startOnPlay = true;
-				onDurationCalled = false;
-				player.load(propsUrl, isReady);
+				return;
 			}
+			isLoading = true;
+			startOnPlay = true;
+			onDurationCalled = false;
+			player.load(propsUrl, isReady);
 		}
 	}
 
@@ -342,6 +343,7 @@
 		{height}
 		{muted}
 		{volume}
+		{display}
 		bind:this={player}
 		on:mount={handlePlayerMount}
 		on:ready={handleReady}

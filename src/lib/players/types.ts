@@ -1,5 +1,6 @@
 import type { SvelteComponent } from 'svelte';
 
+import type { RecursivePartial, Constructor } from './utility.types';
 import type loadScript from 'load-script';
 import type { GlobalSDK, GlobalSDKReady, GlobalSDKType } from './global.types';
 import type { NotImplementedPlayer } from './notimplemented.global.types';
@@ -13,6 +14,17 @@ import type { VimeoPlayer } from './vimeo.global.types';
 import type { PlayerJSPlayer } from './playerjs.global.types';
 import type { WistiaPlayer } from './wistia.global.types';
 import type { VidyardPlayer } from './vidyard.global.types';
+import type { YouTubeConfig } from './youtube.types';
+import type { SoundCloudConfig } from './soundcloud.types';
+import type { ViemoConfig } from './vimeo.types';
+import type { FacebookConfig } from './facebook.types';
+import type { WistiaConfig } from './wistia.types';
+import type { TwitchConfig } from './twitch.types';
+import type { DailyMotionConfig } from './dailymotion.types';
+import type { MixcloudConfig } from './mixcloud.types';
+import type { VidyardConfig } from './vidyard.types';
+import type { FileConfig } from './file.types';
+import type { NotImplementedConfig } from './notimplemented.types';
 
 export type PlayerInstance =
 	| YTPlayer
@@ -35,15 +47,30 @@ export type SDKBase<T extends keyof GlobalSDK> = {
 	sdkReady?: GlobalSDKReady | null;
 };
 
-export type PlayerType = 'YouTube';
-
-export type PlayerUrl = string | string[];
+export type PlayerKey =
+	| 'youtube'
+	| 'soundcloud'
+	| 'vimeo'
+	| 'facebook'
+	| 'streamable'
+	| 'wistia'
+	| 'twitch'
+	| 'dailymotion'
+	| 'mixcloud'
+	| 'vidyard'
+	| 'kaltura'
+	| 'file'
+	| 'not-implemented';
 
 export type Player = {
-	canPlay: (url: PlayerUrl) => boolean;
-	loadComponent: () => Promise<{ default: typeof SvelteComponent<any> }>;
+	key: PlayerKey;
 	loopOnEnded?: boolean;
 	forceLoad?: boolean;
+	canPlay(url: FilePlayerUrl): boolean;
+	canEnablePIP?(url: FilePlayerUrl): boolean;
+	loadComponent(): Promise<{
+		default: Constructor<SvelteComponent<Partial<PlayerProps>> & PlayerMedia>;
+	}>;
 };
 
 export type GetSDKParams<T extends keyof GlobalSDK = GlobalSDKType> = SDKBase<T> & {
@@ -93,4 +120,61 @@ export type InternalPlayerKey = 'player' | 'hls' | 'dash';
 
 export type FileMediaUrl = { src: string; type: string };
 
-export type FilePlayerUrl = PlayerUrl | FileMediaUrl[] | MediaStream;
+export type FilePlayerUrl = string | string[] | FileMediaUrl[] | MediaStream;
+
+export type Config = {
+	youtube: YouTubeConfig;
+	soundcloud: SoundCloudConfig;
+	vimeo: ViemoConfig;
+	facebook: FacebookConfig;
+	streamable: undefined;
+	wistia: WistiaConfig;
+	twitch: TwitchConfig;
+	dailymotion: DailyMotionConfig;
+	mixcloud: MixcloudConfig;
+	vidyard: VidyardConfig;
+	kaltura: undefined;
+	file: FileConfig;
+	'not-implemented': NotImplementedConfig;
+};
+
+export type PlayerProps = {
+	url: FilePlayerUrl;
+	playing: boolean;
+	loop: boolean;
+	controls: boolean;
+	light: boolean | string;
+	volume: number | null;
+	muted: boolean;
+	playbackRate: number;
+	width: string;
+	height: string;
+	progressInterval: number;
+	playsinline: boolean;
+	pip: boolean;
+	stopOnUnmount: boolean;
+	previewTabIndex: number;
+	config: RecursivePartial<Config[keyof Config]>;
+	oEmbedUrl: string;
+	display: string;
+};
+
+export type PlayerMedia = {
+	load(url: FilePlayerUrl, isReady?: boolean): void;
+	stop(): void;
+	play(): void;
+	pause(): void;
+	setVolume(fraction: number): void;
+	mute(): void;
+	unmute(): void;
+	getDuration(): number | null;
+	getCurrentTime(): number | null;
+	getSecondsLoaded(): number | null;
+	seekTo(amount: number, keepPlaying?: boolean): void;
+	setPlaybackRate?(rate: number): void;
+	setLoop?(loop: boolean): void;
+	enablePIP?(): void;
+	disablePIP?(): void;
+	getPlayer?(): GetPlayerReturn;
+	setPlayer?(palyer: GetPlayerReturn): void;
+};

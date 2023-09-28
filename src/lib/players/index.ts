@@ -1,4 +1,4 @@
-import type { FilePlayerUrl } from './types';
+import type { FilePlayerUrl, Player } from './types';
 import {
 	canPlayYoutube,
 	canPlayFile,
@@ -16,7 +16,7 @@ import {
 } from './patterns';
 import { supportsWebKitPresentationMode } from './utils';
 
-const players = [
+const players: Player[] = [
 	{
 		key: 'youtube',
 		canPlay: canPlayYoutube,
@@ -33,7 +33,7 @@ const players = [
 		canEnablePIP: undefined,
 		loopOnEnded: true,
 		forceLoad: undefined,
-		loadComponent: () => {
+		loadComponent: async () => {
 			return import('./SoundCloud.svelte');
 		}
 	},
@@ -158,8 +158,6 @@ const players = [
 			return import('./NotImplemented.svelte');
 		}
 	}
-] as const;
-
-export type Player = (typeof players)[number];
+];
 
 export default players;

@@ -49,22 +49,30 @@
 
 	const dispatch = createEventDispatcher<Dispatcher>();
 
+	let player: PlayerElement;
 	let hls: GlobalSDKHLSClass | undefined = undefined;
 	let dash: DashJSMediaPlayerClass | undefined = undefined;
 	let flv: FlvJSPlayer | undefined = undefined;
 
-	let prevUrl: FilePlayerUrl;
+	let prevUrl: FilePlayerUrl | undefined;
 	let prevConfig: FileConfig | undefined;
-	let player: PlayerElement;
 	let prevPlayer: PlayerElement | undefined;
 
 	// TODO: Fix these setPrevX function
 	function setPrevUrl(newUrl: FilePlayerUrl) {
+		const tmpPrevUrl = prevUrl;
 		prevUrl = newUrl;
+		if (tmpPrevUrl !== undefined) {
+			handlePropsChange({ config, url: newUrl }, { config, url: tmpPrevUrl });
+		}
 	}
 
-	function setPrevConfig(newUrl: FileConfig) {
-		prevConfig = newUrl;
+	function setPrevConfig(newConfig: FileConfig) {
+		const tmpPrevConfig = prevConfig;
+		prevConfig = newConfig;
+		if (tmpPrevConfig !== undefined) {
+			handlePropsChange({ config: newConfig, url }, { config: tmpPrevConfig, url });
+		}
 	}
 
 	function setPrevPlayer(newPlayer: PlayerElement) {
@@ -75,25 +83,23 @@
 	$: setPrevConfig(config);
 	$: setPrevPlayer(player);
 
-	function handlePropsChange(newUrl: FilePlayerUrl, newConfig: FileConfig) {
-		if (prevConfig === undefined || prevUrl === undefined || prevPlayer === undefined) {
+	function handlePropsChange(newProps: ShouldUseAudioParams, prevProps: ShouldUseAudioParams) {
+		if (prevPlayer === undefined) {
 			return;
 		}
 
-		const newShouldUseAudioValue = shouldUseAudio({ config: newConfig, url: newUrl });
-		const prevShouldUseAudioValue = shouldUseAudio({ config: prevConfig, url: prevUrl });
+		const newShouldUseAudioValue = shouldUseAudio(newProps);
+		const prevShouldUseAudioValue = shouldUseAudio(prevProps);
 
 		if (newShouldUseAudioValue !== prevShouldUseAudioValue) {
 			removeListeners(prevPlayer, prevUrl);
 			addListeners(player);
 		}
 
-		if (newUrl !== prevUrl && !isMediaStream(newUrl)) {
+		if (newProps.url !== prevProps.url && !isMediaStream(newProps.url)) {
 			player.srcObject = null;
 		}
 	}
-
-	$: handlePropsChange(url, config);
 
 	onMount(() => {
 		dispatch('mount');
@@ -243,7 +249,7 @@
 		return FLV_EXTENSIONS.test(String(url)) || config.forceFLV;
 	}
 
-	export function load(url: FilePlayerUrl): void {
+	export function load(loadUrl: FilePlayerUrl): void {
 		const { hlsVersion, hlsOptions, dashVersion, flvVersion } = config;
 		if (hls) {
 			hls.destroy();
@@ -253,7 +259,7 @@
 			dash.reset();
 		}
 
-		if (shouldUseHLS(url)) {
+		if (shouldUseHLS(loadUrl)) {
 			getSDK({
 				url: HLS_SDK_URL.replace('VERSION', hlsVersion),
 				sdkGlobal: HLS_GLOBAL
@@ -270,23 +276,23 @@
 						sdkGlobal: Hls
 					});
 				});
-				if (MATCH_CLOUDFLARE_STREAM.test(url)) {
-					const id = url.match(MATCH_CLOUDFLARE_STREAM)?.[1];
+				if (MATCH_CLOUDFLARE_STREAM.test(loadUrl)) {
+					const id = loadUrl.match(MATCH_CLOUDFLARE_STREAM)?.[1];
 					hls.loadSource(REPLACE_CLOUDFLARE_STREAM.replace('{id}', String(id)));
 				} else {
-					hls.loadSource(url);
+					hls.loadSource(loadUrl);
 				}
 				hls.attachMedia(player);
 				dispatch('loaded');
 			});
 		}
-		if (shouldUseDASH(url)) {
+		if (shouldUseDASH(loadUrl)) {
 			getSDK({
 				url: DASH_SDK_URL.replace('VERSION', dashVersion),
 				sdkGlobal: DASH_GLOBAL
 			}).then((dashjs) => {
 				dash = dashjs.MediaPlayer().create();
-				dash.initialize(player, url, playing);
+				dash.initialize(player, loadUrl, playing);
 				dash.on('error', (e) => {
 					dispatch('error', {
 						error: e.error
@@ -300,12 +306,12 @@
 				dispatch('loaded');
 			});
 		}
-		if (shouldUseFLV(url)) {
+		if (shouldUseFLV(loadUrl)) {
 			getSDK({
 				url: FLV_SDK_URL.replace('VERSION', flvVersion),
 				sdkGlobal: FLV_GLOBAL
 			}).then((flvjs) => {
-				flv = flvjs.createPlayer({ type: 'flv', url });
+				flv = flvjs.createPlayer({ type: 'flv', url: loadUrl });
 				flv.attachMediaElement(player);
 				flv.on(flvjs.Events.ERROR, (e, data) => {
 					dispatch('error', {
@@ -320,17 +326,17 @@
 			});
 		}
 
-		if (url instanceof Array) {
+		if (loadUrl instanceof Array) {
 			// When setting new urls (<source>) on an already loaded video,
 			// HTMLMediaElement.load() is needed to reset the media element
 			// and restart the media resource. Just replacing children source
 			// dom nodes is not enough
 			player.load();
-		} else if (isMediaStream(url)) {
+		} else if (isMediaStream(loadUrl)) {
 			try {
-				player.srcObject = url;
+				player.srcObject = loadUrl;
 			} catch (e) {
-				player.src = window.URL.createObjectURL(url as unknown as MediaSource | Blob);
+				player.src = window.URL.createObjectURL(loadUrl as unknown as MediaSource | Blob);
 			}
 		}
 	}

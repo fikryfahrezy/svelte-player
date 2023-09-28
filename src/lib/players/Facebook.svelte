@@ -7,6 +7,7 @@
 	import { onMount, createEventDispatcher } from 'svelte';
 	import { getSDK, randomString } from './utils';
 
+	export let url: string;
 	export let playing: boolean;
 	export let controls: boolean;
 	export let muted: boolean;
@@ -21,15 +22,13 @@
 
 	const dispatch = createEventDispatcher<Dispatcher>();
 
-	let url: string;
 	let player: FacebookPlayer;
 
 	onMount(() => {
 		dispatch('mount');
 	});
 
-	export function load(loadUrl: string, isReady?: boolean) {
-		url = loadUrl;
+	export function load(_: string, isReady?: boolean) {
 		if (isReady) {
 			getSDK({ url: SDK_URL, sdkGlobal: SDK_GLOBAL, sdkReady: SDK_GLOBAL_READY }).then((FB) => {
 				return FB.XFBML.parse();

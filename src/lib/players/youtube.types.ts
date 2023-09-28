@@ -1,5 +1,3 @@
-import type { PlayerUrl } from './types';
-
 import type {
 	YTListUserUploadsType,
 	YTListPlaylistType,
@@ -7,7 +5,7 @@ import type {
 	YTPlayerOptions
 } from './youtube.global.types';
 
-export type ParsePlaylistFn = (url: PlayerUrl) =>
+export type ParsePlaylistFn = (url: string | string[]) =>
 	| {
 			listType: YTListPlaylistType;
 			list: string;

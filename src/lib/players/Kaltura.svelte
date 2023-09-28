@@ -6,6 +6,7 @@
 	import { onMount, createEventDispatcher } from 'svelte';
 	import { getSDK } from './utils';
 
+	export let url: string;
 	export let loop: boolean;
 	export let muted: boolean;
 
@@ -13,7 +14,6 @@
 	const SDK_GLOBAL: GlobalSDKPlayerJSKey = 'playerjs';
 	const dispatch = createEventDispatcher<Dispatcher>();
 
-	let url: string;
 	let iframeContainer: HTMLIFrameElement;
 	let player: PlayerJSPlayer;
 	let duration = 0;
@@ -24,8 +24,7 @@
 		dispatch('mount');
 	});
 
-	export function load(loadUrl: string) {
-		url = loadUrl;
+	export function load() {
 		getSDK({ url: SDK_URL, sdkGlobal: SDK_GLOBAL }).then(
 			(playerjs) => {
 				if (!iframeContainer) {

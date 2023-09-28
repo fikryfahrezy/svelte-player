@@ -1,7 +1,7 @@
 <script lang="ts">
 	import type { GlobalSDKYTKey } from './global.types';
 	import type { YTPlayer, YTPlayerOnStateChangeEvent, YTSDKReady } from './youtube.global.types';
-	import type { PlayerUrl, Dispatcher } from './types';
+	import type { Dispatcher } from './types';
 	import type { ParsePlaylistFn, YouTubeConfig } from './youtube.types';
 
 	import { createEventDispatcher, onMount } from 'svelte';
@@ -34,14 +34,14 @@
 		dispatch('mount');
 	});
 
-	function getID(url: PlayerUrl) {
+	function getID(url: string | string[]) {
 		if (!url || url instanceof Array || MATCH_PLAYLIST.test(url)) {
 			return null;
 		}
 		return url.match(MATCH_URL_YOUTUBE)?.[1] ?? null;
 	}
 
-	export function load(url: PlayerUrl, isReady?: boolean) {
+	export function load(url: string | string[], isReady?: boolean) {
 		const id = String(getID(url));
 
 		if (isReady) {
@@ -121,7 +121,7 @@
 		}
 	}
 
-	function parsePlaylist(url: PlayerUrl): ReturnType<ParsePlaylistFn> {
+	function parsePlaylist(url: string | string[]): ReturnType<ParsePlaylistFn> {
 		if (url instanceof Array) {
 			return {
 				listType: 'playlist',

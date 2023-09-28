@@ -7,6 +7,7 @@
 	import { getSDK } from './utils';
 	import { MATCH_URL_STREAMABLE } from './patterns';
 
+	export let url: string;
 	export let loop: boolean;
 	export let muted: boolean;
 
@@ -15,7 +16,6 @@
 
 	const dispatch = createEventDispatcher<Dispatcher>();
 
-	let url: string;
 	let iframeContainer: HTMLIFrameElement;
 	let player: PlayerJSPlayer;
 	let duration = 0;
@@ -26,8 +26,7 @@
 		dispatch('mount');
 	});
 
-	export function load(loadUrl: string): void {
-		url = loadUrl;
+	export function load() {
 		getSDK({ url: SDK_URL, sdkGlobal: SDK_GLOBAL }).then(
 			(playerjs) => {
 				if (!iframeContainer) {

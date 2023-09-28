@@ -1,14 +1,13 @@
 <script lang="ts">
 	import type {
-		RecursivePartial,
 		PlayerRef,
 		SeekToType,
 		SveltePlayerDispatcher,
 		SveltePlayerRef,
-		Config,
 		PlayerKey
 	} from './types';
-	import type { InternalPlayerKey, PlayerUrl, FilePlayerUrl } from './players/types';
+	import type { RecursivePartial } from './players/utility.types';
+	import type { InternalPlayerKey, FilePlayerUrl, Config } from './players/types';
 
 	import { createEventDispatcher } from 'svelte';
 	import merge from 'deepmerge';
@@ -37,13 +36,14 @@
 	export let oEmbedUrl = 'https://noembed.com/embed?url={url}';
 
 	export let progressFrequency: number | undefined = undefined;
+	export let display: string | undefined = undefined;
 
 	const dispatch = createEventDispatcher<SveltePlayerDispatcher>();
 
 	let showPreviewState = !!light;
 	let playerRef: PlayerRef;
 
-	export function canEnablePIP(url: PlayerUrl) {
+	export function canEnablePIP(url: FilePlayerUrl) {
 		for (const Player of [...players]) {
 			if (Player.canEnablePIP && Player.canEnablePIP(url)) {
 				return true;
@@ -151,6 +151,7 @@
 				{pip}
 				{width}
 				{height}
+				{display}
 				loopOnEnded={player.loopOnEnded}
 				forceLoad={player.forceLoad}
 				config={getConfig(url, player.key)}
