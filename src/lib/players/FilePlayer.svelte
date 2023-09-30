@@ -10,7 +10,7 @@
 	import type { DashJSMediaPlayerClass } from './dash.types';
 	import type { FlvJSPlayer } from './flv.types';
 
-	import { onMount, createEventDispatcher } from 'svelte';
+	import { onMount, createEventDispatcher, beforeUpdate, afterUpdate } from 'svelte';
 	import { getSDK, isMediaStream, supportsWebKitPresentationMode } from './utils';
 	import { AUDIO_EXTENSIONS, HLS_EXTENSIONS, DASH_EXTENSIONS, FLV_EXTENSIONS } from './patterns';
 
@@ -49,69 +49,72 @@
 
 	const dispatch = createEventDispatcher<Dispatcher>();
 
-	let player: PlayerElement;
 	let hls: GlobalSDKHLSClass | undefined = undefined;
 	let dash: DashJSMediaPlayerClass | undefined = undefined;
 	let flv: FlvJSPlayer | undefined = undefined;
 
-	let prevUrl: FilePlayerUrl | undefined;
-	let prevConfig: FileConfig | undefined;
-	let prevPlayer: PlayerElement | undefined;
+	type Props = {
+		url: FilePlayerUrl;
+		config: FileConfig;
+	};
 
-	// TODO: Fix these setPrevX function
-	function setPrevUrl(newUrl: FilePlayerUrl) {
-		const tmpPrevUrl = prevUrl;
-		prevUrl = newUrl;
-		if (tmpPrevUrl !== undefined) {
-			handlePropsChange({ config, url: newUrl }, { config, url: tmpPrevUrl });
-		}
+	let propsHistory: (Props | undefined)[] = [];
+
+	function handlePropsChange(newProps: Props) {
+		propsHistory = [propsHistory[propsHistory.length - 1], newProps];
 	}
 
-	function setPrevConfig(newConfig: FileConfig) {
-		const tmpPrevConfig = prevConfig;
-		prevConfig = newConfig;
-		if (tmpPrevConfig !== undefined) {
-			handlePropsChange({ config: newConfig, url }, { config: tmpPrevConfig, url });
-		}
-	}
+	$: handlePropsChange({ url, config });
 
-	function setPrevPlayer(newPlayer: PlayerElement) {
-		prevPlayer = newPlayer;
-	}
+	function handlePlayerChange(newPlayer: PlayerElement, prevPlayer?: PlayerElement) {
+		const prevProps = propsHistory[0];
+		const currentProps = propsHistory[1];
 
-	$: setPrevUrl(url);
-	$: setPrevConfig(config);
-	$: setPrevPlayer(player);
-
-	function handlePropsChange(newProps: ShouldUseAudioParams, prevProps: ShouldUseAudioParams) {
-		if (prevPlayer === undefined) {
+		if (prevPlayer === undefined || prevProps === undefined || currentProps === undefined) {
 			return;
 		}
 
-		const newShouldUseAudioValue = shouldUseAudio(newProps);
-		const prevShouldUseAudioValue = shouldUseAudio(prevProps);
-
-		if (newShouldUseAudioValue !== prevShouldUseAudioValue) {
-			removeListeners(prevPlayer, prevUrl);
-			addListeners(player);
+		if (shouldUseAudio(currentProps) !== shouldUseAudio(prevProps)) {
+			removeListeners(prevPlayer, prevProps.url);
+			addListeners(newPlayer);
 		}
 
-		if (newProps.url !== prevProps.url && !isMediaStream(newProps.url)) {
-			player.srcObject = null;
+		if (currentProps.url !== prevProps.url && !isMediaStream(currentProps.url)) {
+			newPlayer.srcObject = null;
 		}
 	}
 
+	type PlayerObjectType = 'player' | 'prevPlayer';
+	const playerObjectTarget: Record<PlayerObjectType, PlayerElement> = {} as Record<
+		PlayerObjectType,
+		PlayerElement
+	>;
+	const playerObjectHandler: ProxyHandler<typeof playerObjectTarget> = {
+		set(target, p, newValue) {
+			if (newValue && target['prevPlayer']) {
+				handlePlayerChange(newValue, target['prevPlayer']);
+			}
+			target['prevPlayer'] = target[p as keyof typeof target];
+			target[p as keyof typeof target] = newValue;
+			return true;
+		}
+	};
+	const playerObject = new Proxy<Record<PlayerObjectType, PlayerElement>>(
+		playerObjectTarget,
+		playerObjectHandler
+	);
+
 	onMount(() => {
 		dispatch('mount');
-		addListeners(player);
-		player.src = String(getSource(url)); // Ensure src is set in strict mode
+		addListeners(playerObject.player);
+		playerObject.player.src = String(getSource(url)); // Ensure src is set in strict mode
 		if (IS_IOS || config.forceDisableHls) {
-			player.load();
+			playerObject.player.load();
 		}
 
 		return () => {
-			player.src = '';
-			removeListeners(player);
+			playerObject.player.src = '';
+			removeListeners(playerObject.player);
 			if (hls) {
 				hls.destroy();
 			}
@@ -206,8 +209,8 @@
 	}
 
 	function onPresentationModeChange(e: Event) {
-		if (player && supportsWebKitPresentationMode(player)) {
-			const { webkitPresentationMode } = player;
+		if (playerObject.player && supportsWebKitPresentationMode(playerObject.player)) {
+			const { webkitPresentationMode } = playerObject.player;
 			if (webkitPresentationMode === 'picture-in-picture') {
 				onEnablePIP(e);
 			} else if (webkitPresentationMode === 'inline') {
@@ -282,7 +285,7 @@
 				} else {
 					hls.loadSource(loadUrl);
 				}
-				hls.attachMedia(player);
+				hls.attachMedia(playerObject.player);
 				dispatch('loaded');
 			});
 		}
@@ -292,7 +295,7 @@
 				sdkGlobal: DASH_GLOBAL
 			}).then((dashjs) => {
 				dash = dashjs.MediaPlayer().create();
-				dash.initialize(player, loadUrl, playing);
+				dash.initialize(playerObject.player, loadUrl, playing);
 				dash.on('error', (e) => {
 					dispatch('error', {
 						error: e.error
@@ -312,7 +315,7 @@
 				sdkGlobal: FLV_GLOBAL
 			}).then((flvjs) => {
 				flv = flvjs.createPlayer({ type: 'flv', url: loadUrl });
-				flv.attachMediaElement(player);
+				flv.attachMediaElement(playerObject.player);
 				flv.on(flvjs.Events.ERROR, (e, data) => {
 					dispatch('error', {
 						error: e.error,
@@ -331,18 +334,20 @@
 			// HTMLMediaElement.load() is needed to reset the media element
 			// and restart the media resource. Just replacing children source
 			// dom nodes is not enough
-			player.load();
+			playerObject.player.load();
 		} else if (isMediaStream(loadUrl)) {
 			try {
-				player.srcObject = loadUrl;
+				playerObject.player.srcObject = loadUrl;
 			} catch (e) {
-				player.src = window.URL.createObjectURL(loadUrl as unknown as MediaSource | Blob);
+				playerObject.player.src = window.URL.createObjectURL(
+					loadUrl as unknown as MediaSource | Blob
+				);
 			}
 		}
 	}
 
 	export function play(): void {
-		const promise = player.play();
+		const promise = playerObject.player.play();
 		if (promise) {
 			promise.catch((err) => {
 				dispatch('error', {
@@ -353,57 +358,60 @@
 	}
 
 	export function pause(): void {
-		player.pause();
+		playerObject.player.pause();
 	}
 
 	export function stop(): void {
-		player.removeAttribute('src');
+		playerObject.player.removeAttribute('src');
 		if (dash) {
 			dash.reset();
 		}
 	}
 
 	export function seekTo(seconds: number): void {
-		player.currentTime = seconds;
+		playerObject.player.currentTime = seconds;
 	}
 
 	export function setVolume(fraction: number): void {
-		player.volume = fraction;
+		playerObject.player.volume = fraction;
 	}
 
 	export function mute(): void {
-		player.muted = true;
+		playerObject.player.muted = true;
 	}
 
 	export function unmute(): void {
-		player.muted = false;
+		playerObject.player.muted = false;
 	}
 
 	export function enablePIP(): void {
-		if ('requestPictureInPicture' in player && document.pictureInPictureElement !== player) {
-			player.requestPictureInPicture();
-		} else if (
-			supportsWebKitPresentationMode(player) &&
-			player.webkitPresentationMode !== 'picture-in-picture'
+		if (
+			'requestPictureInPicture' in playerObject.player &&
+			document.pictureInPictureElement !== playerObject.player
 		) {
-			player.webkitSetPresentationMode('picture-in-picture');
+			playerObject.player.requestPictureInPicture();
+		} else if (
+			supportsWebKitPresentationMode(playerObject.player) &&
+			playerObject.player.webkitPresentationMode !== 'picture-in-picture'
+		) {
+			playerObject.player.webkitSetPresentationMode('picture-in-picture');
 		}
 	}
 
 	export function disablePIP(): void {
-		if (document.exitPictureInPicture && document.pictureInPictureElement === player) {
+		if (document.exitPictureInPicture && document.pictureInPictureElement === playerObject.player) {
 			document.exitPictureInPicture();
 		} else if (
-			supportsWebKitPresentationMode(player) &&
-			player.webkitPresentationMode !== 'inline'
+			supportsWebKitPresentationMode(playerObject.player) &&
+			playerObject.player.webkitPresentationMode !== 'inline'
 		) {
-			player.webkitSetPresentationMode('inline');
+			playerObject.player.webkitSetPresentationMode('inline');
 		}
 	}
 
 	export function setPlaybackRate(rate: number): void {
 		try {
-			player.playbackRate = rate;
+			playerObject.player.playbackRate = rate;
 		} catch (error) {
 			dispatch('error', {
 				error: error
@@ -412,10 +420,10 @@
 	}
 
 	export function getDuration() {
-		if (!player) {
+		if (!playerObject.player) {
 			return null;
 		}
-		const { duration, seekable } = player;
+		const { duration, seekable } = playerObject.player;
 		// on iOS, live streams return Infinity for the duration
 		// so instead we use the end of the seekable timerange
 		if (duration === Infinity && seekable.length > 0) {
@@ -425,17 +433,17 @@
 	}
 
 	export function getCurrentTime() {
-		if (!player) {
+		if (!playerObject.player) {
 			return null;
 		}
-		return player.currentTime;
+		return playerObject.player.currentTime;
 	}
 
 	export function getSecondsLoaded() {
-		if (!player) {
+		if (!playerObject.player) {
 			return null;
 		}
-		const { buffered } = player;
+		const { buffered } = playerObject.player;
 		if (buffered.length === 0) {
 			return 0;
 		}
@@ -463,11 +471,11 @@
 	}
 
 	export function getPlayer(): PlayerElement {
-		return player;
+		return playerObject.player;
 	}
 
 	export function setPlayer(newPlayer: PlayerElement) {
-		player = newPlayer;
+		playerObject.player = newPlayer;
 	}
 
 	$: Element = (shouldUseAudio({ config, url }) ? 'audio' : 'video') as 'audio' | 'video';
@@ -478,7 +486,7 @@
 
 <svelte:element
 	this={Element}
-	bind:this={player}
+	bind:this={playerObject.player}
 	src={getSource(url)}
 	{style}
 	preload="auto"
