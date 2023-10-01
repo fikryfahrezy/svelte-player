@@ -30,95 +30,50 @@ export const HLS_EXTENSIONS = /\.(m3u8)($|\?)/i;
 export const DASH_EXTENSIONS = /\.(mpd)($|\?)/i;
 export const FLV_EXTENSIONS = /\.(flv)($|\?)/i;
 
-export function everyNonObjectUrl(url: Exclude<FilePlayerUrl, string>, urlCase: RegExp) {
-	const isArray = url instanceof Array;
-	let isEveryUrl = isArray;
-	if (isArray) {
-		for (let i = 0; i < url.length; i++) {
-			const item = url[i];
-			if (typeof item !== 'string') {
-				return false;
-			}
-			isEveryUrl = isEveryUrl && urlCase.test(item);
-		}
-	}
-	return isEveryUrl;
-}
-
-export function canPlayYoutube(url: FilePlayerUrl) {
-	if (typeof url !== 'string') {
-		return everyNonObjectUrl(url, MATCH_URL_YOUTUBE);
+export function canPlayYoutube(url: string | string[]) {
+	if (url instanceof Array) {
+		return url.every((item) => MATCH_URL_YOUTUBE.test(item));
 	}
 	return MATCH_URL_YOUTUBE.test(url);
 }
 
-export function canPlaySoundCloud(url: FilePlayerUrl) {
-	if (typeof url !== 'string') {
-		return false;
-	}
+export function canPlaySoundCloud(url: string) {
 	return MATCH_URL_SOUNDCLOUD.test(url) && !AUDIO_EXTENSIONS.test(url);
 }
 
-export function canPlayVimeo(url: FilePlayerUrl) {
-	if (typeof url !== 'string') {
-		return false;
-	}
+export function canPlayVimeo(url: string) {
 	return MATCH_URL_VIMEO.test(url) && !VIDEO_EXTENSIONS.test(url) && !HLS_EXTENSIONS.test(url);
 }
 
-export function canPlayFacebook(url: FilePlayerUrl) {
-	if (typeof url !== 'string') {
-		return false;
-	}
+export function canPlayFacebook(url: string) {
 	return MATCH_URL_FACEBOOK.test(url) || MATCH_URL_FACEBOOK_WATCH.test(url);
 }
 
-export function canPlayStreamable(url: FilePlayerUrl) {
-	if (typeof url !== 'string') {
-		return false;
-	}
+export function canPlayStreamable(url: string) {
 	return MATCH_URL_STREAMABLE.test(url);
 }
 
-export function canPlayWistia(url: FilePlayerUrl) {
-	if (typeof url !== 'string') {
-		return false;
-	}
+export function canPlayWistia(url: string) {
 	return MATCH_URL_WISTIA.test(url);
 }
 
-export function canPlayTwitch(url: FilePlayerUrl) {
-	if (typeof url !== 'string') {
-		return false;
-	}
+export function canPlayTwitch(url: string) {
 	return MATCH_URL_TWITCH_VIDEO.test(url) || MATCH_URL_TWITCH_CHANNEL.test(url);
 }
 
-export function canPlayDailyMotion(url: FilePlayerUrl) {
-	if (typeof url !== 'string') {
-		return false;
-	}
+export function canPlayDailyMotion(url: string) {
 	return MATCH_URL_DAILYMOTION.test(url);
 }
 
-export function canPlayMixcloud(url: FilePlayerUrl) {
-	if (typeof url !== 'string') {
-		return false;
-	}
+export function canPlayMixcloud(url: string) {
 	return MATCH_URL_MIXCLOUD.test(url);
 }
 
-export function canPlayVidyard(url: FilePlayerUrl) {
-	if (typeof url !== 'string') {
-		return false;
-	}
+export function canPlayVidyard(url: string) {
 	return MATCH_URL_VIDYARD.test(url);
 }
 
-export function canPlayKaltura(url: FilePlayerUrl) {
-	if (typeof url !== 'string') {
-		return false;
-	}
+export function canPlayKaltura(url: string) {
 	return MATCH_URL_KALTURA.test(url);
 }
 
@@ -128,13 +83,14 @@ export function canPlayFile(url: FilePlayerUrl) {
 			if (typeof item === 'string' && canPlayFile(item)) {
 				return true;
 			}
-			if (typeof item === 'object' && canPlayFile(item.src)) {
+
+			if (typeof item !== 'string' && canPlayFile(item.src)) {
 				return true;
 			}
 		}
 		return false;
 	}
-	if (typeof url !== 'string' || isMediaStream(url) || isBlobUrl(url)) {
+	if (isMediaStream(url) || isBlobUrl(url)) {
 		return true;
 	}
 

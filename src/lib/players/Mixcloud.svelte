@@ -18,9 +18,9 @@
 
 	let iframeContainer: HTMLIFrameElement;
 	let player: MixcloudWidget;
-	let duration = 0;
-	let currentTime = 0;
-	let secondsLoaded = 0;
+
+	let duration: number | null = null;
+	let currentTime: number | null = null;
 
 	onMount(function () {
 		dispatch('mount');
@@ -45,8 +45,8 @@
 							error
 						});
 					});
-					player.events.progress.on(function (secondsParam, durationParam) {
-						currentTime = secondsParam;
+					player.events.progress.on(function (seconds, durationParam) {
+						currentTime = seconds;
 						duration = durationParam;
 					});
 					dispatch('ready');
@@ -97,7 +97,7 @@
 	}
 
 	export function getSecondsLoaded() {
-		return secondsLoaded;
+		return null;
 	}
 
 	export function getPlayer() {

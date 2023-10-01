@@ -18,11 +18,11 @@
 	const SDK_GLOBAL: GlobalSDKWistiaKey = 'Wistia';
 	const PLAYER_ID_PREFIX = 'wistia-player-';
 
-	$: playerID = config.playerId || `${PLAYER_ID_PREFIX}${randomString()}`;
-
 	const dispatch = createEventDispatcher<Dispatcher>();
 
 	let player: WistiaPlayer;
+
+	$: playerID = config.playerId || `${PLAYER_ID_PREFIX}${randomString()}`;
 
 	onMount(function () {
 		dispatch('mount');
@@ -71,6 +71,14 @@
 		);
 	}
 
+	function unbind() {
+		player.unbind('play', onPlay);
+		player.unbind('pause', onPause);
+		player.unbind('seek', onSeek);
+		player.unbind('end', onEnded);
+		player.unbind('playbackratechange', onPlaybackRateChange);
+	}
+
 	// Proxy methods to prevent listener leaks
 	function onPlay() {
 		dispatch('play');
@@ -86,14 +94,6 @@
 	}
 	function onPlaybackRateChange(rate: number) {
 		dispatch('playbackRateChange', rate);
-	}
-
-	function unbind() {
-		player.unbind('play', onPlay);
-		player.unbind('pause', onPause);
-		player.unbind('seek', onSeek);
-		player.unbind('end', onEnded);
-		player.unbind('playbackratechange', onPlaybackRateChange);
 	}
 
 	export function play() {
@@ -138,7 +138,7 @@
 	}
 
 	export function getSecondsLoaded() {
-		return 0;
+		return null;
 	}
 
 	export function getPlayer() {

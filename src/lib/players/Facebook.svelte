@@ -18,11 +18,11 @@
 	const SDK_GLOBAL_READY: FacebookSDKReady = 'fbAsyncInit';
 	const PLAYER_ID_PREFIX = 'facebook-player-';
 
-	$: playerID = config.playerId || `${PLAYER_ID_PREFIX}${randomString()}`;
-
 	const dispatch = createEventDispatcher<Dispatcher>();
 
 	let player: FacebookPlayer;
+
+	$: playerID = config.playerId || `${PLAYER_ID_PREFIX}${randomString()}`;
 
 	onMount(function () {
 		dispatch('mount');

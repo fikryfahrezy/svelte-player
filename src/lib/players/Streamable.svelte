@@ -18,9 +18,10 @@
 
 	let iframeContainer: HTMLIFrameElement;
 	let player: PlayerJSPlayer;
-	let duration = 0;
-	let currentTime = 0;
-	let secondsLoaded = 0;
+
+	let duration: number | null = null;
+	let currentTime: number | null = null;
+	let secondsLoaded: number | null = null;
 
 	onMount(function () {
 		dispatch('mount');

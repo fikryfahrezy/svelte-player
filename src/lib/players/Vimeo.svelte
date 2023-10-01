@@ -26,9 +26,10 @@
 
 	let container: HTMLDivElement;
 	let player: VimeoPlayer;
-	let duration = 0;
-	let currentTime = 0;
-	let secondsLoaded = 0;
+
+	let duration: number | null = null;
+	let currentTime: number | null = null;
+	let secondsLoaded: number | null = null;
 	let playervolume = 0;
 
 	onMount(function () {
@@ -36,7 +37,7 @@
 	});
 
 	export function load(url: string) {
-		duration = 0;
+		duration = null;
 		getSDK(SDK_URL, SDK_GLOBAL).then(
 			function (Vimeo) {
 				if (!container) {
@@ -82,7 +83,7 @@
 					dispatch('seek', e.seconds);
 				});
 				player.on('ended', function () {
-					dispatch('pause');
+					dispatch('ended');
 				});
 				player.on('error', function (error) {
 					dispatch('error', { error });

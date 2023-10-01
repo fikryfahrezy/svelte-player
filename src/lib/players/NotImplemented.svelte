@@ -5,16 +5,16 @@
 
 	import { onMount, createEventDispatcher } from 'svelte';
 
-	export const url: FilePlayerUrl | undefined = undefined; // not used yet, but for suppress the warn from svelte check
-	export const playing: boolean | undefined = undefined; // not used yet, but for suppress the warn from svelte check
-	export const loop: boolean | undefined = undefined; // not used yet, but for suppress the warn from svelte check
-	export const controls: boolean | undefined = undefined; // not used yet, but for suppress the warn from svelte check
-	export const volume: number | null = null; // not used yet, but for suppress the warn from svelte check
-	export const muted: boolean | undefined = undefined; // not used yet, but for suppress the warn from svelte check
-	export const width: string | undefined = undefined; // not used yet, but for suppress the warn from svelte check
-	export const height: string | undefined = undefined; // not used yet, but for suppress the warn from svelte check
-	export const playsinline: boolean | undefined = undefined; // not used yet, but for suppress the warn from svelte check
-	export const config: NotImplementedConfig | undefined = undefined; // not used yet, but for suppress the warn from svelte check
+	export const url: FilePlayerUrl | undefined = undefined;
+	export const playing: boolean | undefined = undefined;
+	export const loop: boolean | undefined = undefined;
+	export const controls: boolean | undefined = undefined;
+	export const volume: number | null = null;
+	export const muted: boolean | undefined = undefined;
+	export const width: string | undefined = undefined;
+	export const height: string | undefined = undefined;
+	export const playsinline: boolean | undefined = undefined;
+	export const config: NotImplementedConfig | undefined = undefined;
 
 	const dispatch = createEventDispatcher<Dispatcher>();
 
@@ -28,15 +28,15 @@
 		console.log('load');
 	}
 
-	export function play() {
+	export function play(): void {
 		console.log('play');
 	}
 
-	export function pause() {
+	export function pause(): void {
 		console.log('pause');
 	}
 
-	export function stop() {
+	export function stop(): void {
 		console.log('stop');
 	}
 
@@ -48,11 +48,11 @@
 		console.log('setVolume');
 	}
 
-	export function mute() {
+	export function mute(): void {
 		console.log('mute');
 	}
 
-	export function unmute() {
+	export function unmute(): void {
 		console.log('unmute');
 	}
 
@@ -68,11 +68,11 @@
 		console.log('setLoop');
 	}
 
-	export function getDuration(): number {
+	export function getDuration(): number | null {
 		return 0;
 	}
 
-	export function getCurrentTime() {
+	export function getCurrentTime(): number | null {
 		return 0;
 	}
 

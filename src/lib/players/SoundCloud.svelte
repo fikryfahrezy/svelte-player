@@ -8,17 +8,9 @@
 	import { getSDK } from './utils';
 
 	export let url: string;
-	export const playing: boolean | undefined = undefined;
-	export const loop: boolean | undefined = undefined;
-	export const controls: boolean | undefined = undefined;
 	export let volume: number | null;
-	export const muted: boolean | undefined = undefined;
-	export const width: string | undefined = undefined;
-	export const height: string | undefined = undefined;
-	export const playsinline: boolean | undefined = undefined;
-	export let display: string | undefined = undefined;
-
 	export let config: SoundCloudConfig;
+	export let display: string | undefined = undefined;
 
 	const SDK_URL = 'https://w.soundcloud.com/player/api.js';
 	const SDK_GLOBAL: GlobalSDKSoundCloudKey = 'SC';

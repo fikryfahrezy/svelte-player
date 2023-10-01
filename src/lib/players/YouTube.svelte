@@ -43,14 +43,12 @@
 
 	export function load(url: string | string[], isReady?: boolean) {
 		const id = String(getID(url));
-
 		if (isReady) {
 			if (url instanceof Array || MATCH_PLAYLIST.test(url) || MATCH_USER_UPLOADS.test(url)) {
 				const { list = '', listType } = parsePlaylist(url);
 				player.loadPlaylist({ list, listType });
 				return;
 			}
-
 			player.cueVideoById({
 				videoId: id,
 				startSeconds: parseStartTime(url) || playerVars?.start,
@@ -108,7 +106,6 @@
 				});
 			}
 		);
-
 		if (embedOptions?.events) {
 			console.warn(
 				"Using `embedOptions.events` will likely break things. Use SveltePlayer's callback props instead, eg onReady, onPlay, onPause"
@@ -142,7 +139,6 @@
 
 	export function onStateChange(event: YTPlayerOnStateChangeEvent) {
 		const { data } = event;
-
 		const { UNSTARTED, PLAYING, PAUSED, BUFFERING, ENDED, CUED } = window[SDK_GLOBAL].PlayerState;
 		if (data === UNSTARTED) {
 			onUnstarted?.();

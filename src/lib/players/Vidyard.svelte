@@ -19,9 +19,10 @@
 
 	const dispatch = createEventDispatcher<Dispatcher>();
 
-	let player: VidyardPlayer;
 	let container: HTMLDivElement;
-	let duration = 0;
+	let player: VidyardPlayer;
+
+	let duration: number | null = null;
 
 	onMount(function () {
 		dispatch('mount');

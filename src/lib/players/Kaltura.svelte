@@ -12,13 +12,15 @@
 
 	const SDK_URL = 'https://cdn.embed.ly/player-0.1.0.min.js';
 	const SDK_GLOBAL: GlobalSDKPlayerJSKey = 'playerjs';
+
 	const dispatch = createEventDispatcher<Dispatcher>();
 
 	let iframeContainer: HTMLIFrameElement;
 	let player: PlayerJSPlayer;
-	let duration = 0;
-	let currentTime = 0;
-	let secondsLoaded = 0;
+
+	let duration: number | null = null;
+	let currentTime: number | null = null;
+	let secondsLoaded: number | null = null;
 
 	onMount(function () {
 		dispatch('mount');
@@ -97,16 +99,16 @@
 		player.setVolume(fraction * 100);
 	}
 
+	export function setLoop(loop: boolean) {
+		player.setLoop?.(loop);
+	}
+
 	export function mute() {
 		player.mute();
 	}
 
 	export function unmute() {
 		player.unmute();
-	}
-
-	export function setLoop(loop: boolean) {
-		player.setLoop?.(loop);
 	}
 
 	export function getDuration() {

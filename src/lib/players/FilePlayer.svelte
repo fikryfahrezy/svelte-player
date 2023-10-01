@@ -240,7 +240,6 @@
 		if (IS_IOS || config.forceDisableHls) {
 			return false;
 		}
-
 		return HLS_EXTENSIONS.test(String(url)) || MATCH_CLOUDFLARE_STREAM.test(String(url));
 	}
 
@@ -252,16 +251,14 @@
 		return FLV_EXTENSIONS.test(String(url)) || config.forceFLV;
 	}
 
-	export function load(loadUrl: FilePlayerUrl): void {
+	export function load(loadUrl: FilePlayerUrl) {
 		const { hlsVersion, hlsOptions, dashVersion, flvVersion } = config;
 		if (hls) {
 			hls.destroy();
 		}
-
 		if (dash) {
 			dash.reset();
 		}
-
 		if (shouldUseHLS(loadUrl)) {
 			getSDK(HLS_SDK_URL.replace('VERSION', hlsVersion), HLS_GLOBAL).then(function (Hls) {
 				hls = new Hls(hlsOptions);
@@ -337,7 +334,7 @@
 		}
 	}
 
-	export function play(): void {
+	export function play() {
 		const promise = playerObject.player.play();
 		if (promise) {
 			promise.catch(function (err) {
@@ -348,34 +345,34 @@
 		}
 	}
 
-	export function pause(): void {
+	export function pause() {
 		playerObject.player.pause();
 	}
 
-	export function stop(): void {
+	export function stop() {
 		playerObject.player.removeAttribute('src');
 		if (dash) {
 			dash.reset();
 		}
 	}
 
-	export function seekTo(seconds: number): void {
+	export function seekTo(seconds: number) {
 		playerObject.player.currentTime = seconds;
 	}
 
-	export function setVolume(fraction: number): void {
+	export function setVolume(fraction: number) {
 		playerObject.player.volume = fraction;
 	}
 
-	export function mute(): void {
+	export function mute() {
 		playerObject.player.muted = true;
 	}
 
-	export function unmute(): void {
+	export function unmute() {
 		playerObject.player.muted = false;
 	}
 
-	export function enablePIP(): void {
+	export function enablePIP() {
 		if (
 			'requestPictureInPicture' in playerObject.player &&
 			document.pictureInPictureElement !== playerObject.player
@@ -389,7 +386,7 @@
 		}
 	}
 
-	export function disablePIP(): void {
+	export function disablePIP() {
 		if (document.exitPictureInPicture && document.pictureInPictureElement === playerObject.player) {
 			document.exitPictureInPicture();
 		} else if (
@@ -400,7 +397,7 @@
 		}
 	}
 
-	export function setPlaybackRate(rate: number): void {
+	export function setPlaybackRate(rate: number) {
 		try {
 			playerObject.player.playbackRate = rate;
 		} catch (error) {
@@ -450,14 +447,12 @@
 		if (typeof url === 'string' && MATCH_DROPBOX_URL.test(url)) {
 			return url.replace('www.dropbox.com', 'dl.dropboxusercontent.com');
 		}
-
 		const useHLS = shouldUseHLS(url);
 		const useDASH = shouldUseDASH(url);
 		const useFLV = shouldUseFLV(url);
 		if (url instanceof Array || isMediaStream(url) || useHLS || useDASH || useFLV) {
 			return undefined;
 		}
-
 		return url;
 	}
 
@@ -469,9 +464,10 @@
 		playerObject.player = newPlayer;
 	}
 
-	$: Element = (shouldUseAudio({ config, url }) ? 'audio' : 'video') as 'audio' | 'video';
-	$: widthStyle = `${width === 'auto' ? `width: ${width};` : ''}`;
-	$: heightStyle = `${height === 'auto' ? `height: ${height};` : ''}`;
+	$: useAudio = shouldUseAudio({ config, url });
+	$: Element = (useAudio ? 'audio' : 'video') as 'audio' | 'video';
+	$: widthStyle = `width: ${width === 'auto' ? width : '100%'};`;
+	$: heightStyle = `height: ${height === 'auto' ? height : '100%'};`;
 	$: style = widthStyle + heightStyle;
 </script>
 
@@ -486,8 +482,6 @@
 	muted={muted || undefined}
 	loop={loop || undefined}
 	{...config.attributes}
-	class:fullwidth={style === ''}
-	class:fullheight={style === ''}
 >
 	{#if url instanceof Array}
 		{#each url as source}
@@ -502,13 +496,3 @@
 		<track {...track} />
 	{/each}
 </svelte:element>
-
-<style>
-	.fullwidth {
-		width: 100%;
-	}
-
-	.fullheight {
-		height: 100%;
-	}
-</style>

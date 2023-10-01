@@ -18,11 +18,11 @@
 	const SDK_GLOBAL: GlobalSDKTwitchKey = 'Twitch';
 	const PLAYER_ID_PREFIX = 'twitch-player-';
 
-	$: playerID = config.playerId || `${PLAYER_ID_PREFIX}${randomString()}`;
-
 	const dispatch = createEventDispatcher<Dispatcher>();
 
 	let player: TwitchPlayer;
+
+	$: playerID = config.playerId || `${PLAYER_ID_PREFIX}${randomString()}`;
 
 	onMount(function () {
 		dispatch('mount');
@@ -30,9 +30,9 @@
 
 	export function load(url: string, isReady?: boolean) {
 		const isChannel = MATCH_URL_TWITCH_CHANNEL.test(url);
-		const channelUrl = url.match(MATCH_URL_TWITCH_CHANNEL)?.[1];
-		const videoUrl = url.match(MATCH_URL_TWITCH_VIDEO)?.[1];
-		const id = String(isChannel ? channelUrl : videoUrl);
+		const id = String(
+			isChannel ? url.match(MATCH_URL_TWITCH_CHANNEL)?.[1] : url.match(MATCH_URL_TWITCH_VIDEO)?.[1]
+		);
 
 		if (isReady) {
 			if (isChannel) {
@@ -44,20 +44,18 @@
 		}
 		getSDK(SDK_URL, SDK_GLOBAL).then(
 			function (Twitch) {
-				const linkOption: TwitchPlayerLinkOption = isChannel
-					? {
-							collection: undefined,
-							channel: id,
-							video: undefined
-					  }
-					: {
-							collection: undefined,
-							channel: undefined,
-							video: id
-					  };
-
 				player = new Twitch.Player(playerID, {
-					...linkOption,
+					...(isChannel
+						? {
+								collection: undefined,
+								channel: id,
+								video: undefined
+						  }
+						: {
+								collection: undefined,
+								channel: undefined,
+								video: id
+						  }),
 					height: '100%',
 					width: '100%',
 					playsinline: playsinline,
