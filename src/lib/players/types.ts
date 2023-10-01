@@ -1,8 +1,6 @@
 import type { SvelteComponent } from 'svelte';
 
 import type { RecursivePartial, Constructor } from './utility.types';
-import type loadScript from 'load-script';
-import type { GlobalSDK, GlobalSDKReady, GlobalSDKType } from './global.types';
 import type { NotImplementedPlayer } from './notimplemented.global.types';
 import type { YTPlayerOnPlaybackQualityChangeEvent, YTPlayer } from './youtube.global.types';
 import type { TwitchPlayer } from './twitch.global.types';
@@ -41,12 +39,6 @@ export type PlayerInstance =
 	| WistiaPlayer
 	| VidyardPlayer;
 
-export type SDKBase<T extends keyof GlobalSDK> = {
-	url: string;
-	sdkGlobal: T;
-	sdkReady?: GlobalSDKReady | null;
-};
-
 export type PlayerKey =
 	| 'youtube'
 	| 'soundcloud'
@@ -71,11 +63,6 @@ export type Player = {
 	loadComponent(): Promise<{
 		default: Constructor<SvelteComponent<Partial<PlayerProps>> & PlayerMedia>;
 	}>;
-};
-
-export type GetSDKParams<T extends keyof GlobalSDK = GlobalSDKType> = SDKBase<T> & {
-	isLoaded?: (sdk: GlobalSDK[T]) => boolean;
-	fetchScript?: typeof loadScript;
 };
 
 export type GetPlayerReturn = PlayerInstance | null;

@@ -22,37 +22,37 @@
 	let currentTime = 0;
 	let secondsLoaded = 0;
 
-	onMount(() => {
+	onMount(function () {
 		dispatch('mount');
 	});
 
 	export function load() {
-		getSDK({ url: SDK_URL, sdkGlobal: SDK_GLOBAL }).then(
-			(Mixcloud) => {
+		getSDK(SDK_URL, SDK_GLOBAL).then(
+			function (Mixcloud) {
 				player = Mixcloud.PlayerWidget(iframeContainer);
-				player.ready.then(() => {
-					player.events.play.on(() => {
+				player.ready.then(function () {
+					player.events.play.on(function () {
 						dispatch('play');
 					});
-					player.events.pause.on(() => {
+					player.events.pause.on(function () {
 						dispatch('pause');
 					});
-					player.events.ended.on(() => {
+					player.events.ended.on(function () {
 						dispatch('ended');
 					});
-					player.events.error.on((error) => {
+					player.events.error.on(function (error) {
 						dispatch('error', {
 							error
 						});
 					});
-					player.events.progress.on((secondsParam, durationParam) => {
+					player.events.progress.on(function (secondsParam, durationParam) {
 						currentTime = secondsParam;
 						duration = durationParam;
 					});
 					dispatch('ready');
 				});
 			},
-			(error) => {
+			function (error) {
 				dispatch('error', {
 					error
 				});

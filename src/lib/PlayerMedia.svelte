@@ -49,10 +49,10 @@
 	const SEEK_ON_PLAY_EXPIRY = 5000;
 	const dispatch = createEventDispatcher<PlayerDispatcher>();
 
-	onMount(() => {
+	onMount(function () {
 		mounted = true;
 
-		return () => {
+		return function () {
 			clearTimeout(progressTimeout);
 			clearTimeout(durationCheckTimeout);
 			if (player !== undefined && isReady && stopOnUnmount) {
@@ -128,7 +128,7 @@
 				player.unmute();
 				if (volume !== null) {
 					// Set volume next tick to fix a bug with DailyMotion
-					setTimeout(() => {
+					setTimeout(function () {
 						if (player !== undefined && volume !== null) {
 							player.setVolume(volume);
 						}
@@ -229,7 +229,7 @@
 		if (player === undefined || !isReady) {
 			if (amount !== 0) {
 				seekOnPlay = amount;
-				setTimeout(() => {
+				setTimeout(function () {
 					seekOnPlay = null;
 				}, SEEK_ON_PLAY_EXPIRY);
 			}

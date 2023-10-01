@@ -18,7 +18,7 @@
 	const isElement = $$slots['light'];
 	const ICON_SIZE = '64px';
 
-	onMount(() => {
+	onMount(function () {
 		fetchImage({ url, light, oEmbedUrl });
 	});
 
@@ -38,8 +38,10 @@
 		image = null;
 		return window
 			.fetch(oEmbedUrl.replace('{url}', url))
-			.then((response) => response.json())
-			.then((data) => {
+			.then(function (response) {
+				return response.json();
+			})
+			.then(function (data) {
 				if (data.thumbnail_url) {
 					const fetchedImage = data.thumbnail_url
 						.replace('height=100', 'height=480')

@@ -30,7 +30,7 @@
 	let container: HTMLDivElement;
 	let player: YTPlayer;
 
-	onMount(() => {
+	onMount(function () {
 		dispatch('mount');
 	});
 
@@ -58,15 +58,10 @@
 			});
 			return;
 		}
-		getSDK({
-			url: SDK_URL,
-			sdkGlobal: SDK_GLOBAL,
-			sdkReady: SDK_GLOBAL_READY,
-			isLoaded(YT) {
-				return YT.loaded === 1;
-			}
+		getSDK(SDK_URL, SDK_GLOBAL, SDK_GLOBAL_READY, function (YT) {
+			return YT.loaded === 1;
 		}).then(
-			(YT) => {
+			function (YT) {
 				if (!container) {
 					return;
 				}
@@ -85,20 +80,20 @@
 						...playerVars
 					},
 					events: {
-						onReady: () => {
+						onReady: function () {
 							if (loop) {
 								player.setLoop(true);
 							}
 							dispatch('ready');
 						},
-						onPlaybackRateChange: (event) => {
+						onPlaybackRateChange: function (event) {
 							dispatch('playbackRateChange', event.data);
 						},
-						onPlaybackQualityChange: (event) => {
+						onPlaybackQualityChange: function (event) {
 							dispatch('playbackQualityChange', event);
 						},
 						onStateChange,
-						onError: (event) => {
+						onError: function (event) {
 							dispatch('error', {
 								error: event.data
 							});
@@ -107,7 +102,7 @@
 					...embedOptions
 				});
 			},
-			(err) => {
+			function (err) {
 				dispatch('error', {
 					error: err
 				});

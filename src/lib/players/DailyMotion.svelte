@@ -23,7 +23,7 @@
 	let container: HTMLDivElement;
 	let player: DailyMotionPlayer;
 
-	onMount(() => {
+	onMount(function () {
 		dispatch('mount');
 	});
 
@@ -36,15 +36,10 @@
 			});
 			return;
 		}
-		getSDK({
-			url: SDK_URL,
-			sdkGlobal: SDK_GLOBAL,
-			sdkReady: SDK_GLOBAL_READY,
-			isLoaded(DM) {
-				return DM.player !== undefined;
-			}
+		getSDK(SDK_URL, SDK_GLOBAL, SDK_GLOBAL_READY, function (DM) {
+			return DM.player !== undefined;
 		}).then(
-			(DM) => {
+			function (DM) {
 				if (!container) {
 					return;
 				}
@@ -87,7 +82,7 @@
 					}
 				});
 			},
-			(error) => {
+			function (error) {
 				dispatch('error', { error });
 			}
 		);

@@ -104,7 +104,7 @@
 		playerObjectHandler
 	);
 
-	onMount(() => {
+	onMount(function () {
 		dispatch('mount');
 		addListeners(playerObject.player);
 		playerObject.player.src = String(getSource(url)); // Ensure src is set in strict mode
@@ -112,7 +112,7 @@
 			playerObject.player.load();
 		}
 
-		return () => {
+		return function () {
 			playerObject.player.src = '';
 			removeListeners(playerObject.player);
 			if (hls) {
@@ -263,15 +263,12 @@
 		}
 
 		if (shouldUseHLS(loadUrl)) {
-			getSDK({
-				url: HLS_SDK_URL.replace('VERSION', hlsVersion),
-				sdkGlobal: HLS_GLOBAL
-			}).then((Hls) => {
+			getSDK(HLS_SDK_URL.replace('VERSION', hlsVersion), HLS_GLOBAL).then(function (Hls) {
 				hls = new Hls(hlsOptions);
-				hls.on(Hls.Events.MANIFEST_PARSED, () => {
+				hls.on(Hls.Events.MANIFEST_PARSED, function () {
 					dispatch('ready');
 				});
-				hls.on(Hls.Events.ERROR, (e, data) => {
+				hls.on(Hls.Events.ERROR, function (e, data) {
 					dispatch('error', {
 						error: e,
 						data: data,
@@ -290,13 +287,10 @@
 			});
 		}
 		if (shouldUseDASH(loadUrl)) {
-			getSDK({
-				url: DASH_SDK_URL.replace('VERSION', dashVersion),
-				sdkGlobal: DASH_GLOBAL
-			}).then((dashjs) => {
+			getSDK(DASH_SDK_URL.replace('VERSION', dashVersion), DASH_GLOBAL).then(function (dashjs) {
 				dash = dashjs.MediaPlayer().create();
 				dash.initialize(playerObject.player, loadUrl, playing);
-				dash.on('error', (e) => {
+				dash.on('error', function (e) {
 					dispatch('error', {
 						error: e.error
 					});
@@ -310,13 +304,10 @@
 			});
 		}
 		if (shouldUseFLV(loadUrl)) {
-			getSDK({
-				url: FLV_SDK_URL.replace('VERSION', flvVersion),
-				sdkGlobal: FLV_GLOBAL
-			}).then((flvjs) => {
+			getSDK(FLV_SDK_URL.replace('VERSION', flvVersion), FLV_GLOBAL).then(function (flvjs) {
 				flv = flvjs.createPlayer({ type: 'flv', url: loadUrl });
 				flv.attachMediaElement(playerObject.player);
-				flv.on(flvjs.Events.ERROR, (e, data) => {
+				flv.on(flvjs.Events.ERROR, function (e, data) {
 					dispatch('error', {
 						error: e.error,
 						data: data,
@@ -349,7 +340,7 @@
 	export function play(): void {
 		const promise = playerObject.player.play();
 		if (promise) {
-			promise.catch((err) => {
+			promise.catch(function (err) {
 				dispatch('error', {
 					error: err
 				});

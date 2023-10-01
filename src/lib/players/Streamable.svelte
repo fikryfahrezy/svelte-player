@@ -22,13 +22,13 @@
 	let currentTime = 0;
 	let secondsLoaded = 0;
 
-	onMount(() => {
+	onMount(function () {
 		dispatch('mount');
 	});
 
 	export function load() {
-		getSDK({ url: SDK_URL, sdkGlobal: SDK_GLOBAL }).then(
-			(playerjs) => {
+		getSDK(SDK_URL, SDK_GLOBAL).then(
+			function (playerjs) {
 				if (!iframeContainer) {
 					return;
 				}
@@ -36,31 +36,31 @@
 				player = new playerjs.Player(iframeContainer);
 				player.setLoop?.(loop);
 
-				player.on('ready', () => {
+				player.on('ready', function () {
 					dispatch('ready');
 				});
-				player.on('play', () => {
+				player.on('play', function () {
 					dispatch('play');
 				});
-				player.on('pause', () => {
+				player.on('pause', function () {
 					dispatch('pause');
 				});
-				player.on('seeked', () => {
+				player.on('seeked', function () {
 					dispatch('seek', 0);
 				});
-				player.on('ended', () => {
+				player.on('ended', function () {
 					dispatch('ended');
 				});
-				player.on('error', (error) => {
+				player.on('error', function (error) {
 					dispatch('error', {
 						error
 					});
 				});
-				player.on('timeupdate', (data) => {
+				player.on('timeupdate', function (data) {
 					duration = data.duration;
 					currentTime = data.seconds;
 				});
-				player.on('buffered', ({ percent }) => {
+				player.on('buffered', function ({ percent }) {
 					if (duration) {
 						secondsLoaded = duration * percent;
 					}
@@ -69,7 +69,7 @@
 					player.mute();
 				}
 			},
-			(error) => {
+			function (error) {
 				dispatch('error', {
 					error
 				});
@@ -89,12 +89,16 @@
 		// Nothing to do
 	}
 
-	export function seekTo(seconds: number): void {
+	export function seekTo(seconds: number) {
 		player.setCurrentTime(seconds);
 	}
 
-	export function setVolume(fraction: number): void {
+	export function setVolume(fraction: number) {
 		player.setVolume(fraction * 100);
+	}
+
+	export function setLoop(loop: boolean) {
+		player.setLoop?.(loop);
 	}
 
 	export function mute() {
@@ -105,11 +109,7 @@
 		player.unmute();
 	}
 
-	export function setLoop(loop: boolean): void {
-		player.setLoop?.(loop);
-	}
-
-	export function getDuration(): number {
+	export function getDuration() {
 		return duration;
 	}
 
@@ -117,11 +117,11 @@
 		return currentTime;
 	}
 
-	export function getSecondsLoaded(): number {
+	export function getSecondsLoaded() {
 		return secondsLoaded;
 	}
 
-	export function getPlayer(): PlayerJSPlayer | null {
+	export function getPlayer() {
 		return player;
 	}
 

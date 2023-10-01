@@ -23,7 +23,7 @@ const players: Player[] = [
 		canEnablePIP: undefined,
 		loopOnEnded: undefined,
 		forceLoad: undefined,
-		loadComponent: () => {
+		loadComponent() {
 			return import('./YouTube.svelte');
 		}
 	},
@@ -33,7 +33,7 @@ const players: Player[] = [
 		canEnablePIP: undefined,
 		loopOnEnded: true,
 		forceLoad: undefined,
-		loadComponent: async () => {
+		loadComponent() {
 			return import('./SoundCloud.svelte');
 		}
 	},
@@ -43,7 +43,7 @@ const players: Player[] = [
 		canEnablePIP: undefined,
 		loopOnEnded: undefined,
 		forceLoad: true,
-		loadComponent: () => {
+		loadComponent() {
 			return import('./Vimeo.svelte');
 		}
 	},
@@ -53,7 +53,7 @@ const players: Player[] = [
 		canEnablePIP: undefined,
 		loopOnEnded: true,
 		forceLoad: undefined,
-		loadComponent: () => {
+		loadComponent() {
 			return import('./Facebook.svelte');
 		}
 	},
@@ -63,7 +63,7 @@ const players: Player[] = [
 		canEnablePIP: undefined,
 		loopOnEnded: undefined,
 		forceLoad: undefined,
-		loadComponent: () => {
+		loadComponent() {
 			return import('./Streamable.svelte');
 		}
 	},
@@ -73,7 +73,7 @@ const players: Player[] = [
 		canEnablePIP: undefined,
 		loopOnEnded: true,
 		forceLoad: undefined,
-		loadComponent: () => {
+		loadComponent() {
 			return import('./Wistia.svelte');
 		}
 	},
@@ -83,7 +83,7 @@ const players: Player[] = [
 		canEnablePIP: undefined,
 		loopOnEnded: true,
 		forceLoad: undefined,
-		loadComponent: () => {
+		loadComponent() {
 			return import('./Twitch.svelte');
 		}
 	},
@@ -93,7 +93,7 @@ const players: Player[] = [
 		canEnablePIP: undefined,
 		loopOnEnded: true,
 		forceLoad: undefined,
-		loadComponent: () => {
+		loadComponent() {
 			return import('./DailyMotion.svelte');
 		}
 	},
@@ -103,7 +103,7 @@ const players: Player[] = [
 		canEnablePIP: undefined,
 		loopOnEnded: true,
 		forceLoad: undefined,
-		loadComponent: () => {
+		loadComponent() {
 			return import('./Mixcloud.svelte');
 		}
 	},
@@ -113,7 +113,7 @@ const players: Player[] = [
 		canEnablePIP: undefined,
 		loopOnEnded: undefined,
 		forceLoad: undefined,
-		loadComponent: () => {
+		loadComponent() {
 			return import('./Vidyard.svelte');
 		}
 	},
@@ -123,7 +123,7 @@ const players: Player[] = [
 		canEnablePIP: undefined,
 		loopOnEnded: undefined,
 		forceLoad: undefined,
-		loadComponent: () => {
+		loadComponent() {
 			return import('./Kaltura.svelte');
 		}
 	},
@@ -132,7 +132,7 @@ const players: Player[] = [
 		canPlay: canPlayFile,
 		loopOnEnded: undefined,
 		forceLoad: undefined,
-		canEnablePIP: (url: FilePlayerUrl) => {
+		canEnablePIP(url: FilePlayerUrl) {
 			return (
 				canPlayFile(url) &&
 				(document.pictureInPictureEnabled || supportsWebKitPresentationMode()) &&
@@ -140,7 +140,7 @@ const players: Player[] = [
 				!AUDIO_EXTENSIONS.test(url)
 			);
 		},
-		loadComponent: () => {
+		loadComponent() {
 			return import('./FilePlayer.svelte');
 		}
 	},
@@ -151,10 +151,10 @@ const players: Player[] = [
 		canPlay() {
 			return false;
 		},
-		canEnablePIP: () => {
+		canEnablePIP() {
 			return false;
 		},
-		loadComponent: () => {
+		loadComponent() {
 			return import('./NotImplemented.svelte');
 		}
 	}

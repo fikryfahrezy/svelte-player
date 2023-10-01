@@ -24,7 +24,7 @@
 
 	let player: TwitchPlayer;
 
-	onMount(() => {
+	onMount(function () {
 		dispatch('mount');
 	});
 
@@ -42,11 +42,8 @@
 			}
 			return;
 		}
-		getSDK({
-			url: SDK_URL,
-			sdkGlobal: SDK_GLOBAL
-		}).then(
-			(Twitch) => {
+		getSDK(SDK_URL, SDK_GLOBAL).then(
+			function (Twitch) {
 				const linkOption: TwitchPlayerLinkOption = isChannel
 					? {
 							collection: undefined,
@@ -73,31 +70,31 @@
 				});
 
 				const { READY, PLAYING, PAUSE, ENDED, ONLINE, OFFLINE, SEEK } = Twitch.Player;
-				player.addEventListener(READY, () => {
+				player.addEventListener(READY, function () {
 					dispatch('ready');
 				});
-				player.addEventListener(PLAYING, () => {
+				player.addEventListener(PLAYING, function () {
 					dispatch('play');
 				});
-				player.addEventListener(PAUSE, () => {
+				player.addEventListener(PAUSE, function () {
 					dispatch('pause');
 				});
-				player.addEventListener(ENDED, () => {
+				player.addEventListener(ENDED, function () {
 					dispatch('ended');
 				});
-				player.addEventListener(SEEK, ({ position }) => {
+				player.addEventListener(SEEK, function ({ position }) {
 					dispatch('seek', position);
 				});
 
 				// Prevent weird isLoading behaviour when streams are offline
-				player.addEventListener(ONLINE, () => {
+				player.addEventListener(ONLINE, function () {
 					dispatch('loaded');
 				});
-				player.addEventListener(OFFLINE, () => {
+				player.addEventListener(OFFLINE, function () {
 					dispatch('loaded');
 				});
 			},
-			(err) => {
+			function (err) {
 				dispatch('error', {
 					error: err
 				});

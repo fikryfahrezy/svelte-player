@@ -23,7 +23,7 @@
 	let container: HTMLDivElement;
 	let duration = 0;
 
-	onMount(() => {
+	onMount(function () {
 		dispatch('mount');
 	});
 
@@ -32,29 +32,29 @@
 		if (player) {
 			stop();
 		}
-		getSDK({ url: SDK_URL, sdkGlobal: SDK_GLOBAL, sdkReady: SDK_GLOBAL_READY }).then(
-			(Vidyard) => {
+		getSDK(SDK_URL, SDK_GLOBAL, SDK_GLOBAL_READY).then(
+			function (Vidyard) {
 				if (!container) {
 					return;
 				}
-				Vidyard.api.addReadyListener((_, newPlayer) => {
+				Vidyard.api.addReadyListener(function (_, newPlayer) {
 					if (player) {
 						return;
 					}
 					player = newPlayer;
-					player.on('ready', () => {
+					player.on('ready', function () {
 						dispatch('ready');
 					});
-					player.on('play', () => {
+					player.on('play', function () {
 						dispatch('play');
 					});
-					player.on('pause', () => {
+					player.on('pause', function () {
 						dispatch('pause');
 					});
-					player.on('seek', (seekTimes) => {
+					player.on('seek', function (seekTimes) {
 						dispatch('seek', seekTimes);
 					});
-					player.on('playerComplete', () => {
+					player.on('playerComplete', function () {
 						dispatch('ended');
 					});
 					if (player.metadata !== null) {
@@ -69,7 +69,7 @@
 					...config.options
 				});
 			},
-			(error) => {
+			function (error) {
 				dispatch('error', { error });
 			}
 		);

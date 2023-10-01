@@ -24,15 +24,15 @@
 
 	let player: WistiaPlayer;
 
-	onMount(() => {
+	onMount(function () {
 		dispatch('mount');
 	});
 
 	export function load() {
-		getSDK({ url: SDK_URL, sdkGlobal: SDK_GLOBAL }).then(
-			(Wistia) => {
+		getSDK(SDK_URL, SDK_GLOBAL).then(
+			function (Wistia) {
 				if (config.customControls) {
-					config.customControls.forEach((control) => {
+					config.customControls.forEach(function (control) {
 						Wistia.defineControl(control);
 					});
 				}
@@ -65,7 +65,7 @@
 					}
 				});
 			},
-			(error) => {
+			function (error) {
 				dispatch('error', { error });
 			}
 		);

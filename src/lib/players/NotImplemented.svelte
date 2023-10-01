@@ -20,7 +20,7 @@
 
 	let player: NotImplementedPlayer;
 
-	onMount(() => {
+	onMount(function () {
 		dispatch('mount');
 	});
 

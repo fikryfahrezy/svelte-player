@@ -4,6 +4,7 @@
 import type {
 	GlobalSDKYT,
 	GlobalSDK,
+	GlobalSDKReady,
 	GlobalSDKType,
 	GlobalSDKFLV,
 	GlobalSDKDASH,
@@ -19,7 +20,8 @@ import type {
 	GlobalSDKVidyard
 } from './global.types';
 import type { WistiaWQ } from './wistia.global.types';
-import type { GetSDKParams, FilePlayerUrl } from './types';
+import type { FilePlayerUrl, PlayerInstance } from './types';
+import type { ExtractMethods, MethodParameters, MethodReturnType } from './utility.types';
 import loadScript from 'load-script';
 
 declare global {
@@ -116,13 +118,14 @@ type Request = {
 };
 
 const requests: Record<string, Request[] | null> = {};
-export function getSDK<T extends GlobalSDKType>({
-	fetchScript = loadScript,
-	isLoaded = () => true,
-	sdkGlobal,
-	url,
-	sdkReady = null
-}: GetSDKParams<T>): Promise<GlobalSDK[T]> {
+
+export function getSDK<T extends GlobalSDKType>(
+	url: string,
+	sdkGlobal: T,
+	sdkReady: GlobalSDKReady | null = null,
+	isLoaded: (sdk: GlobalSDK[T]) => boolean = () => true,
+	fetchScript: typeof loadScript = loadScript
+): Promise<GlobalSDK[T]> {
 	const existingGlobal = getGlobal(sdkGlobal);
 	if (existingGlobal && isLoaded(existingGlobal)) {
 		return Promise.resolve(existingGlobal);
@@ -157,6 +160,32 @@ export function getSDK<T extends GlobalSDKType>({
 			}
 		});
 	});
+}
+
+export function callPlayer<TPlayer extends PlayerInstance>(player?: TPlayer) {
+	return function <
+		TObject extends ExtractMethods<Required<TPlayer>>,
+		TMethodKey extends keyof ExtractMethods<Required<TPlayer>>,
+		TMethod extends TObject[TMethodKey],
+		TParams extends MethodParameters<TMethod>,
+		TReturn extends MethodReturnType<TMethod>
+	>(method: TMethodKey, ...args: TParams) {
+		// Util method for calling a method on this.player
+		// but guard against errors and console.warn instead
+		if (!player || !player[method]) {
+			let message = `SveltePlayer: player could not call %c${String(method)}%c – `;
+			if (!player) {
+				message += 'The player was not available';
+			} else if (!player[method]) {
+				message += 'The method was not available';
+			}
+			console.warn(message, 'font-weight: bold', '');
+			return null;
+		}
+
+		type CurryFn = (...args: TParams) => TReturn;
+		return (player[method] as CurryFn)(...args);
+	};
 }
 
 export function isMediaStream(url: FilePlayerUrl): url is MediaStream {

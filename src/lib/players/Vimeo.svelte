@@ -31,14 +31,14 @@
 	let secondsLoaded = 0;
 	let playervolume = 0;
 
-	onMount(() => {
+	onMount(function () {
 		dispatch('mount');
 	});
 
 	export function load(url: string) {
 		duration = 0;
-		getSDK({ url: SDK_URL, sdkGlobal: SDK_GLOBAL }).then(
-			(Vimeo) => {
+		getSDK(SDK_URL, SDK_GLOBAL).then(
+			function (Vimeo) {
 				if (!container) {
 					return;
 				}
@@ -54,7 +54,7 @@
 				});
 				player
 					.ready()
-					.then(() => {
+					.then(function () {
 						const iframe = container.querySelector('iframe');
 						if (iframe !== null) {
 							iframe.style.width = '100%';
@@ -64,56 +64,56 @@
 							}
 						}
 					})
-					.catch((error) => {
+					.catch(function (error) {
 						dispatch('error', { error });
 					});
-				player.on('loaded', () => {
+				player.on('loaded', function () {
 					dispatch('ready');
 					refreshDuration();
 				});
-				player.on('play', () => {
+				player.on('play', function () {
 					dispatch('play');
 					refreshDuration();
 				});
-				player.on('pause', () => {
+				player.on('pause', function () {
 					dispatch('pause');
 				});
-				player.on('seeked', (e) => {
+				player.on('seeked', function (e) {
 					dispatch('seek', e.seconds);
 				});
-				player.on('ended', () => {
+				player.on('ended', function () {
 					dispatch('pause');
 				});
-				player.on('error', (error) => {
+				player.on('error', function (error) {
 					dispatch('error', { error });
 				});
-				player.on('timeupdate', ({ seconds }) => {
+				player.on('timeupdate', function ({ seconds }) {
 					currentTime = seconds;
 				});
-				player.on('progress', ({ seconds }) => {
+				player.on('progress', function ({ seconds }) {
 					secondsLoaded = seconds;
 				});
-				player.on('bufferstart', () => {
+				player.on('bufferstart', function () {
 					dispatch('buffer');
 				});
-				player.on('bufferend', () => {
+				player.on('bufferend', function () {
 					dispatch('bufferEnd');
 				});
-				player.on('playbackratechange', (e) => {
+				player.on('playbackratechange', function (e) {
 					dispatch('playbackRateChange', e.playbackRate);
 				});
-				player.on('volumechange', (e) => {
+				player.on('volumechange', function (e) {
 					playervolume = e.volume;
 				});
 			},
-			(error) => {
+			function (error) {
 				dispatch('error', { error });
 			}
 		);
 	}
 
 	function refreshDuration() {
-		player.getDuration().then((durationParam) => {
+		player.getDuration().then(function (durationParam) {
 			duration = durationParam;
 		});
 	}
@@ -121,7 +121,7 @@
 	export function play() {
 		const promise = player.play();
 		if (promise) {
-			promise.catch((error) => {
+			promise.catch(function (error) {
 				dispatch('error', { error });
 			});
 		}
@@ -143,20 +143,20 @@
 		player.setVolume(fraction);
 	}
 
-	export function mute() {
-		setVolume(0);
-	}
-
-	export function unmute() {
-		setVolume(playervolume);
+	export function setLoop(loop: boolean) {
+		player.setLoop(loop);
 	}
 
 	export function setPlaybackRate(rate: number) {
 		player.setPlaybackRate(rate);
 	}
 
-	export function setLoop(loop: boolean) {
-		player.setLoop(loop);
+	export function mute() {
+		setVolume(0);
+	}
+
+	export function unmute() {
+		setVolume(playervolume);
 	}
 
 	export function getDuration() {

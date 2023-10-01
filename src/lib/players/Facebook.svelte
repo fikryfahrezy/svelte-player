@@ -24,47 +24,47 @@
 
 	let player: FacebookPlayer;
 
-	onMount(() => {
+	onMount(function () {
 		dispatch('mount');
 	});
 
 	export function load(_: string, isReady?: boolean) {
 		if (isReady) {
-			getSDK({ url: SDK_URL, sdkGlobal: SDK_GLOBAL, sdkReady: SDK_GLOBAL_READY }).then((FB) => {
+			getSDK(SDK_URL, SDK_GLOBAL, SDK_GLOBAL_READY).then(function (FB) {
 				return FB.XFBML.parse();
 			});
 			return;
 		}
-		getSDK({ url: SDK_URL, sdkGlobal: SDK_GLOBAL, sdkReady: SDK_GLOBAL_READY }).then((FB) => {
+		getSDK(SDK_URL, SDK_GLOBAL, SDK_GLOBAL_READY).then(function (FB) {
 			FB.init({
 				appId: config.appId,
 				xfbml: true,
 				version: config.version
 			});
-			FB.Event.subscribe('xfbml.render', (msg) => {
+			FB.Event.subscribe('xfbml.render', function (msg) {
 				// Here we know the SDK has loaded, even if onReady/onPlay
 				// is not called due to a video that cannot be embedded
 				dispatch('loaded');
 			});
-			FB.Event.subscribe('xfbml.ready', (msg) => {
+			FB.Event.subscribe('xfbml.ready', function (msg) {
 				if (msg.type === 'video' && msg.id === playerID) {
 					player = msg.instance;
-					player.subscribe('startedPlaying', () => {
+					player.subscribe('startedPlaying', function () {
 						dispatch('play');
 					});
-					player.subscribe('paused', () => {
+					player.subscribe('paused', function () {
 						dispatch('pause');
 					});
-					player.subscribe('finishedPlaying', () => {
+					player.subscribe('finishedPlaying', function () {
 						dispatch('ended');
 					});
-					player.subscribe('startedBuffering', () => {
+					player.subscribe('startedBuffering', function () {
 						dispatch('buffer');
 					});
-					player.subscribe('finishedBuffering', () => {
+					player.subscribe('finishedBuffering', function () {
 						dispatch('bufferEnd');
 					});
-					player.subscribe('error', (error) => {
+					player.subscribe('error', function (error) {
 						dispatch('error', { error });
 					});
 					if (muted) {
@@ -125,7 +125,7 @@
 	}
 
 	export function getSecondsLoaded() {
-		return 0;
+		return null;
 	}
 
 	export function getPlayer() {

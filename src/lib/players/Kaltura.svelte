@@ -20,13 +20,13 @@
 	let currentTime = 0;
 	let secondsLoaded = 0;
 
-	onMount(() => {
+	onMount(function () {
 		dispatch('mount');
 	});
 
 	export function load() {
-		getSDK({ url: SDK_URL, sdkGlobal: SDK_GLOBAL }).then(
-			(playerjs) => {
+		getSDK(SDK_URL, SDK_GLOBAL).then(
+			function (playerjs) {
 				if (!iframeContainer) {
 					return;
 				}
@@ -34,10 +34,10 @@
 				player = new playerjs.Player(iframeContainer);
 				player.setLoop?.(loop);
 
-				player.on('ready', () => {
+				player.on('ready', function () {
 					// An arbitrary timeout is required otherwise
 					// the event listeners won’t work
-					setTimeout(() => {
+					setTimeout(function () {
 						player.isReady = true;
 						player.setLoop?.(loop);
 						if (muted) {
@@ -48,7 +48,7 @@
 					}, 500);
 				});
 			},
-			(error) => {
+			function (error) {
 				dispatch('error', {
 					error
 				});
@@ -57,21 +57,21 @@
 	}
 
 	function addListeners(player: PlayerJSPlayer) {
-		player.on('play', () => {
+		player.on('play', function () {
 			dispatch('play');
 		});
-		player.on('pause', () => {
+		player.on('pause', function () {
 			dispatch('pause');
 		});
-		player.on('ended', () => {
+		player.on('ended', function () {
 			dispatch('ended');
 		});
-		player.on('error', (error) => {
+		player.on('error', function (error) {
 			dispatch('error', {
 				error
 			});
 		});
-		player.on('timeupdate', (data) => {
+		player.on('timeupdate', function (data) {
 			duration = data.duration;
 			currentTime = data.seconds;
 		});
