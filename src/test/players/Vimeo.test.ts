@@ -1,18 +1,11 @@
-import type {
-	Vimeo,
-	VimeoPlayer,
-	VimeoPlayerTextTrack,
-	VimeoPlayerChapter,
-	VimeoPlayerOptions,
-	VimeoEmbedOptions,
-	VimeoPlayerSetAutopauseParams
-} from '../../lib/players/vimeo.global.types';
 import type { ViemoConfig } from '../../lib/players/vimeo.types';
 
-import { describe } from 'vitest';
+import { test, vi, describe } from 'vitest';
+import { render } from '@testing-library/svelte';
 import testPlayerMethods from '../helpers/testPlayerMethods';
-
 import VimeoSvelte from '../../lib/players/Vimeo.svelte';
+import * as utils from '../../lib/players/utils';
+import VimeoPlayerMock from './VimeoPlayer.mock';
 
 const TEST_URL = 'https://vimeo.com/90509568';
 
@@ -30,163 +23,70 @@ const TEST_PROPS = {
 	config: TEST_CONFIG
 };
 
-const vimeoPlayerTextTrack: VimeoPlayerTextTrack = {
-	kind: '',
-	label: '',
-	language: '',
-	mode: ''
-};
-
-const vimeoPlayerChapter: VimeoPlayerChapter = {
-	index: 0,
-	startTime: 0,
-	title: ''
-};
-
-class VimeoPlayerMock implements VimeoPlayer {
-	constructor() {
-		// do nothing
-	}
-	async getAutopause() {
-		return false;
-	}
-	async getCurrentTime() {
-		return 0;
-	}
-	async getDuration() {
-		return 0;
-	}
-	async getEnded() {
-		return false;
-	}
-	async getLoop() {
-		return false;
-	}
-	async getPaused() {
-		return false;
-	}
-	async getPlaybackRate() {
-		return 0;
-	}
-	async getVolume() {
-		return 0;
-	}
-	async pause() {
-		// do nothing
-	}
-	async play() {
-		// do nothing
-	}
-	setAutopause<T extends VimeoEmbedOptions['autopause']>(params: VimeoPlayerSetAutopauseParams<T>) {
-		return params.autopause;
-	}
-	async setCurrentTime<T extends number>(seconds: T) {
-		return seconds;
-	}
-	async setLoop<T extends VimeoEmbedOptions['loop']>(loop: T) {
-		return loop;
-	}
-	async setPlaybackRate<T extends number>(playbackRate: T) {
-		return playbackRate;
-	}
-	async setVolume<T extends number>(volume: T) {
-		return volume;
-	}
-	async getChapters() {
-		return [];
-	}
-	async getCurrentChapter() {
-		return vimeoPlayerChapter;
-	}
-	async addCuePoint() {
-		return '';
-	}
-	async getCuePoints() {
-		return [];
-	}
-	async removeCuePoint<T extends string>(id: T) {
-		return id;
-	}
-	async disableTextTrack() {
-		// do nothing
-	}
-	async enableTextTrack() {
-		return vimeoPlayerTextTrack;
-	}
-	async getTextTracks() {
-		return [];
-	}
-	async destroy() {
-		// do nothing
-	}
-	async getColor() {
-		return '';
-	}
-	async getColors() {
-		return [];
-	}
-	async getVideoEmbedCode() {
-		return '';
-	}
-	async getVideoHeight() {
-		return 0;
-	}
-	async getVideoId() {
-		return 0;
-	}
-	async getVideoTitle() {
-		return '';
-	}
-	async getVideoUrl() {
-		return '';
-	}
-	async getVideoWidth() {
-		return 0;
-	}
-	async ready() {
-		// do nothing
-	}
-	setColor<T extends VimeoPlayerOptions['color']>(color: T) {
-		return color;
-	}
-	setColors<T extends VimeoPlayerOptions['colors']>(colors: T) {
-		return colors;
-	}
-	unload() {
-		// do nothing
-	}
-	async loadVideo() {
-		return 0;
-	}
-	on() {
-		// do nothing
-	}
-	off() {
-		// do nothing
-	}
-}
-
-const PLAYERJS_SDK: Vimeo = {
-	Player: VimeoPlayerMock
-};
-
-describe('testPlayerMethods', () => {
-	testPlayerMethods({
-		Player: VimeoSvelte,
-		playerSDK: PLAYERJS_SDK,
-		loadParameters: [TEST_URL],
-		methods: {
-			play: 'play',
-			pause: 'pause',
-			stop: 'unload',
-			seekTo: 'setCurrentTime',
-			setVolume: 'setVolume',
-			mute: 'setVolume',
-			unmute: 'setVolume',
-			getDuration: null,
-			getCurrentTime: null,
-			getSecondsLoaded: null
-		},
-		props: TEST_PROPS
+describe('testPlayerMethods', function () {
+	testPlayerMethods(VimeoSvelte, new VimeoPlayerMock(), {
+		play: 'play',
+		pause: 'pause',
+		stop: 'unload',
+		seekTo: 'setCurrentTime',
+		setVolume: 'setVolume',
+		mute: 'setVolume',
+		unmute: 'setVolume',
+		getDuration: null,
+		getCurrentTime: null,
+		getSecondsLoaded: null
 	});
+});
+
+test('load()', async function (t) {
+	t.expect.assertions(2);
+
+	vi.doMock('./VimeoPlayer.mock', function () {
+		const Player = vi.fn();
+
+		Player.prototype.ready = vi.fn(function () {
+			return Promise.resolve();
+		});
+		Player.prototype.getDuration = vi.fn(function () {
+			return Promise.resolve();
+		});
+		Player.prototype.on = vi.fn(function (event, fn) {
+			if (event === 'loaded') {
+				setTimeout(fn, 100);
+			}
+		});
+
+		return { default: Player };
+	});
+
+	const Player = (await import('./VimeoPlayer.mock')).default;
+	const getSDK = vi.spyOn(utils, 'getSDK').mockImplementation(async function () {
+		return { Player };
+	});
+
+	return new Promise(function (resolve) {
+		const onReady = vi.fn(function () {
+			t.expect(true).toBeTruthy();
+			resolve(undefined);
+		});
+
+		const instance = new VimeoSvelte({
+			target: document.body,
+			props: TEST_PROPS
+		});
+
+		instance.$on('ready', onReady);
+		instance.load(TEST_URL);
+
+		t.expect(getSDK).toHaveBeenCalledOnce();
+		getSDK.mockRestore();
+	});
+});
+
+test('render()', function (t) {
+	const wrapper = render(VimeoSvelte, TEST_PROPS);
+
+	const element = wrapper.container.querySelector('.vimeo-player') as HTMLIFrameElement;
+	t.expect(element).not.toStrictEqual(null);
+	t.expect(element.className).includes('vimeo-player');
 });

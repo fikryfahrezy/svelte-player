@@ -1,4 +1,5 @@
-import type { FilePlayerUrl } from './types';
+import type { YouTubeUrl } from './youtube.types';
+import type { PlayerUrl } from './types';
 
 import { isMediaStream, isBlobUrl } from './utils';
 
@@ -30,9 +31,11 @@ export const HLS_EXTENSIONS = /\.(m3u8)($|\?)/i;
 export const DASH_EXTENSIONS = /\.(mpd)($|\?)/i;
 export const FLV_EXTENSIONS = /\.(flv)($|\?)/i;
 
-export function canPlayYoutube(url: string | string[]) {
+export function canPlayYoutube(url: YouTubeUrl) {
 	if (url instanceof Array) {
-		return url.every((item) => MATCH_URL_YOUTUBE.test(item));
+		return url.every(function (item) {
+			return MATCH_URL_YOUTUBE.test(item);
+		});
 	}
 	return MATCH_URL_YOUTUBE.test(url);
 }
@@ -77,7 +80,7 @@ export function canPlayKaltura(url: string) {
 	return MATCH_URL_KALTURA.test(url);
 }
 
-export function canPlayFile(url: FilePlayerUrl) {
+export function canPlayFile(url: PlayerUrl) {
 	if (url instanceof Array) {
 		for (const item of url) {
 			if (typeof item === 'string' && canPlayFile(item)) {

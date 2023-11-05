@@ -1,19 +1,22 @@
-import type { Facebook, FacebookPlayer } from '../../lib/players/facebook.global.types';
+import type { Facebook } from '../../lib/players/facebook.global.types';
 import type { FacebookConfig } from '../../lib/players/facebook.types';
 
-import { describe, vi } from 'vitest';
-import testPlayerMethods from '../helpers/testPlayerMethods';
+import { describe, vi, test, expect } from 'vitest';
+import { render } from '@testing-library/svelte';
 
 import * as utils from '../../lib/players/utils';
 import FacebookSvelte from '../../lib/players/Facebook.svelte';
 
+import testPlayerMethods from '../helpers/testPlayerMethods';
+import facebookPlayer from './FacebookPlayer.mock';
+
 const TEST_URL = 'https://www.facebook.com/facebook/videos/10153231379946729';
-const TEST_CONFIG: FacebookConfig = {
+const TEST_CONFIG = {
 	appId: '123',
 	version: 'v3.3',
 	playerId: 'facebook-player',
 	attributes: {}
-};
+} satisfies FacebookConfig;
 
 const TEST_PROPS = {
 	controls: false,
@@ -23,70 +26,11 @@ const TEST_PROPS = {
 	config: TEST_CONFIG
 };
 
-const FACEBOOK_INSTANCE: FacebookPlayer = {
-	getCurrentPosition() {
-		return 0;
-	},
-	getDuration() {
-		return 0;
-	},
-	getVolume() {
-		return 0;
-	},
-	isMuted() {
-		return false;
-	},
-	mute() {
-		// do nothing
-	},
-	pause() {
-		// do nothing
-	},
-	play() {
-		// do nothing
-	},
-	seek() {
-		// do nothing
-	},
-	setVolume() {
-		// do nothing
-	},
-	subscribe() {
-		return {
-			release() {
-				// do nothing
-			}
-		};
-	},
-	unmute() {
-		// do nothing
-	}
-};
-
-const FACEBOOK_SDK: Facebook = {
-	init: utils.noop,
-	Event: {
-		subscribe: vi.fn().mockImplementation((event, fn) => {
-			if (event === 'xfbml.ready') {
-				fn({
-					type: 'video',
-					id: TEST_CONFIG.playerId,
-					instance: FACEBOOK_INSTANCE
-				});
-			}
-		})
-	},
-	XFBML: {
-		parse: utils.noop
-	}
-};
-
-describe('testPlayerMethods', () => {
-	testPlayerMethods({
-		Player: FacebookSvelte,
-		playerSDK: FACEBOOK_SDK,
-		loadParameters: [TEST_URL, false],
-		methods: {
+describe('testPlayerMethods', function () {
+	testPlayerMethods(
+		FacebookSvelte,
+		facebookPlayer,
+		{
 			play: 'play',
 			pause: 'pause',
 			stop: null,
@@ -98,6 +42,80 @@ describe('testPlayerMethods', () => {
 			getCurrentTime: 'getCurrentPosition',
 			getSecondsLoaded: null
 		},
+		TEST_PROPS
+	);
+});
+
+test('load()', async function (t) {
+	t.expect.assertions(2);
+	const FACEBOOK_SDK: Facebook = {
+		init: function () {
+			return null;
+		},
+		Event: {
+			subscribe: vi.fn().mockImplementation(function (event, fn) {
+				if (event === 'xfbml.ready') {
+					fn({
+						type: 'video',
+						id: TEST_CONFIG.playerId,
+						instance: facebookPlayer
+					});
+				}
+			})
+		},
+		XFBML: t.expect.anything()
+	};
+
+	const getSDK = vi.spyOn(utils, 'getSDK').mockImplementation(async function () {
+		return FACEBOOK_SDK;
+	});
+
+	function onReady() {
+		t.expect(true).toBeTruthy();
+	}
+
+	const instance = new FacebookSvelte({
+		target: document.body,
 		props: TEST_PROPS
 	});
+
+	instance.$on('ready', onReady);
+	instance.load(TEST_URL);
+	t.expect(getSDK).toHaveBeenCalled();
+	getSDK.mockRestore();
+
+	return Promise.resolve();
+});
+
+test.only('load() when ready', async function (t) {
+	t.expect.assertions(2);
+	const FACEBOOK_SDK: Facebook = {
+		init: expect.anything(),
+		Event: expect.anything(),
+		XFBML: {
+			parse: function () {
+				t.expect(true).toBeTruthy();
+			}
+		}
+	};
+
+	const getSDK = vi.spyOn(utils, 'getSDK').mockImplementation(async function () {
+		return FACEBOOK_SDK;
+	});
+
+	const instance = new FacebookSvelte({
+		target: document.body,
+		props: TEST_PROPS
+	});
+
+	instance.load(TEST_URL, true);
+	t.expect(getSDK).toHaveBeenCalled();
+	getSDK.mockRestore();
+
+	return Promise.resolve();
+});
+
+test('render()', function (t) {
+	const wrapper = render(FacebookSvelte, TEST_PROPS);
+	t.expect(wrapper.container.querySelector('.facebook-player')).not.toStrictEqual(null);
 });

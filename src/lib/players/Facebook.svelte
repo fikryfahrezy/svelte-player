@@ -1,7 +1,7 @@
 <script lang="ts">
 	import type { GlobalSDKFacebookKey } from './global.types';
 	import type { FacebookPlayer, FacebookSDKReady } from './facebook.global.types';
-	import type { Dispatcher } from './types';
+	import type { PlayerDispatcher } from './types';
 	import type { FacebookConfig } from './facebook.types';
 
 	import { onMount, createEventDispatcher } from 'svelte';
@@ -18,11 +18,12 @@
 	const SDK_GLOBAL_READY: FacebookSDKReady = 'fbAsyncInit';
 	const PLAYER_ID_PREFIX = 'facebook-player-';
 
-	const dispatch = createEventDispatcher<Dispatcher>();
+	const dispatch = createEventDispatcher<PlayerDispatcher>();
 
 	let player: FacebookPlayer;
 
-	$: playerID = config.playerId || `${PLAYER_ID_PREFIX}${randomString()}`;
+	$: ({ playerId } = config);
+	$: playerID = playerId || `${PLAYER_ID_PREFIX}${randomString()}`;
 
 	onMount(function () {
 		dispatch('mount');
@@ -132,7 +133,7 @@
 		return player;
 	}
 
-	export function setPlayer(newPlayer: FacebookPlayer) {
+	export function _setPlayer(newPlayer: FacebookPlayer) {
 		player = newPlayer;
 	}
 </script>

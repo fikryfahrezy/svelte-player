@@ -3,11 +3,23 @@ import type {
 	HTMLAudioAttributes,
 	HTMLTrackAttributes
 } from 'svelte/elements';
-import type { FilePlayerUrl } from './types';
 
-import type { HlsConfig } from './hls.types';
+import type { GlobalSDKFLV, GlobalSDKHLS } from './global.types';
+import type { HlsConfig, HLSClass, ErrorData } from './hls.types';
+import type { DashJSMediaPlayerClass } from './dash.types';
+import type { FlvJSPlayer } from './flv.types';
 
-export type FileConfigAttributes = Omit<HTMLVideoAttributes | HTMLAudioAttributes, `on:${string}`>;
+export type { DashJSMediaPlayerClass } from './dash.types';
+export type { FlvJSPlayer } from './flv.types';
+export type { HLSClass } from './hls.types';
+
+export type FileMedia = { src: string; type: string };
+
+export type FileUrl = string | string[] | FileMedia[] | MediaStream;
+
+export type FileConfigAttributes =
+	| Omit<HTMLVideoAttributes, `on:${string}`>
+	| Omit<HTMLAudioAttributes, `on:${string}`>;
 
 export type FileConfig = {
 	attributes: Partial<FileConfigAttributes>;
@@ -25,9 +37,29 @@ export type FileConfig = {
 	forceSafariHLS?: boolean;
 };
 
-export type ShouldUseAudioParams = {
-	url: FilePlayerUrl;
-	config: FileConfig;
+export type FilePlayerElement = HTMLAudioElement | HTMLVideoElement;
+
+export type FilePlayer = FilePlayerElement;
+
+export type FileInternalPlayer = {
+	hls: HLSClass;
+	dash: DashJSMediaPlayerClass;
+	flv: FlvJSPlayer;
+	player: FilePlayer;
 };
 
-export type PlayerElement = HTMLAudioElement | HTMLVideoElement;
+export type FileInternalPlayerKey = keyof FileInternalPlayer;
+
+export type FileErrorData = ErrorData;
+
+export type FileErrorSDKInstance = HLSClass | FlvJSPlayer;
+
+export type FileErrorSDKGlobal = GlobalSDKFLV | GlobalSDKHLS;
+
+export type AddListenersFn = (playerParams: FilePlayerElement) => void;
+
+export type RemoveListenersFn = (playerParams: FilePlayerElement, urlParams?: FileUrl) => void;
+
+export type PlayerElementRef = {
+	getPlayer(): FilePlayerElement;
+};

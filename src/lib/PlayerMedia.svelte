@@ -1,16 +1,20 @@
 <script lang="ts">
-	import type { SeekToType, PlayerDispatcher, PlayerMediaRef } from './types';
+	import type { SeekToType } from './types';
 	import type {
 		OnProgressProps,
-		InternalPlayerKey,
 		OnErrorProps,
-		FilePlayerUrl,
-		Player
+		PlayerUrl,
+		Player,
+		PlayerRef,
+		PlayerDispatcher,
+		PlayerConfigObject,
+		PlayerGetPlayerKey,
+		PlayerInternalPlayer
 	} from './players/types';
 	import { onMount, createEventDispatcher } from 'svelte';
 	import { isMediaStream } from './players/utils';
 
-	export let url: FilePlayerUrl;
+	export let url: PlayerUrl;
 	export let playing: boolean;
 	export let loop: boolean;
 	export let controls: boolean;
@@ -23,7 +27,7 @@
 	export let playsinline: boolean;
 	export let pip: boolean;
 	export let stopOnUnmount: boolean;
-	export let config: any; // Expect this type is `PlayerConfig` but, can't figure it out how
+	export let config: PlayerConfigObject;
 
 	export let progressFrequency: number | undefined = undefined;
 	export let disableDeferredLoading: boolean | undefined = undefined;
@@ -32,11 +36,14 @@
 	export let display: string | undefined = undefined;
 	export let activePlayer: Player['loadComponent'];
 
+	const SEEK_ON_PLAY_EXPIRY = 5000;
+	const dispatch = createEventDispatcher<PlayerDispatcher>();
+
 	let mounted = false;
 	let isReady = false;
 	let isPlaying = false; // Track playing state internally to prevent bugs
 	let isLoading = true; // Use isLoading to prevent onPause when switching URL
-	let loadOnReady: FilePlayerUrl | null = null;
+	let loadOnReady: PlayerUrl | null = null;
 	let seekOnPlay: number | null = null;
 	let progressTimeout: number | undefined = undefined;
 	let durationCheckTimeout: number | undefined = undefined;
@@ -44,10 +51,7 @@
 	let prevLoaded: number | undefined = undefined;
 	let onDurationCalled: boolean | undefined = undefined;
 	let startOnPlay: boolean | undefined = undefined;
-	let player: PlayerMediaRef | undefined;
-
-	const SEEK_ON_PLAY_EXPIRY = 5000;
-	const dispatch = createEventDispatcher<PlayerDispatcher>();
+	let player: PlayerRef;
 
 	onMount(function () {
 		mounted = true;
@@ -55,7 +59,7 @@
 		return function () {
 			clearTimeout(progressTimeout);
 			clearTimeout(durationCheckTimeout);
-			if (player !== undefined && isReady && stopOnUnmount) {
+			if (isReady && stopOnUnmount) {
 				player.stop();
 
 				if (player.disablePIP) {
@@ -68,52 +72,66 @@
 	});
 
 	function handlePropsUrlChange(propsUrl: typeof url) {
-		if (player !== undefined && isReady) {
-			if (isLoading && !forceLoad && !disableDeferredLoading && !isMediaStream(propsUrl)) {
-				console.warn(
-					`SveltePlayer: the attempt to load ${propsUrl} is being deferred until the player has loaded`
-				);
-				loadOnReady = propsUrl;
-				return;
-			}
-			isLoading = true;
-			startOnPlay = true;
-			onDurationCalled = false;
-			player.load(propsUrl, isReady);
+		// If there isn’t a player available, don’t do anything
+		if (!player) {
+			return;
 		}
+
+		if (isLoading && !forceLoad && !disableDeferredLoading && !isMediaStream(propsUrl)) {
+			console.warn(
+				`SveltePlayer: the attempt to load ${propsUrl} is being deferred until the player has loaded`
+			);
+			loadOnReady = propsUrl;
+			return;
+		}
+		isLoading = true;
+		startOnPlay = true;
+		onDurationCalled = false;
+		player.load(propsUrl, isReady);
 	}
 
 	$: handlePropsUrlChange(url);
 
 	function handlePropsPlayingChange(propsPlaying: typeof playing) {
-		if (player !== undefined && isReady) {
-			if (propsPlaying && !isPlaying) {
-				player.play();
-			}
-			if (!propsPlaying && isPlaying) {
-				player.pause();
-			}
+		// If there isn’t a player available, don’t do anything
+		if (!player) {
+			return;
+		}
+
+		if (propsPlaying && !isPlaying) {
+			player.play();
+		}
+		if (!propsPlaying && isPlaying) {
+			player.pause();
 		}
 	}
 
 	$: handlePropsPlayingChange(playing);
 
 	function handlePropsPipChange(propsPip: typeof pip) {
-		if (player !== undefined && isReady) {
-			if (propsPip && player.enablePIP) {
-				player.enablePIP();
-			}
+		// If there isn’t a player available, don’t do anything
+		if (!player) {
+			return;
+		}
 
-			if (!propsPip && player.disablePIP) {
-				player.disablePIP();
-			}
+		if (propsPip && player.enablePIP) {
+			player.enablePIP();
+		}
+
+		if (!propsPip && player.disablePIP) {
+			player.disablePIP();
 		}
 	}
 
 	$: handlePropsPipChange(pip);
 
 	function handlePropsVolumeChange(propsVolume: typeof volume) {
-		if (player !== undefined && isReady && propsVolume !== null) {
+		// If there isn’t a player available, don’t do anything
+		if (!player) {
+			return;
+		}
+
+		if (propsVolume !== null) {
 			player.setVolume(propsVolume);
 		}
 	}
@@ -121,19 +139,20 @@
 	$: handlePropsVolumeChange(volume);
 
 	function handlePropsMutedChange(propsMuted: typeof muted) {
-		if (player !== undefined && isReady) {
-			if (propsMuted) {
-				player.mute();
-			} else {
-				player.unmute();
-				if (volume !== null) {
-					// Set volume next tick to fix a bug with DailyMotion
-					setTimeout(function () {
-						if (player !== undefined && volume !== null) {
-							player.setVolume(volume);
-						}
-					});
-				}
+		// If there isn’t a player available, don’t do anything
+		if (!player) {
+			return;
+		}
+
+		if (propsMuted) {
+			player.mute();
+		} else {
+			player.unmute();
+			if (volume !== null) {
+				// Set volume next tick to fix a bug with DailyMotion
+				setTimeout(function () {
+					player.setVolume(Number(volume));
+				});
 			}
 		}
 	}
@@ -141,7 +160,12 @@
 	$: handlePropsMutedChange(muted);
 
 	function handlePropsPlaybackRateChange(propsPlaybackRate: typeof playbackRate) {
-		if (player !== undefined && isReady && player.setPlaybackRate) {
+		// If there isn’t a player available, don’t do anything
+		if (!player) {
+			return;
+		}
+
+		if (player.setPlaybackRate) {
 			player.setPlaybackRate(propsPlaybackRate);
 		}
 	}
@@ -149,7 +173,12 @@
 	$: handlePropsPlaybackRateChange(playbackRate);
 
 	function handlePropsLoopChange(propsLoop: typeof loop) {
-		if (player !== undefined && isReady && player.setLoop) {
+		// If there isn’t a player available, don’t do anything
+		if (!player) {
+			return;
+		}
+
+		if (player.setLoop) {
 			player.setLoop(propsLoop);
 		}
 	}
@@ -157,46 +186,38 @@
 	$: handlePropsLoopChange(loop);
 
 	function handlePlayerMount() {
-		if (player !== undefined) {
-			player.load(url);
-			progress();
-		}
+		player.load(url);
+		progress();
 	}
 
 	export function getDuration() {
-		if (player === undefined || !isReady) {
+		if (!isReady) {
 			return null;
 		}
 		return player.getDuration();
 	}
 
 	export function getCurrentTime() {
-		if (player === undefined || !isReady) {
+		if (!isReady) {
 			return null;
 		}
 		return player.getCurrentTime();
 	}
 
 	export function getSecondsLoaded() {
-		if (player === undefined || !isReady) {
+		if (!isReady) {
 			return null;
 		}
 		return player.getSecondsLoaded();
 	}
 
-	export function getInternalPlayer(key: InternalPlayerKey) {
-		if (!player) return null;
-		switch (key) {
-			case 'player':
-				if (player.getPlayer !== undefined) {
-					return player.getPlayer();
-				}
-				return null;
-			case 'hls':
-			case 'dash':
-			default:
-				return null;
+	export function getInternalPlayer<TKey extends PlayerGetPlayerKey>(
+		key?: TKey
+	): PlayerInternalPlayer[TKey] | null {
+		if (!player) {
+			return null;
 		}
+		return player.getPlayer(key);
 	}
 
 	function progress() {
@@ -226,7 +247,7 @@
 
 	export function seekTo(amount: number, type?: SeekToType, keepPlaying = false) {
 		// When seeking before player is ready, store value and seek later
-		if (player === undefined || !isReady) {
+		if (!isReady) {
 			if (amount !== 0) {
 				seekOnPlay = amount;
 				setTimeout(function () {
@@ -258,13 +279,13 @@
 		isLoading = false;
 		dispatch('ready');
 
-		if (player !== undefined && !muted && volume !== null) {
+		if (!muted && volume !== null) {
 			player.setVolume(volume);
 		}
-		if (player !== undefined && loadOnReady) {
+		if (loadOnReady) {
 			player.load(loadOnReady, true);
 			loadOnReady = null;
-		} else if (player !== undefined && playing) {
+		} else if (playing) {
 			player.play();
 		}
 		handleDurationCheck();
@@ -274,7 +295,7 @@
 		isPlaying = true;
 		isLoading = false;
 		if (startOnPlay) {
-			if (player !== undefined && player.setPlaybackRate && playbackRate !== 1) {
+			if (player.setPlaybackRate && playbackRate !== 1) {
 				player.setPlaybackRate(playbackRate);
 			}
 			dispatch('start');
@@ -354,7 +375,6 @@
 		on:error={handleError}
 		on:bufferEnd
 		on:buffer
-		on:startxxxxxxxxxxx
 		on:playbackRateChange
 		on:seek
 		on:playbackQualityChange

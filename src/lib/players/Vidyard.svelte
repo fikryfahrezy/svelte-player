@@ -1,7 +1,7 @@
 <script lang="ts">
 	import type { GlobalSDKVidyardKey } from './global.types';
 	import type { VidyardSDKReady, VidyardPlayer } from './vidyard.global.types';
-	import type { Dispatcher } from './types';
+	import type { PlayerDispatcher } from './types';
 	import type { VidyardConfig } from './vidyard.types';
 
 	import { onMount, createEventDispatcher } from 'svelte';
@@ -17,7 +17,7 @@
 	const SDK_GLOBAL: GlobalSDKVidyardKey = 'VidyardV4';
 	const SDK_GLOBAL_READY: VidyardSDKReady = 'onVidyardAPI';
 
-	const dispatch = createEventDispatcher<Dispatcher>();
+	const dispatch = createEventDispatcher<PlayerDispatcher>();
 
 	let container: HTMLDivElement;
 	let player: VidyardPlayer;
@@ -126,7 +126,7 @@
 		return player;
 	}
 
-	export function setPlayer(newPlayer: VidyardPlayer) {
+	export function _setPlayer(newPlayer: VidyardPlayer) {
 		player = newPlayer;
 	}
 </script>

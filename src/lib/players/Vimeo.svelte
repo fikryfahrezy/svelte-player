@@ -1,7 +1,7 @@
 <script lang="ts">
 	import type { GlobalSDKVimeoKey } from './global.types';
 	import type { VimeoPlayer } from './vimeo.global.types';
-	import type { Dispatcher } from './types';
+	import type { PlayerDispatcher } from './types';
 	import type { ViemoConfig } from './vimeo.types';
 
 	import { onMount, createEventDispatcher } from 'svelte';
@@ -22,7 +22,7 @@
 		return url.replace('/manage/videos', '');
 	}
 
-	const dispatch = createEventDispatcher<Dispatcher>();
+	const dispatch = createEventDispatcher<PlayerDispatcher>();
 
 	let container: HTMLDivElement;
 	let player: VimeoPlayer;
@@ -176,7 +176,7 @@
 		return player;
 	}
 
-	export function setPlayer(newPlayer: VimeoPlayer) {
+	export function _setPlayer(newPlayer: VimeoPlayer) {
 		player = newPlayer;
 	}
 </script>

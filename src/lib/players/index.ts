@@ -1,4 +1,4 @@
-import type { FilePlayerUrl, Player } from './types';
+import type { PlayerUrl, Player } from './types';
 import {
 	canPlayYoutube,
 	canPlayFile,
@@ -132,7 +132,7 @@ const players: Player[] = [
 		canPlay: canPlayFile,
 		loopOnEnded: undefined,
 		forceLoad: undefined,
-		canEnablePIP(url: FilePlayerUrl) {
+		canEnablePIP(url: PlayerUrl) {
 			return (
 				canPlayFile(url) &&
 				(document.pictureInPictureEnabled || supportsWebKitPresentationMode()) &&

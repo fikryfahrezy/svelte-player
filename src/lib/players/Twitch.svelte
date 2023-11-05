@@ -1,7 +1,7 @@
 <script lang="ts">
 	import type { GlobalSDKTwitchKey } from './global.types';
-	import type { TwitchPlayer, TwitchPlayerLinkOption } from './twitch.global.types';
-	import type { Dispatcher } from './types';
+	import type { TwitchPlayer } from './twitch.global.types';
+	import type { PlayerDispatcher } from './types';
 	import type { TwitchConfig } from './twitch.types';
 
 	import { onMount, createEventDispatcher } from 'svelte';
@@ -18,11 +18,12 @@
 	const SDK_GLOBAL: GlobalSDKTwitchKey = 'Twitch';
 	const PLAYER_ID_PREFIX = 'twitch-player-';
 
-	const dispatch = createEventDispatcher<Dispatcher>();
+	const dispatch = createEventDispatcher<PlayerDispatcher>();
 
 	let player: TwitchPlayer;
 
-	$: playerID = config.playerId || `${PLAYER_ID_PREFIX}${randomString()}`;
+	$: ({ playerId } = config);
+	$: playerID = playerId || `${PLAYER_ID_PREFIX}${randomString()}`;
 
 	onMount(function () {
 		dispatch('mount');
@@ -144,7 +145,7 @@
 		return player;
 	}
 
-	export function setPlayer(newPlayer: TwitchPlayer) {
+	export function _setPlayer(newPlayer: TwitchPlayer) {
 		player = newPlayer;
 	}
 </script>

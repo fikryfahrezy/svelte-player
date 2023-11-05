@@ -1,1 +1,1 @@
-export type NotImplementedPlayer = Record<string, never>;
+export type NotImplementedPlayer = null;

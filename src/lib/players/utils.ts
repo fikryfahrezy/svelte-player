@@ -20,8 +20,7 @@ import type {
 	GlobalSDKVidyard
 } from './global.types';
 import type { WistiaWQ } from './wistia.global.types';
-import type { FilePlayerUrl, PlayerInstance } from './types';
-import type { ExtractMethods, MethodParameters, MethodReturnType } from './utility.types';
+import type { PlayerUrl } from './types';
 import loadScript from 'load-script';
 
 declare global {
@@ -54,7 +53,7 @@ const MATCH_NUMERIC = /^\d+$/;
 
 // Parse YouTube URL for a start time param, ie ?t=1h14m30s
 // and return the start time in seconds
-function parseTimeParam(url: FilePlayerUrl, pattern: RegExp) {
+function parseTimeParam(url: PlayerUrl, pattern: RegExp) {
 	if (typeof url !== 'string') {
 		return undefined;
 	}
@@ -84,11 +83,11 @@ function parseTimeString(stamp: string) {
 	return seconds;
 }
 
-export function parseStartTime(url: FilePlayerUrl) {
+export function parseStartTime(url: PlayerUrl) {
 	return parseTimeParam(url, MATCH_START_QUERY);
 }
 
-export function parseEndTime(url: FilePlayerUrl) {
+export function parseEndTime(url: PlayerUrl) {
 	return parseTimeParam(url, MATCH_END_QUERY);
 }
 
@@ -99,7 +98,9 @@ export function randomString() {
 
 export function queryString(object: Record<string, unknown>) {
 	return Object.keys(object)
-		.map((key) => `${key}=${object[key]}`)
+		.map(function (key) {
+			return `${key}=${object[key]}`;
+		})
 		.join('&');
 }
 
@@ -162,33 +163,33 @@ export function getSDK<T extends GlobalSDKType>(
 	});
 }
 
-export function callPlayer<TPlayer extends PlayerInstance>(player?: TPlayer) {
-	return function <
-		TObject extends ExtractMethods<Required<TPlayer>>,
-		TMethodKey extends keyof ExtractMethods<Required<TPlayer>>,
-		TMethod extends TObject[TMethodKey],
-		TParams extends MethodParameters<TMethod>,
-		TReturn extends MethodReturnType<TMethod>
-	>(method: TMethodKey, ...args: TParams) {
-		// Util method for calling a method on this.player
-		// but guard against errors and console.warn instead
-		if (!player || !player[method]) {
-			let message = `SveltePlayer: player could not call %c${String(method)}%c – `;
-			if (!player) {
-				message += 'The player was not available';
-			} else if (!player[method]) {
-				message += 'The method was not available';
-			}
-			console.warn(message, 'font-weight: bold', '');
-			return null;
-		}
+// export function callPlayer<TPlayer extends PlayerInstance>(player?: TPlayer) {
+// 	return function <
+// 		TObject extends ObjectMethods<Required<TPlayer>>,
+// 		TMethodKey extends keyof ObjectMethods<Required<TPlayer>>,
+// 		TMethod extends TObject[TMethodKey],
+// 		TParams extends MethodParameters<TMethod>,
+// 		TReturn extends MethodReturnType<TMethod>
+// 	>(method: TMethodKey, ...args: TParams) {
+// 		// Util method for calling a method on this.player
+// 		// but guard against errors and console.warn instead
+// 		if (!player || !player[method]) {
+// 			let message = `SveltePlayer: player could not call %c${String(method)}%c – `;
+// 			if (!player) {
+// 				message += 'The player was not available';
+// 			} else if (!player[method]) {
+// 				message += 'The method was not available';
+// 			}
+// 			console.warn(message, 'font-weight: bold', '');
+// 			return null;
+// 		}
 
-		type CurryFn = (...args: TParams) => TReturn;
-		return (player[method] as CurryFn)(...args);
-	};
-}
+// 		type CurryFn = (...args: TParams) => TReturn;
+// 		return (player[method] as CurryFn)(...args);
+// 	};
+// }
 
-export function isMediaStream(url: FilePlayerUrl): url is MediaStream {
+export function isMediaStream(url: PlayerUrl): url is MediaStream {
 	return (
 		typeof window !== 'undefined' &&
 		typeof window.MediaStream !== 'undefined' &&
@@ -224,6 +225,6 @@ export function supportsWebKitPresentationMode(
 	);
 }
 
-export const noop = () => {
+export function noop() {
 	// this comment to suppress warning from eslint
-};
+}

@@ -1,20 +1,26 @@
 <script lang="ts">
+	import type { GlobalSDKDASHKey, GlobalSDKHLSKey, GlobalSDKFLVKey } from './global.types';
+	import type { PlayerDispatcher } from './types';
 	import type {
-		GlobalSDKDASHKey,
-		GlobalSDKHLSKey,
-		GlobalSDKFLVKey,
-		GlobalSDKHLSClass
-	} from './global.types';
-	import type { FilePlayerUrl, Dispatcher } from './types';
-	import type { FileConfig, ShouldUseAudioParams, PlayerElement } from './file.types';
-	import type { DashJSMediaPlayerClass } from './dash.types';
-	import type { FlvJSPlayer } from './flv.types';
+		FileConfig,
+		FilePlayerElement,
+		FileUrl,
+		FileInternalPlayerKey,
+		FileInternalPlayer,
+		DashJSMediaPlayerClass,
+		FlvJSPlayer,
+		HLSClass,
+		PlayerElementRef
+	} from './file.types';
 
-	import { onMount, createEventDispatcher, beforeUpdate, afterUpdate } from 'svelte';
+	import { onMount, createEventDispatcher } from 'svelte';
 	import { getSDK, isMediaStream, supportsWebKitPresentationMode } from './utils';
 	import { AUDIO_EXTENSIONS, HLS_EXTENSIONS, DASH_EXTENSIONS, FLV_EXTENSIONS } from './patterns';
+	import FilePlayerAudio from './FilePlayerAudio.svelte';
+	import FilePlayerVideo from './FilePlayerVideo.svelte';
+	import FilePlayerTrack from './FilePlayerTrack.svelte';
 
-	export let url: FilePlayerUrl;
+	export let url: FileUrl;
 	export let playing: boolean;
 	export let loop: boolean;
 	export let controls: boolean;
@@ -47,81 +53,45 @@
 	const MATCH_CLOUDFLARE_STREAM = /https:\/\/watch\.cloudflarestream\.com\/([a-z0-9]+)/;
 	const REPLACE_CLOUDFLARE_STREAM = 'https://videodelivery.net/{id}/manifest/video.m3u8';
 
-	const dispatch = createEventDispatcher<Dispatcher>();
+	const dispatch = createEventDispatcher<PlayerDispatcher>();
 
-	let hls: GlobalSDKHLSClass | undefined = undefined;
+	let hls: HLSClass | undefined = undefined;
 	let dash: DashJSMediaPlayerClass | undefined = undefined;
 	let flv: FlvJSPlayer | undefined = undefined;
 
-	type Props = {
-		url: FilePlayerUrl;
-		config: FileConfig;
-	};
+	let playerElementRef: PlayerElementRef;
+	let player: FilePlayerElement;
 
-	let propsHistory: (Props | undefined)[] = [];
-
-	function handlePropsChange(newProps: Props) {
-		propsHistory = [propsHistory[propsHistory.length - 1], newProps];
-	}
-
-	$: handlePropsChange({ url, config });
-
-	function handlePlayerChange(newPlayer: PlayerElement, prevPlayer?: PlayerElement) {
-		const prevProps = propsHistory[0];
-		const currentProps = propsHistory[1];
-
-		if (prevPlayer === undefined || prevProps === undefined || currentProps === undefined) {
-			return;
-		}
-
-		if (shouldUseAudio(currentProps) !== shouldUseAudio(prevProps)) {
-			removeListeners(prevPlayer, prevProps.url);
-			addListeners(newPlayer);
-		}
-
-		if (currentProps.url !== prevProps.url && !isMediaStream(currentProps.url)) {
-			newPlayer.srcObject = null;
+	export function setInternalPlayer(newPlayer: FilePlayerElement) {
+		if (player === undefined) {
+			player = newPlayer;
 		}
 	}
-
-	type PlayerObjectType = 'player' | 'prevPlayer';
-	const playerObjectTarget: Record<PlayerObjectType, PlayerElement> = {} as Record<
-		PlayerObjectType,
-		PlayerElement
-	>;
-	const playerObjectHandler: ProxyHandler<typeof playerObjectTarget> = {
-		set(target, p, newValue) {
-			if (newValue && target['prevPlayer']) {
-				handlePlayerChange(newValue, target['prevPlayer']);
-			}
-			target['prevPlayer'] = target[p as keyof typeof target];
-			target[p as keyof typeof target] = newValue;
-			return true;
-		}
-	};
-	const playerObject = new Proxy<Record<PlayerObjectType, PlayerElement>>(
-		playerObjectTarget,
-		playerObjectHandler
-	);
 
 	onMount(function () {
 		dispatch('mount');
-		addListeners(playerObject.player);
-		playerObject.player.src = String(getSource(url)); // Ensure src is set in strict mode
+		setInternalPlayer(playerElementRef.getPlayer());
 		if (IS_IOS || config.forceDisableHls) {
-			playerObject.player.load();
+			player.load();
 		}
 
 		return function () {
-			playerObject.player.src = '';
-			removeListeners(playerObject.player);
 			if (hls) {
 				hls.destroy();
 			}
 		};
 	});
 
-	function addListeners(playerParams: PlayerElement) {
+	function handleUrlChange(newUrl: FileUrl) {
+		if (player !== undefined && !isMediaStream(newUrl)) {
+			player.srcObject = null;
+		}
+	}
+
+	$: handleUrlChange(url);
+
+	export let _addListeners = (playerParams: FilePlayerElement) => {
+		player = playerParams;
 		playerParams.addEventListener('play', onPlay);
 		playerParams.addEventListener('waiting', onBuffer);
 		playerParams.addEventListener('playing', onBufferEnd);
@@ -142,9 +112,9 @@
 			playerParams.setAttribute('webkit-playsinline', '');
 			playerParams.setAttribute('x5-playsinline', '');
 		}
-	}
+	};
 
-	function removeListeners(playerParams: PlayerElement, urlParams?: typeof url) {
+	export let _removeListeners = (playerParams: FilePlayerElement, urlParams?: typeof url) => {
 		playerParams.removeEventListener('canplay', onReady);
 		playerParams.removeEventListener('play', onPlay);
 		playerParams.removeEventListener('waiting', onBuffer);
@@ -161,7 +131,7 @@
 			// onReady is handled by hls.js
 			playerParams.removeEventListener('canplay', onReady);
 		}
-	}
+	};
 
 	function onReady(e: Event) {
 		dispatch('ready', e);
@@ -209,8 +179,8 @@
 	}
 
 	function onPresentationModeChange(e: Event) {
-		if (playerObject.player && supportsWebKitPresentationMode(playerObject.player)) {
-			const { webkitPresentationMode } = playerObject.player;
+		if (player && supportsWebKitPresentationMode(player)) {
+			const { webkitPresentationMode } = player;
 			if (webkitPresentationMode === 'picture-in-picture') {
 				onEnablePIP(e);
 			} else if (webkitPresentationMode === 'inline') {
@@ -219,9 +189,14 @@
 		}
 	}
 
-	function onSeek(e: Event) {
+	export function onSeek(e: Event) {
 		dispatch('seek', (e.target as HTMLMediaElement).currentTime);
 	}
+
+	type ShouldUseAudioParams = {
+		url: FileUrl;
+		config: FileConfig;
+	};
 
 	function shouldUseAudio(props: ShouldUseAudioParams) {
 		if (props.config.forceVideo) {
@@ -233,7 +208,7 @@
 		return AUDIO_EXTENSIONS.test(String(props.url)) || props.config.forceAudio;
 	}
 
-	function shouldUseHLS(url: FilePlayerUrl): url is string {
+	function shouldUseHLS(url: FileUrl): url is string {
 		if ((IS_SAFARI && config.forceSafariHLS) || config.forceHLS) {
 			return true;
 		}
@@ -243,15 +218,15 @@
 		return HLS_EXTENSIONS.test(String(url)) || MATCH_CLOUDFLARE_STREAM.test(String(url));
 	}
 
-	function shouldUseDASH(url: FilePlayerUrl): url is string {
+	function shouldUseDASH(url: FileUrl): url is string {
 		return DASH_EXTENSIONS.test(String(url)) || config.forceDASH;
 	}
 
-	function shouldUseFLV(url: FilePlayerUrl): url is string {
+	function shouldUseFLV(url: FileUrl): url is string {
 		return FLV_EXTENSIONS.test(String(url)) || config.forceFLV;
 	}
 
-	export function load(loadUrl: FilePlayerUrl) {
+	export function load(loadUrl: FileUrl) {
 		const { hlsVersion, hlsOptions, dashVersion, flvVersion } = config;
 		if (hls) {
 			hls.destroy();
@@ -279,14 +254,14 @@
 				} else {
 					hls.loadSource(loadUrl);
 				}
-				hls.attachMedia(playerObject.player);
+				hls.attachMedia(player);
 				dispatch('loaded');
 			});
 		}
 		if (shouldUseDASH(loadUrl)) {
 			getSDK(DASH_SDK_URL.replace('VERSION', dashVersion), DASH_GLOBAL).then(function (dashjs) {
 				dash = dashjs.MediaPlayer().create();
-				dash.initialize(playerObject.player, loadUrl, playing);
+				dash.initialize(player, loadUrl, playing);
 				dash.on('error', function (e) {
 					dispatch('error', {
 						error: e.error
@@ -303,7 +278,7 @@
 		if (shouldUseFLV(loadUrl)) {
 			getSDK(FLV_SDK_URL.replace('VERSION', flvVersion), FLV_GLOBAL).then(function (flvjs) {
 				flv = flvjs.createPlayer({ type: 'flv', url: loadUrl });
-				flv.attachMediaElement(playerObject.player);
+				flv.attachMediaElement(player);
 				flv.on(flvjs.Events.ERROR, function (e, data) {
 					dispatch('error', {
 						error: e.error,
@@ -322,20 +297,18 @@
 			// HTMLMediaElement.load() is needed to reset the media element
 			// and restart the media resource. Just replacing children source
 			// dom nodes is not enough
-			playerObject.player.load();
+			player.load();
 		} else if (isMediaStream(loadUrl)) {
 			try {
-				playerObject.player.srcObject = loadUrl;
+				player.srcObject = loadUrl;
 			} catch (e) {
-				playerObject.player.src = window.URL.createObjectURL(
-					loadUrl as unknown as MediaSource | Blob
-				);
+				player.src = window.URL.createObjectURL(loadUrl as unknown as MediaSource | Blob);
 			}
 		}
 	}
 
 	export function play() {
-		const promise = playerObject.player.play();
+		const promise = player.play();
 		if (promise) {
 			promise.catch(function (err) {
 				dispatch('error', {
@@ -346,60 +319,57 @@
 	}
 
 	export function pause() {
-		playerObject.player.pause();
+		player.pause();
 	}
 
 	export function stop() {
-		playerObject.player.removeAttribute('src');
+		player.removeAttribute('src');
 		if (dash) {
 			dash.reset();
 		}
 	}
 
 	export function seekTo(seconds: number) {
-		playerObject.player.currentTime = seconds;
+		player.currentTime = seconds;
 	}
 
 	export function setVolume(fraction: number) {
-		playerObject.player.volume = fraction;
+		player.volume = fraction;
 	}
 
 	export function mute() {
-		playerObject.player.muted = true;
+		player.muted = true;
 	}
 
 	export function unmute() {
-		playerObject.player.muted = false;
+		player.muted = false;
 	}
 
 	export function enablePIP() {
-		if (
-			'requestPictureInPicture' in playerObject.player &&
-			document.pictureInPictureElement !== playerObject.player
-		) {
-			playerObject.player.requestPictureInPicture();
+		if ('requestPictureInPicture' in player && document.pictureInPictureElement !== player) {
+			player.requestPictureInPicture();
 		} else if (
-			supportsWebKitPresentationMode(playerObject.player) &&
-			playerObject.player.webkitPresentationMode !== 'picture-in-picture'
+			supportsWebKitPresentationMode(player) &&
+			player.webkitPresentationMode !== 'picture-in-picture'
 		) {
-			playerObject.player.webkitSetPresentationMode('picture-in-picture');
+			player.webkitSetPresentationMode('picture-in-picture');
 		}
 	}
 
 	export function disablePIP() {
-		if (document.exitPictureInPicture && document.pictureInPictureElement === playerObject.player) {
+		if (document.exitPictureInPicture && document.pictureInPictureElement === player) {
 			document.exitPictureInPicture();
 		} else if (
-			supportsWebKitPresentationMode(playerObject.player) &&
-			playerObject.player.webkitPresentationMode !== 'inline'
+			supportsWebKitPresentationMode(player) &&
+			player.webkitPresentationMode !== 'inline'
 		) {
-			playerObject.player.webkitSetPresentationMode('inline');
+			player.webkitSetPresentationMode('inline');
 		}
 	}
 
 	export function setPlaybackRate(rate: number) {
 		try {
-			playerObject.player.playbackRate = rate;
+			player.playbackRate = rate;
 		} catch (error) {
 			dispatch('error', {
 				error: error
@@ -408,10 +378,10 @@
 	}
 
 	export function getDuration() {
-		if (!playerObject.player) {
+		if (!player) {
 			return null;
 		}
-		const { duration, seekable } = playerObject.player;
+		const { duration, seekable } = player;
 		// on iOS, live streams return Infinity for the duration
 		// so instead we use the end of the seekable timerange
 		if (duration === Infinity && seekable.length > 0) {
@@ -421,17 +391,17 @@
 	}
 
 	export function getCurrentTime() {
-		if (!playerObject.player) {
+		if (!player) {
 			return null;
 		}
-		return playerObject.player.currentTime;
+		return player.currentTime;
 	}
 
 	export function getSecondsLoaded() {
-		if (!playerObject.player) {
+		if (!player) {
 			return null;
 		}
-		const { buffered } = playerObject.player;
+		const { buffered } = player;
 		if (buffered.length === 0) {
 			return 0;
 		}
@@ -443,7 +413,7 @@
 		return end;
 	}
 
-	function getSource(url: FilePlayerUrl) {
+	function getSource(url: FileUrl) {
 		if (typeof url === 'string' && MATCH_DROPBOX_URL.test(url)) {
 			return url.replace('www.dropbox.com', 'dl.dropboxusercontent.com');
 		}
@@ -456,43 +426,65 @@
 		return url;
 	}
 
-	export function getPlayer(): PlayerElement {
-		return playerObject.player;
+	export function getPlayer<TKey extends FileInternalPlayerKey>(
+		key: TKey
+	): FileInternalPlayer[TKey] | null {
+		const fileInternalPlayer: Partial<FileInternalPlayer> = {
+			dash,
+			flv,
+			hls,
+			player
+		};
+
+		return fileInternalPlayer[key] ?? null;
 	}
 
-	export function setPlayer(newPlayer: PlayerElement) {
-		playerObject.player = newPlayer;
+	export function _setPlayer(newPlayer: FilePlayerElement) {
+		player = newPlayer;
+	}
+
+	export function _setDash(newDashPlayer: DashJSMediaPlayerClass) {
+		dash = newDashPlayer;
 	}
 
 	$: useAudio = shouldUseAudio({ config, url });
-	$: Element = (useAudio ? 'audio' : 'video') as 'audio' | 'video';
 	$: widthStyle = `width: ${width === 'auto' ? width : '100%'};`;
 	$: heightStyle = `height: ${height === 'auto' ? height : '100%'};`;
 	$: style = widthStyle + heightStyle;
 </script>
 
-<svelte:element
-	this={Element}
-	bind:this={playerObject.player}
-	src={getSource(url)}
-	{style}
-	preload="auto"
-	autoplay={playing || undefined}
-	controls={controls || undefined}
-	muted={muted || undefined}
-	loop={loop || undefined}
-	{...config.attributes}
->
-	{#if url instanceof Array}
-		{#each url as source}
-			{#if typeof source === 'string'}
-				<source src={source} />
-			{:else}
-				<source {...source} />
-			{/if}
-		{/each}
-	{/if}
-	{#each config.tracks as track}
-		<track {...track} />
-	{/each}
-</svelte:element>
+{#if useAudio}
+	<FilePlayerAudio
+		{url}
+		{style}
+		bind:this={playerElementRef}
+		src={getSource(url)}
+		addListeners={_addListeners}
+		removeListeners={_removeListeners}
+		preload="auto"
+		autoplay={playing || undefined}
+		controls={controls || undefined}
+		muted={muted || undefined}
+		loop={loop || undefined}
+		attributes={config.attributes}
+	>
+		<FilePlayerTrack {url} tracks={config.tracks} />
+	</FilePlayerAudio>
+{:else}
+	<FilePlayerVideo
+		{url}
+		{style}
+		bind:this={playerElementRef}
+		src={getSource(url)}
+		addListeners={_addListeners}
+		removeListeners={_removeListeners}
+		preload="auto"
+		autoplay={playing || undefined}
+		controls={controls || undefined}
+		muted={muted || undefined}
+		loop={loop || undefined}
+		attributes={config.attributes}
+	>
+		<FilePlayerTrack {url} tracks={config.tracks} />
+	</FilePlayerVideo>
+{/if}

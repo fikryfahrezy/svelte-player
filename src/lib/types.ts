@@ -1,39 +1,30 @@
-import type { SvelteComponent } from 'svelte';
 import type {
-	InternalPlayerKey,
-	Dispatcher,
-	FilePlayerUrl,
-	PlayerInstance,
-	PlayerMedia,
-	PlayerProps,
-	Config
+	PlayerDispatcher,
+	PlayerUrl,
+	PlayerInternalPlayer,
+	PlayerGetPlayerKey
 } from './players/types';
 
 export type SeekToType = 'seconds' | 'fraction';
 
-export type PlayerDispatcher = Dispatcher & {
-	ready: undefined;
-};
-
-export type PlayerRef = {
+export type PlayerMediaRef = {
 	getDuration(): number | null;
 	getCurrentTime(): number | null;
 	getSecondsLoaded(): number | null;
-	getInternalPlayer(key?: InternalPlayerKey): PlayerInstance | null;
+	getInternalPlayer(key?: 'player'): PlayerInternalPlayer['player'] | null;
+	getInternalPlayer<TKey extends PlayerGetPlayerKey>(key: TKey): PlayerInternalPlayer[TKey] | null;
 	seekTo(amount: number, type?: SeekToType, keepPlaying?: boolean): void;
 };
 
-export type SveltePlayerDispatcher = Omit<Dispatcher, 'ready'> & {
-	ready: PlayerRef;
-	onClickPreview: null;
+export type PreviewDispatcher = {
+	click?: Event;
 };
 
-export type SveltePlayerRef = PlayerRef & {
-	canEnablePIP(url: FilePlayerUrl): boolean;
+export type SveltePlayerRef = PlayerMediaRef & {
+	canEnablePIP(url: PlayerUrl): boolean;
 	showPreview(): void;
 };
 
-export type PlayerKey = keyof Config;
-export type PlayerConfig = Config[keyof Config];
-
-export type PlayerMediaRef = SvelteComponent<Partial<PlayerProps>> & PlayerMedia;
+export type SveltePlayerDispatcher = PlayerDispatcher & {
+	clickPreview: Event;
+};

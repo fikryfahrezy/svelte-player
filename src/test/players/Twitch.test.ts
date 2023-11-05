@@ -1,20 +1,17 @@
-import type {
-	Twitch,
-	TwitchPlayer,
-	TwitchPlaybackStats
-} from '../../lib/players/twitch.global.types';
 import type { TwitchConfig } from '../../lib/players/twitch.types';
 
-import { describe } from 'vitest';
+import { test, vi, describe } from 'vitest';
+import { render } from '@testing-library/svelte';
 import testPlayerMethods from '../helpers/testPlayerMethods';
-
 import TwitchSvelte from '../../lib/players/Twitch.svelte';
+import * as utils from '../../lib/players/utils';
+import TwitchPlayerMock from './TwitchPlayerPlayer.mock';
 
 const TEST_URL = 'https://www.twitch.tv/videos/106400740';
 
 const TEST_CONFIG: TwitchConfig = {
 	options: {},
-	playerId: null
+	playerId: 'mock-player-id'
 };
 
 const TEST_PROPS = {
@@ -25,114 +22,11 @@ const TEST_PROPS = {
 	config: TEST_CONFIG
 };
 
-const twitchPlaybackStats: TwitchPlaybackStats = {
-	backendVersion: '',
-	bufferSize: 0,
-	codecs: '',
-	displayResolution: '',
-	fps: '',
-	hlsLatencyBroadcaster: 0,
-	playbackRate: 0,
-	skippedFrames: 0,
-	videoResolution: ''
-};
-
-class TwitchPlayerMock implements TwitchPlayer {
-	constructor() {
-		// do nothing
-	}
-	disableCaptions() {
-		// do nothing
-	}
-	enableCaptions() {
-		// do nothing
-	}
-	pause() {
-		// do nothing
-	}
-	play() {
-		// do nothing
-	}
-	seek() {
-		// do nothing
-	}
-	setChannel() {
-		// do nothing
-	}
-	setCollection() {
-		// do nothing
-	}
-	setQuality() {
-		// do nothing
-	}
-	setVideo() {
-		// do nothing
-	}
-	getMuted() {
-		return false;
-	}
-	setMuted() {
-		// do nothing
-	}
-	getVolume() {
-		return 0;
-	}
-	setVolume() {
-		// do nothing
-	}
-	getPlaybackStats() {
-		return twitchPlaybackStats;
-	}
-	getChannel() {
-		return '';
-	}
-	getCurrentTime() {
-		return 0;
-	}
-	getDuration() {
-		return 0;
-	}
-	getEnded() {
-		return false;
-	}
-	getQualities() {
-		return [];
-	}
-	getQuality() {
-		return '';
-	}
-	getVideo() {
-		return '';
-	}
-	isPaused() {
-		return false;
-	}
-	addEventListener() {
-		// do nothing
-	}
-
-	static CAPTIONS = 'captions' as const;
-	static ENDED = 'ended' as const;
-	static PAUSE = 'pause' as const;
-	static PLAY = 'play' as const;
-	static PLAYBACK_BLOCKED = 'playbackBlocked' as const;
-	static PLAYING = 'playing' as const;
-	static OFFLINE = 'offline' as const;
-	static ONLINE = 'online' as const;
-	static READY = 'ready' as const;
-	static SEEK = 'seek' as const;
-}
-
-const PLAYERJS_SDK: Twitch = {
-	Player: TwitchPlayerMock
-};
-
-describe('testPlayerMethods', () => {
-	testPlayerMethods({
-		Player: TwitchSvelte,
-		playerSDK: PLAYERJS_SDK,
-		loadParameters: [TEST_URL, false],
-		methods: {
+describe('testPlayerMethods', function () {
+	testPlayerMethods(
+		TwitchSvelte,
+		new TwitchPlayerMock(),
+		{
 			play: 'play',
 			pause: 'pause',
 			stop: 'pause',
@@ -144,6 +38,60 @@ describe('testPlayerMethods', () => {
 			getCurrentTime: 'getCurrentTime',
 			getSecondsLoaded: null
 		},
-		props: TEST_PROPS
+		TEST_PROPS
+	);
+});
+
+test('load()', async function (t) {
+	t.expect.assertions(3);
+
+	vi.doMock('./TwitchPlayerPlayer.mock', function () {
+		const Player = function (id: string) {
+			t.expect(id).toStrictEqual('mock-player-id');
+		};
+
+		Player.READY = 'READY';
+		Player.PLAY = 'PLAY';
+		Player.PAUSE = 'PAUSE';
+		Player.ENDED = 'ENDED';
+		Player.prototype.addEventListener = vi.fn(function (event, fn) {
+			if (event === 'READY') {
+				setTimeout(fn, 100);
+			}
+		});
+
+		return { default: Player };
 	});
+
+	const Player = (await import('./TwitchPlayerPlayer.mock')).default;
+	const getSDK = vi.spyOn(utils, 'getSDK').mockImplementation(async function () {
+		return { Player };
+	});
+
+	return new Promise(function (resolve) {
+		const onReady = vi.fn(function () {
+			t.expect(true).toBeTruthy();
+			resolve(undefined);
+		});
+
+		const instance = new TwitchSvelte({
+			target: document.body,
+			props: TEST_PROPS
+		});
+
+		instance.$on('ready', onReady);
+		instance.load(TEST_URL);
+
+		t.expect(getSDK).toHaveBeenCalledOnce();
+		getSDK.mockRestore();
+	});
+});
+
+test('render()', function (t) {
+	const wrapper = render(TwitchSvelte, TEST_PROPS);
+
+	const element = wrapper.container.querySelector('.twitch-player') as HTMLIFrameElement;
+	t.expect(element).not.toStrictEqual(null);
+	t.expect(element.className).includes('twitch-player');
+	t.expect(element.id).toStrictEqual('mock-player-id');
 });

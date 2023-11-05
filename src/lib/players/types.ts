@@ -12,7 +12,7 @@ import type { VimeoPlayer } from './vimeo.global.types';
 import type { PlayerJSPlayer } from './playerjs.global.types';
 import type { WistiaPlayer } from './wistia.global.types';
 import type { VidyardPlayer } from './vidyard.global.types';
-import type { YouTubeConfig } from './youtube.types';
+import type { YouTubeConfig, YouTubeUrl } from './youtube.types';
 import type { SoundCloudConfig } from './soundcloud.types';
 import type { ViemoConfig } from './vimeo.types';
 import type { FacebookConfig } from './facebook.types';
@@ -21,14 +21,21 @@ import type { TwitchConfig } from './twitch.types';
 import type { DailyMotionConfig } from './dailymotion.types';
 import type { MixcloudConfig } from './mixcloud.types';
 import type { VidyardConfig } from './vidyard.types';
-import type { FileConfig } from './file.types';
+import type {
+	FileConfig,
+	FileUrl,
+	FilePlayer,
+	FileErrorData,
+	FileErrorSDKInstance,
+	FileErrorSDKGlobal,
+	FileInternalPlayer
+} from './file.types';
 import type { NotImplementedConfig } from './notimplemented.types';
 
 export type PlayerInstance =
 	| YTPlayer
 	| TwitchPlayer
-	| HTMLAudioElement
-	| HTMLVideoElement
+	| FilePlayer
 	| NotImplementedPlayer
 	| SoundCloudPlayer
 	| DailyMotionPlayer
@@ -38,6 +45,12 @@ export type PlayerInstance =
 	| PlayerJSPlayer
 	| WistiaPlayer
 	| VidyardPlayer;
+
+export type PlayerInternalPlayer = Omit<FileInternalPlayer, 'player'> & {
+	player: FileInternalPlayer['player'] | PlayerInstance;
+};
+
+export type PlayerGetPlayerKey = keyof PlayerInternalPlayer;
 
 export type PlayerKey =
 	| 'youtube'
@@ -54,18 +67,7 @@ export type PlayerKey =
 	| 'file'
 	| 'not-implemented';
 
-export type Player = {
-	key: PlayerKey;
-	loopOnEnded?: boolean;
-	forceLoad?: boolean;
-	canPlay(url: FilePlayerUrl): boolean;
-	canEnablePIP?(url: FilePlayerUrl): boolean;
-	loadComponent(): Promise<{
-		default: Constructor<SvelteComponent<Partial<PlayerProps>> & PlayerMedia>;
-	}>;
-};
-
-export type GetPlayerReturn = PlayerInstance | null;
+export type PlayerUrl = string | YouTubeUrl | FileUrl;
 
 export type OnProgressProps = {
 	played: number;
@@ -74,15 +76,21 @@ export type OnProgressProps = {
 	loadedSeconds?: number;
 };
 
+export type ErrorData = FileErrorData;
+
+export type ErrorSDKInstance = FileErrorSDKInstance;
+
+export type ErrorSDKGlobal = FileErrorSDKGlobal;
+
 // TODO: to implement corrent type
 export type OnErrorProps = {
 	error: unknown;
-	data?: unknown;
-	sdkInstance?: unknown;
-	sdkGlobal?: unknown;
+	data?: ErrorData | unknown;
+	sdkInstance?: ErrorSDKInstance;
+	sdkGlobal?: ErrorSDKGlobal;
 };
 
-export type Dispatcher = {
+export type PlayerDispatcher = {
 	ready: undefined | Event;
 	mount: undefined;
 	start: undefined;
@@ -103,13 +111,7 @@ export type Dispatcher = {
 	loaded: undefined;
 };
 
-export type InternalPlayerKey = 'player' | 'hls' | 'dash';
-
-export type FileMediaUrl = { src: string; type: string };
-
-export type FilePlayerUrl = string | string[] | FileMediaUrl[] | MediaStream;
-
-export type Config = {
+export type PlayerConfig = {
 	youtube: YouTubeConfig;
 	soundcloud: SoundCloudConfig;
 	vimeo: ViemoConfig;
@@ -125,8 +127,12 @@ export type Config = {
 	'not-implemented': NotImplementedConfig;
 };
 
+export type PlayerConfigKey = keyof PlayerConfig;
+
+export type PlayerConfigObject = PlayerConfig[PlayerConfigKey];
+
 export type PlayerProps = {
-	url: FilePlayerUrl;
+	url: PlayerUrl;
 	playing: boolean;
 	loop: boolean;
 	controls: boolean;
@@ -141,13 +147,13 @@ export type PlayerProps = {
 	pip: boolean;
 	stopOnUnmount: boolean;
 	previewTabIndex: number;
-	config: RecursivePartial<Config[keyof Config]>;
+	config: RecursivePartial<PlayerConfigObject>;
 	oEmbedUrl: string;
 	display: string;
 };
 
-export type PlayerMedia = {
-	load(url: FilePlayerUrl, isReady?: boolean): void;
+export type PlayerRef = {
+	load(url: PlayerUrl, isReady?: boolean): void;
 	stop(): void;
 	play(): void;
 	pause(): void;
@@ -162,6 +168,19 @@ export type PlayerMedia = {
 	setLoop?(loop: boolean): void;
 	enablePIP?(): void;
 	disablePIP?(): void;
-	getPlayer?(): GetPlayerReturn;
-	setPlayer?(palyer: GetPlayerReturn): void;
+	getPlayer(key?: 'player'): PlayerInternalPlayer['player'] | null;
+	getPlayer<TKey extends PlayerGetPlayerKey>(key?: TKey): PlayerInternalPlayer[TKey] | null;
+};
+
+export type PlayerComponent = Constructor<SvelteComponent<Partial<PlayerProps>> & PlayerRef>;
+
+export type Player = {
+	key: PlayerKey;
+	loopOnEnded?: boolean;
+	forceLoad?: boolean;
+	canPlay(url: PlayerUrl): boolean;
+	canEnablePIP?(url: PlayerUrl): boolean;
+	loadComponent(): Promise<{
+		default: PlayerComponent;
+	}>;
 };

@@ -1,11 +1,11 @@
 <script lang="ts">
 	import type { NotImplementedPlayer } from './notimplemented.global.types';
-	import type { FilePlayerUrl, Dispatcher } from './types';
+	import type { PlayerUrl, PlayerDispatcher } from './types';
 	import type { NotImplementedConfig } from './notimplemented.types';
 
 	import { onMount, createEventDispatcher } from 'svelte';
 
-	export const url: FilePlayerUrl | undefined = undefined;
+	export const url: PlayerUrl | undefined = undefined;
 	export const playing: boolean | undefined = undefined;
 	export const loop: boolean | undefined = undefined;
 	export const controls: boolean | undefined = undefined;
@@ -16,7 +16,7 @@
 	export const playsinline: boolean | undefined = undefined;
 	export const config: NotImplementedConfig | undefined = undefined;
 
-	const dispatch = createEventDispatcher<Dispatcher>();
+	const dispatch = createEventDispatcher<PlayerDispatcher>();
 
 	let player: NotImplementedPlayer;
 
@@ -24,7 +24,7 @@
 		dispatch('mount');
 	});
 
-	export function load(url: FilePlayerUrl, isReady?: boolean): void {
+	export function load(url: PlayerUrl, isReady?: boolean): void {
 		console.log('load');
 	}
 
@@ -96,7 +96,7 @@
 		return player;
 	}
 
-	export function setPlayer(newPlayer: NotImplementedPlayer) {
+	export function _setPlayer(newPlayer: NotImplementedPlayer) {
 		player = newPlayer;
 	}
 </script>

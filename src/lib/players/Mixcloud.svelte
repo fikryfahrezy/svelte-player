@@ -1,7 +1,7 @@
 <script lang="ts">
 	import type { GlobalSDKMixcloudKey } from './global.types';
 	import type { MixcloudWidget } from './mixcloud.global.types';
-	import type { Dispatcher } from './types';
+	import type { PlayerDispatcher } from './types';
 	import type { MixcloudConfig } from './mixcloud.types';
 
 	import { onMount, createEventDispatcher } from 'svelte';
@@ -14,7 +14,7 @@
 	const SDK_URL = 'https://widget.mixcloud.com/media/js/widgetApi.js';
 	const SDK_GLOBAL: GlobalSDKMixcloudKey = 'Mixcloud';
 
-	const dispatch = createEventDispatcher<Dispatcher>();
+	const dispatch = createEventDispatcher<PlayerDispatcher>();
 
 	let iframeContainer: HTMLIFrameElement;
 	let player: MixcloudWidget;
@@ -104,20 +104,29 @@
 		return player;
 	}
 
-	export function setPlayer(newPlayer: MixcloudWidget) {
+	export function _setPlayer(newPlayer: MixcloudWidget) {
 		player = newPlayer;
 	}
 
+	export function _setDuration(newDuration: number) {
+		duration = newDuration;
+	}
+
+	export function _setCurrentTime(newCurrentTime: number) {
+		currentTime = newCurrentTime;
+	}
+
 	$: id = url.match(MATCH_URL_MIXCLOUD)?.[1];
+	$: ({ options } = config);
 	$: query = queryString({
-		...config.options,
+		...options,
 		feed: `/${id}/`
 	});
 </script>
 
 <iframe
 	bind:this={iframeContainer}
-	title="Mix Cloud Player"
+	title="Mixcloud Player"
 	class="mixcloud-player"
 	src={`https://www.mixcloud.com/widget/iframe/?${query}`}
 	frameborder={0}

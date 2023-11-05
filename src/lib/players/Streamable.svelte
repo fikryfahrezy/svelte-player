@@ -1,7 +1,7 @@
 <script lang="ts">
 	import type { GlobalSDKPlayerJSKey } from './global.types';
 	import type { PlayerJSPlayer } from './playerjs.global.types';
-	import type { Dispatcher } from './types';
+	import type { PlayerDispatcher } from './types';
 
 	import { onMount, createEventDispatcher } from 'svelte';
 	import { getSDK } from './utils';
@@ -14,7 +14,7 @@
 	const SDK_URL = 'https://cdn.embed.ly/player-0.1.0.min.js';
 	const SDK_GLOBAL: GlobalSDKPlayerJSKey = 'playerjs';
 
-	const dispatch = createEventDispatcher<Dispatcher>();
+	const dispatch = createEventDispatcher<PlayerDispatcher>();
 
 	let iframeContainer: HTMLIFrameElement;
 	let player: PlayerJSPlayer;
@@ -126,8 +126,20 @@
 		return player;
 	}
 
-	export function setPlayer(newPlayer: PlayerJSPlayer) {
+	export function _setPlayer(newPlayer: PlayerJSPlayer) {
 		player = newPlayer;
+	}
+
+	export function _setDuration(newDuration: number) {
+		duration = newDuration;
+	}
+
+	export function _setCurrentTime(newCurrentTime: number) {
+		currentTime = newCurrentTime;
+	}
+
+	export function _setSecondsLoaded(newSecondsLoaded: number) {
+		secondsLoaded = newSecondsLoaded;
 	}
 
 	$: id = url.match(MATCH_URL_STREAMABLE)?.[1];

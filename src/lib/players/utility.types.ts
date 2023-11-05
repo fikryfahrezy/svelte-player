@@ -21,7 +21,7 @@ export type Prettify<T> = {
 // https://stackoverflow.com/a/70428144/12976234
 export type PickMatching<T, V> = { [K in keyof T as T[K] extends V ? K : never]: T[K] };
 /* eslint-disable-next-line @typescript-eslint/ban-types -- TODO: Comment this*/
-export type ExtractMethods<T> = PickMatching<T, Function>;
+export type ObjectMethods<T> = PickMatching<T, Function>;
 
 export type MethodParameters<T> = T extends (...args: infer P) => any ? P : never;
 

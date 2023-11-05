@@ -65,16 +65,12 @@ export type SoundCloudPlayerBindCallbackParams = {
 
 export type SoundCloudPlayerBindCallbackFn = (params: SoundCloudPlayerBindCallbackParams) => void;
 
-// TODO: Fix the any / unknown types
 export type SoundCloudPlayer = {
 	bind(
 		event: Exclude<SoundCloudPlayerEVENT, SoundCloudUIERROREvent>,
 		listener: SoundCloudPlayerBindCallbackFn
 	): void;
-	bind(
-		event: Extract<SoundCloudPlayerEVENT, SoundCloudUIERROREvent>,
-		listener: (e: unknown) => void
-	): void;
+	bind(event: SoundCloudUIERROREvent, listener: (e: unknown) => void): void; // TODO: Fix the unknown types
 	unbind(event: SoundCloudPlayerEVENT): void;
 	load(url: string, options?: Partial<SoundCloudPlayerLoadOptions>): void;
 	play(): void;

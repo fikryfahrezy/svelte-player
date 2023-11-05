@@ -8,62 +8,111 @@ import type { Vimeo } from './vimeo.global.types';
 import type { PlayerJS } from './playerjs.global.types';
 import type { Wistia } from './wistia.global.types';
 import type { Vidyard, VidyardSDKReady } from './vidyard.global.types';
-import type { HlsJS, Hls } from './hls.types';
+import type { HlsJS } from './hls.types';
 import type { DashJS } from './dash.types';
 import type { FlvJS } from './flv.types';
 
-export type GlobalSDK = {
-	YT: YT;
-	SC: SoundCloud;
-	Vimeo: Vimeo;
-	FB: Facebook;
-	playerjs: PlayerJS;
-	Wistia: Wistia;
-	Twitch: Twitch;
-	DM: DailyMotion;
-	Mixcloud: MixcloudPlayer;
-	VidyardV4: Vidyard;
-	Hls: HlsJS;
-	dashjs: DashJS;
-	flvjs: FlvJS;
+export type GlobalSDKYTKey = 'YT';
+export type GlobalSDKYT = YT;
+type GlobalSDKYTObject = {
+	[k in GlobalSDKYTKey]: GlobalSDKYT;
 };
 
+export type GlobalSDKSoundCloudKey = 'SC';
+export type GlobalSDKSoundCloud = SoundCloud;
+type GlobalSDKSoundCloudObject = {
+	[k in GlobalSDKSoundCloudKey]: GlobalSDKSoundCloud;
+};
+
+export type GlobalSDKVimeoKey = 'Vimeo';
+export type GlobalSDKVimeo = Vimeo;
+type GlobalSDKVimeoObject = {
+	[k in GlobalSDKVimeoKey]: GlobalSDKVimeo;
+};
+
+export type GlobalSDKFacebookKey = 'FB';
+export type GlobalSDKFacebook = Facebook;
+type GlobalSDKFacebookObject = {
+	[k in GlobalSDKFacebookKey]: GlobalSDKFacebook;
+};
+
+export type GlobalSDKPlayerJSKey = 'playerjs';
+export type GlobalSDKPlayerJS = PlayerJS;
+type GlobalSDKPlayerJSObject = {
+	[k in GlobalSDKPlayerJSKey]: GlobalSDKPlayerJS;
+};
+
+export type GlobalSDKWistiaKey = 'Wistia';
+export type GlobalSDKWistia = Wistia;
+type GlobalSDKWistiaObject = {
+	[k in GlobalSDKWistiaKey]: GlobalSDKWistia;
+};
+
+export type GlobalSDKTwitchKey = 'Twitch';
+export type GlobalSDKTwitch = Twitch;
+type GlobalSDKTwitchObject = {
+	[k in GlobalSDKTwitchKey]: GlobalSDKTwitch;
+};
+
+export type GlobalSDKDailyMotionKey = 'DM';
+export type GlobalSDKDailyMotion = DailyMotion;
+type GlobalSDKDailyMotionObject = {
+	[k in GlobalSDKDailyMotionKey]: GlobalSDKDailyMotion;
+};
+
+export type GlobalSDKMixcloudKey = 'Mixcloud';
+export type GlobalSDKMixcloud = MixcloudPlayer;
+type GlobalSDKMixcloudObject = {
+	[k in GlobalSDKMixcloudKey]: GlobalSDKMixcloud;
+};
+
+export type GlobalSDKVidyardKey = 'VidyardV4';
+export type GlobalSDKVidyard = Vidyard;
+type GlobalSDKVidyardObject = {
+	[k in GlobalSDKVidyardKey]: GlobalSDKVidyard;
+};
+
+export type GlobalSDKHLSKey = 'Hls';
+export type GlobalSDKHLS = HlsJS;
+type GlobalSDKHLSObject = {
+	[k in GlobalSDKHLSKey]: GlobalSDKHLS;
+};
+
+export type GlobalSDKDASHKey = 'dashjs';
+export type GlobalSDKDASH = DashJS;
+type GlobalSDKDASHObject = {
+	[k in GlobalSDKDASHKey]: GlobalSDKDASH;
+};
+
+export type GlobalSDKFLVKey = 'flvjs';
+export type GlobalSDKFLV = FlvJS;
+type GlobalSDKFLVObject = {
+	[k in GlobalSDKFLVKey]: GlobalSDKFLV;
+};
+
+export type GlobalSDK = GlobalSDKYTObject &
+	GlobalSDKSoundCloudObject &
+	GlobalSDKVimeoObject &
+	GlobalSDKFacebookObject &
+	GlobalSDKPlayerJSObject &
+	GlobalSDKWistiaObject &
+	GlobalSDKTwitchObject &
+	GlobalSDKDailyMotionObject &
+	GlobalSDKMixcloudObject &
+	GlobalSDKVidyardObject &
+	GlobalSDKHLSObject &
+	GlobalSDKDASHObject &
+	GlobalSDKFLVObject;
+
 export type GlobalSDKType = keyof GlobalSDK;
-
-export type GlobalSDKYTKey = Extract<GlobalSDKType, 'YT'>;
-export type GlobalSDKSoundCloudKey = Extract<GlobalSDKType, 'SC'>;
-export type GlobalSDKVimeoKey = Extract<GlobalSDKType, 'Vimeo'>;
-export type GlobalSDKFacebookKey = Extract<GlobalSDKType, 'FB'>;
-export type GlobalSDKPlayerJSKey = Extract<GlobalSDKType, 'playerjs'>;
-export type GlobalSDKWistiaKey = Extract<GlobalSDKType, 'Wistia'>;
-export type GlobalSDKTwitchKey = Extract<GlobalSDKType, 'Twitch'>;
-export type GlobalSDKDailyMotionKey = Extract<GlobalSDKType, 'DM'>;
-export type GlobalSDKMixcloudKey = Extract<GlobalSDKType, 'Mixcloud'>;
-export type GlobalSDKVidyardKey = Extract<GlobalSDKType, 'VidyardV4'>;
-export type GlobalSDKHLSKey = Extract<GlobalSDKType, 'Hls'>;
-export type GlobalSDKDASHKey = Extract<GlobalSDKType, 'dashjs'>;
-export type GlobalSDKFLVKey = Extract<GlobalSDKType, 'flvjs'>;
-
 export type GlobalSDKValue = GlobalSDK[GlobalSDKType];
 
-export type GlobalSDKYT = Extract<GlobalSDKValue, YT>;
-export type GlobalSDKSoundCloud = Extract<GlobalSDKValue, SoundCloud>;
-export type GlobalSDKVimeo = Extract<GlobalSDKValue, Vimeo>;
-export type GlobalSDKFacebook = Extract<GlobalSDKValue, Facebook>;
-export type GlobalSDKPlayerJS = Extract<GlobalSDKValue, PlayerJS>;
-export type GlobalSDKWistia = Extract<GlobalSDKValue, Wistia>;
-export type GlobalSDKTwitch = Extract<GlobalSDKValue, Twitch>;
-export type GlobalSDKDailyMotion = Extract<GlobalSDKValue, DailyMotion>;
-export type GlobalSDKMixcloud = Extract<GlobalSDKValue, MixcloudPlayer>;
-export type GlobalSDKVidyard = Extract<GlobalSDKValue, Vidyard>;
-export type GlobalSDKHLSClass = Hls;
-export type GlobalSDKHLS = Extract<GlobalSDKValue, HlsJS>;
-export type GlobalSDKDASH = Extract<GlobalSDKValue, DashJS>;
-export type GlobalSDKFLV = Extract<GlobalSDKValue, FlvJS>;
-
-export type GlobalSDKReady = YTSDKReady | DailyMotionSDKReady | FacebookSDKReady | VidyardSDKReady;
-
-export type GlobalSDKYTReady = Extract<GlobalSDKReady, YTSDKReady>;
-export type GlobalSDKDailyMotionReady = Extract<GlobalSDKReady, DailyMotionSDKReady>;
-export type GlobalSDKFacebookReady = Extract<GlobalSDKReady, FacebookSDKReady>;
-export type GlobalSDKVidyardReady = Extract<GlobalSDKReady, VidyardSDKReady>;
+export type GlobalSDKYTReady = YTSDKReady;
+export type GlobalSDKDailyMotionReady = DailyMotionSDKReady;
+export type GlobalSDKFacebookReady = FacebookSDKReady;
+export type GlobalSDKVidyardReady = VidyardSDKReady;
+export type GlobalSDKReady =
+	| GlobalSDKYTReady
+	| GlobalSDKDailyMotionReady
+	| GlobalSDKFacebookReady
+	| GlobalSDKVidyardReady;

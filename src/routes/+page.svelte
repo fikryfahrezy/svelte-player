@@ -22,7 +22,7 @@
 	let urlInput = '';
 	let seeking = false;
 
-	let playerRef: SveltePlayerRef | undefined = undefined;
+	let playerRef: SveltePlayerRef;
 	let prevUrl: PlayerUrl = '';
 
 	function load(requestUrl: PlayerUrl) {
@@ -44,7 +44,7 @@
 	}
 
 	function onPrevURLStateChange(prevUrlState: typeof prevUrl) {
-		setTimeout(() => {
+		setTimeout(function () {
 			if (prevUrlState !== '') {
 				load(prevUrlState);
 			}
@@ -58,12 +58,12 @@
 	}
 
 	function handlePlay() {
-		console.log('onPlay');
+		// console.log('onPlay');
 		playing = true;
 	}
 
 	function handlePause() {
-		console.log('onPause');
+		// console.log('onPause');
 		playing = false;
 	}
 
@@ -80,7 +80,7 @@
 
 	function handleProgress(event: CustomEvent<OnProgressProps>) {
 		const state = event.detail;
-		console.log('onProgress', state);
+		// console.log('onProgress', state);
 		// We only want to update time slider if we are not currently seeking
 		if (!seeking && state.loaded !== undefined && state.played !== undefined) {
 			loaded = state.loaded;
@@ -89,12 +89,12 @@
 	}
 
 	function handleEnded() {
-		console.log('onEnded');
+		// console.log('onEnded');
 		playing = loop;
 	}
 
 	function handleDuration(event: CustomEvent<number | null>) {
-		console.log('onDuration', event.detail);
+		// console.log('onDuration', event.detail);
 		duration = event.detail ?? 0;
 	}
 
@@ -117,29 +117,29 @@
 				{loop}
 				{pip}
 				bind:this={playerRef}
-				on:ready={() => {
-					console.log('onReady');
+				on:ready={function () {
+					// console.log('onReady');
 				}}
-				on:start={() => {
-					console.log('onStart');
+				on:start={function () {
+					// console.log('onStart');
 				}}
 				on:play={handlePlay}
 				on:pause={handlePause}
-				on:buffer={() => {
-					console.log('onBuffer');
+				on:buffer={function () {
+					// console.log('onBuffer');
 				}}
 				on:playbackRateChange={handleOnPlaybackRateChange}
 				on:seek={(e) => {
-					console.log('onSeek', e);
+					// console.log('onSeek', e);
 				}}
 				on:ended={handleEnded}
 				on:error={(e) => {
-					console.log('onError', e);
+					// console.log('onError', e);
 				}}
 				on:progress={handleProgress}
 				on:duration={handleDuration}
 				on:playbackQualityChange={(e) => {
-					console.log('onPlaybackQualityChange', e);
+					// console.log('onPlaybackQualityChange', e);
 				}}
 			/>
 		</div>
@@ -157,7 +157,7 @@
 						<button on:click={handleClickFullscreen}>Fullscreen</button>
 						{#if light}
 							<button
-								on:click={() => {
+								on:click={function () {
 									if (playerRef !== undefined) {
 										playerRef.showPreview();
 									}
@@ -267,21 +267,21 @@
 					<th>YouTube</th>
 					<td>
 						<LoadButton
-							on:click={() => {
+							on:click={function () {
 								load('https://www.youtube.com/watch?v=oUFJJNQGwhk');
 							}}
 						>
 							Test A
 						</LoadButton>
 						<LoadButton
-							on:click={() => {
+							on:click={function () {
 								load('https://www.youtube.com/watch?v=jNgP6d9HraI');
 							}}
 						>
 							Test B
 						</LoadButton>
 						<LoadButton
-							on:click={() => {
+							on:click={function () {
 								load('https://www.youtube.com/playlist?list=PLogRWNZ498ETeQNYrOlqikEML3bKJcdcx');
 							}}
 						>
@@ -293,21 +293,21 @@
 					<th>SoundCloud</th>
 					<td>
 						<LoadButton
-							on:click={() => {
+							on:click={function () {
 								load('https://soundcloud.com/miami-nights-1984/accelerated');
 							}}
 						>
 							Test A
 						</LoadButton>
 						<LoadButton
-							on:click={() => {
+							on:click={function () {
 								load('https://soundcloud.com/tycho/tycho-awake');
 							}}
 						>
 							Test B
 						</LoadButton>
 						<LoadButton
-							on:click={() => {
+							on:click={function () {
 								load('https://soundcloud.com/yunghog/sets/doperaptraxxx');
 							}}
 						>
@@ -319,14 +319,14 @@
 					<th>Facebook</th>
 					<td>
 						<LoadButton
-							on:click={() => {
+							on:click={function () {
 								load('https://www.facebook.com/facebook/videos/10153231379946729/');
 							}}
 						>
 							Test A
 						</LoadButton>
 						<LoadButton
-							on:click={() => {
+							on:click={function () {
 								load('https://www.facebook.com/FacebookDevelopers/videos/10152454700553553/');
 							}}
 						>
@@ -338,14 +338,14 @@
 					<th>Vimeo</th>
 					<td>
 						<LoadButton
-							on:click={() => {
+							on:click={function () {
 								load('https://vimeo.com/90509568');
 							}}
 						>
 							Test A
 						</LoadButton>
 						<LoadButton
-							on:click={() => {
+							on:click={function () {
 								load('https://vimeo.com/169599296');
 							}}
 						>
@@ -357,21 +357,21 @@
 					<th>Twitch</th>
 					<td>
 						<LoadButton
-							on:click={() => {
+							on:click={function () {
 								load('https://www.twitch.tv/videos/106400740');
 							}}
 						>
 							Test A
 						</LoadButton>
 						<LoadButton
-							on:click={() => {
+							on:click={function () {
 								load('https://www.twitch.tv/videos/12783852');
 							}}
 						>
 							Test B
 						</LoadButton>
 						<LoadButton
-							on:click={() => {
+							on:click={function () {
 								load('https://www.twitch.tv/kronovi');
 							}}
 						>
@@ -383,14 +383,14 @@
 					<th>Streamable</th>
 					<td>
 						<LoadButton
-							on:click={() => {
+							on:click={function () {
 								load('https://streamable.com/moo');
 							}}
 						>
 							Test A
 						</LoadButton>
 						<LoadButton
-							on:click={() => {
+							on:click={function () {
 								load('https://streamable.com/ifjh');
 							}}
 						>
@@ -402,21 +402,21 @@
 					<th>Wistia</th>
 					<td>
 						<LoadButton
-							on:click={() => {
+							on:click={function () {
 								load('https://home.wistia.com/medias/e4a27b971d');
 							}}
 						>
 							Test A
 						</LoadButton>
 						<LoadButton
-							on:click={() => {
+							on:click={function () {
 								load('https://home.wistia.com/medias/29b0fbf547');
 							}}
 						>
 							Test B
 						</LoadButton>
 						<LoadButton
-							on:click={() => {
+							on:click={function () {
 								load('https://home.wistia.com/medias/bq6epni33s');
 							}}
 						>
@@ -428,14 +428,14 @@
 					<th>DailyMotion</th>
 					<td>
 						<LoadButton
-							on:click={() => {
+							on:click={function () {
 								load('https://www.dailymotion.com/video/x5e9eog');
 							}}
 						>
 							Test A
 						</LoadButton>
 						<LoadButton
-							on:click={() => {
+							on:click={function () {
 								load('https://www.dailymotion.com/video/x61xx3z');
 							}}
 						>
@@ -447,14 +447,14 @@
 					<th>Mixcloud</th>
 					<td>
 						<LoadButton
-							on:click={() => {
+							on:click={function () {
 								load('https://www.mixcloud.com/mixcloud/meet-the-curators/');
 							}}
 						>
 							Test A
 						</LoadButton>
 						<LoadButton
-							on:click={() => {
+							on:click={function () {
 								load(
 									'https://www.mixcloud.com/mixcloud/mixcloud-curates-4-mary-anne-hobbs-in-conversation-with-dan-deacon/'
 								);
@@ -468,14 +468,14 @@
 					<th>Vidyard</th>
 					<td>
 						<LoadButton
-							on:click={() => {
+							on:click={function () {
 								load('https://video.vidyard.com/watch/YBvcF2BEfvKdowmfrRwk57');
 							}}
 						>
 							Test A
 						</LoadButton>
 						<LoadButton
-							on:click={() => {
+							on:click={function () {
 								load('https://video.vidyard.com/watch/BLXgYCDGfwU62vdMWybNVJ');
 							}}
 						>
@@ -487,7 +487,7 @@
 					<th>Kaltura</th>
 					<td>
 						<LoadButton
-							on:click={() => {
+							on:click={function () {
 								load(
 									'https://cdnapisec.kaltura.com/p/2507381/sp/250738100/embedIframeJs/uiconf_id/44372392/partner_id/2507381?iframeembed=true&playerId=kaltura_player_1605622074&entry_id=1_jz404fbl'
 								);
@@ -496,7 +496,7 @@
 							Test A
 						</LoadButton>
 						<LoadButton
-							on:click={() => {
+							on:click={function () {
 								load(
 									'https://cdnapisec.kaltura.com/p/2507381/sp/250738100/embedIframeJs/uiconf_id/44372392/partner_id/2507381?iframeembed=true&playerId=kaltura_player_1605622336&entry_id=1_i1jmzcn3'
 								);
@@ -510,7 +510,7 @@
 					<th>Files</th>
 					<td>
 						<LoadButton
-							on:click={() => {
+							on:click={function () {
 								load(
 									'https://test-videos.co.uk/vids/bigbuckbunny/mp4/h264/360/Big_Buck_Bunny_360_10s_1MB.mp4'
 								);
@@ -519,7 +519,7 @@
 							mp4
 						</LoadButton>
 						<LoadButton
-							on:click={() => {
+							on:click={function () {
 								load(
 									'https://test-videos.co.uk/vids/bigbuckbunny/webm/vp8/360/Big_Buck_Bunny_360_10s_1MB.webm'
 								);
@@ -528,21 +528,21 @@
 							webm
 						</LoadButton>
 						<LoadButton
-							on:click={() => {
+							on:click={function () {
 								load('https://filesamples.com/samples/video/ogv/sample_640x360.ogv');
 							}}
 						>
 							ogv
 						</LoadButton>
 						<LoadButton
-							on:click={() => {
+							on:click={function () {
 								load('https://storage.googleapis.com/media-session/elephants-dream/the-wires.mp3');
 							}}
 						>
 							mp3
 						</LoadButton>
 						<LoadButton
-							on:click={() => {
+							on:click={function () {
 								load(
 									'https://bitdash-a.akamaihd.net/content/MI201109210084_1/m3u8s/f08e80da-bf1d-4e3d-8899-f0f6155f6efa.m3u8'
 								);
@@ -551,7 +551,7 @@
 							HLS (m3u8)
 						</LoadButton>
 						<LoadButton
-							on:click={() => {
+							on:click={function () {
 								load('https://dash.akamaized.net/akamai/bbb_30fps/bbb_30fps_640x360_800k.mpd');
 							}}
 						>
@@ -564,7 +564,7 @@
 					<td>
 						<input type="text" placeholder="Enter URL" bind:value={urlInput} />
 						<button
-							on:click={() => {
+							on:click={function () {
 								load(urlInput);
 							}}
 						>

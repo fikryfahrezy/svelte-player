@@ -1,13 +1,13 @@
 <script lang="ts">
-	import type {
-		PlayerRef,
-		SeekToType,
-		SveltePlayerDispatcher,
-		SveltePlayerRef,
-		PlayerKey
-	} from './types';
+	import type { PlayerMediaRef, SeekToType, SveltePlayerDispatcher } from './types';
 	import type { RecursivePartial } from './players/utility.types';
-	import type { InternalPlayerKey, FilePlayerUrl, Config } from './players/types';
+	import type {
+		PlayerUrl,
+		PlayerConfig,
+		PlayerConfigKey,
+		PlayerGetPlayerKey,
+		PlayerInternalPlayer
+	} from './players/types';
 
 	import { createEventDispatcher } from 'svelte';
 	import merge from 'deepmerge';
@@ -17,7 +17,9 @@
 	import Preview from './Preview.svelte';
 	import { defaultConfig } from './props';
 
-	export let url: FilePlayerUrl;
+	export const someValue = 123;
+
+	export let url: PlayerUrl;
 	export let playing = false;
 	export let loop = false;
 	export let controls = false;
@@ -32,7 +34,7 @@
 	export let pip = false;
 	export let stopOnUnmount = true;
 	export let previewTabIndex = 0;
-	export let config: RecursivePartial<Config> = {};
+	export let config: RecursivePartial<PlayerConfig> = {};
 	export let oEmbedUrl = 'https://noembed.com/embed?url={url}';
 
 	export let progressFrequency: number | undefined = undefined;
@@ -40,10 +42,9 @@
 
 	const dispatch = createEventDispatcher<SveltePlayerDispatcher>();
 
-	let showPreviewState = !!light;
-	let playerRef: PlayerRef;
+	let playerRef: PlayerMediaRef;
 
-	export function canEnablePIP(url: FilePlayerUrl) {
+	export function canEnablePIP(url: PlayerUrl) {
 		for (const Player of [...players]) {
 			if (Player.canEnablePIP && Player.canEnablePIP(url)) {
 				return true;
@@ -52,20 +53,11 @@
 		return false;
 	}
 
-	function handlePropsLightChange(propsLight: typeof light) {
-		if (propsLight) {
-			showPreviewState = true;
-		}
-		if (!propsLight) {
-			showPreviewState = false;
-		}
-	}
+	$: showPreviewState = !!light;
 
-	$: handlePropsLightChange(light);
-
-	function handleClickPreview() {
+	function handleClickPreview(e: Event) {
 		showPreviewState = false;
-		dispatch('clickPreview');
+		dispatch('clickPreview', e);
 	}
 
 	export function showPreview() {
@@ -73,47 +65,49 @@
 	}
 
 	export function getDuration() {
-		if (!playerRef) return null;
+		if (!playerRef) {
+			return null;
+		}
 		return playerRef.getDuration();
 	}
 
 	export function getCurrentTime() {
-		if (!playerRef) return null;
+		if (!playerRef) {
+			return null;
+		}
 		return playerRef.getCurrentTime();
 	}
 
 	export function getSecondsLoaded() {
-		if (!playerRef) return null;
+		if (!playerRef) {
+			return null;
+		}
 		return playerRef.getSecondsLoaded();
 	}
 
-	export function getInternalPlayer(key: InternalPlayerKey = 'player') {
-		if (!playerRef) return null;
+	export function getInternalPlayer<TKey extends PlayerGetPlayerKey>(
+		key: TKey | 'player' = 'player'
+	): PlayerInternalPlayer['player'] | PlayerInternalPlayer[TKey] | null {
+		if (!playerRef) {
+			return null;
+		}
 		return playerRef.getInternalPlayer(key);
 	}
 
 	export function seekTo(fraction: number, type?: SeekToType, keepPlaying?: boolean) {
-		if (!playerRef) return null;
+		if (!playerRef) {
+			return null;
+		}
 		playerRef.seekTo(fraction, type, keepPlaying);
 	}
 
-	const sveltePlayer: SveltePlayerRef = {
-		showPreview,
-		canEnablePIP,
-		getCurrentTime,
-		getDuration,
-		getInternalPlayer,
-		getSecondsLoaded,
-		seekTo
-	};
-
 	function handleReady() {
-		dispatch('ready', sveltePlayer);
+		dispatch('ready');
 	}
 
-	function getConfig<T extends PlayerKey>(configUrl: FilePlayerUrl, configKey: T) {
-		const memoized = memoize<(url: typeof configUrl, key: T) => Config[T]>((_, key) => {
-			return merge<Config[T]>(defaultConfig[key] || {}, config[key] || {});
+	function getConfig<T extends PlayerConfigKey>(configUrl: PlayerUrl, configKey: T) {
+		const memoized = memoize<(url: typeof configUrl, key: T) => PlayerConfig[T]>((_, key) => {
+			return merge<PlayerConfig[T]>(defaultConfig[key] || {}, config[key] || {});
 		});
 
 		return memoized(configUrl, configKey);
@@ -123,13 +117,15 @@
 {#if showPreviewState}
 	{#if url}
 		<Preview
-			url={typeof url !== 'string' ? '' : url}
 			{light}
 			{previewTabIndex}
 			{oEmbedUrl}
-			isCustomPlayIcon={$$slots['play-icon']}
+			url={typeof url !== 'string' ? '' : url}
+			playIcon={$$slots['play-icon']}
+			isElementLight={$$slots['light']}
 			on:click={handleClickPreview}
 		>
+			<slot name="light" slot="light" />
 			<slot name="play-icon" slot="play-icon" />
 		</Preview>
 	{/if}

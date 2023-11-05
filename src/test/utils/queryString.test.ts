@@ -1,7 +1,7 @@
 import { test } from 'vitest';
 import { queryString } from '../../lib/players/utils';
 
-test('generates query string', (t) => {
+test('generates query string', function (t) {
 	const object = {
 		a: 1,
 		b: 'abc',

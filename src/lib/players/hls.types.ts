@@ -1,6 +1,8 @@
 import type Hls from 'hls.js';
-export type { default as Hls, HlsConfig } from 'hls.js';
+export type { HlsConfig, ErrorData } from 'hls.js';
 
-type TypeOfHls = typeof Hls;
+export type HlsJS = typeof Hls;
 
-export type HlsJS = TypeOfHls;
+export type HLSClass = Hls;
+
+export type HlsInternalPlayerKey = 'hls';

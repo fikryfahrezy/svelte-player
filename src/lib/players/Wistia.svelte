@@ -1,7 +1,7 @@
 <script lang="ts">
 	import type { GlobalSDKWistiaKey } from './global.types';
 	import type { WistiaPlayer } from './wistia.global.types';
-	import type { Dispatcher } from './types';
+	import type { PlayerDispatcher } from './types';
 	import type { WistiaConfig } from './wistia.types';
 
 	import { onMount, createEventDispatcher } from 'svelte';
@@ -18,11 +18,12 @@
 	const SDK_GLOBAL: GlobalSDKWistiaKey = 'Wistia';
 	const PLAYER_ID_PREFIX = 'wistia-player-';
 
-	const dispatch = createEventDispatcher<Dispatcher>();
+	const dispatch = createEventDispatcher<PlayerDispatcher>();
 
 	let player: WistiaPlayer;
 
-	$: playerID = config.playerId || `${PLAYER_ID_PREFIX}${randomString()}`;
+	$: ({ playerId } = config);
+	$: playerID = playerId || `${PLAYER_ID_PREFIX}${randomString()}`;
 
 	onMount(function () {
 		dispatch('mount');
@@ -145,7 +146,7 @@
 		return player;
 	}
 
-	export function setPlayer(newPlayer: WistiaPlayer) {
+	export function _setPlayer(newPlayer: WistiaPlayer) {
 		player = newPlayer;
 	}
 

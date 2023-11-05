@@ -3,28 +3,35 @@
 </script>
 
 <script lang="ts">
+	import type { PreviewDispatcher } from './types';
 	import { createEventDispatcher, onMount } from 'svelte';
 
 	export let previewTabIndex: number;
 	export let url: string;
 	export let light: boolean | string;
 	export let oEmbedUrl: string;
-	export let isCustomPlayIcon: boolean;
+	export let isElementLight: boolean;
+	export let playIcon: boolean;
+
+	const ICON_SIZE = '64px';
+
+	const dispatch = createEventDispatcher<PreviewDispatcher>();
 
 	let image: string | null = null;
-
-	const dispatch = createEventDispatcher();
-
-	const isElement = $$slots['light'];
-	const ICON_SIZE = '64px';
 
 	onMount(function () {
 		fetchImage({ url, light, oEmbedUrl });
 	});
 
+	function handleUrlLightChange(newUrl: typeof url, newLight: typeof light) {
+		fetchImage({ url: newUrl, light: newLight, oEmbedUrl });
+	}
+
+	$: handleUrlLightChange(url, light);
+
 	type FetchImageParams = { url: typeof url; light: typeof light; oEmbedUrl: typeof oEmbedUrl };
 	function fetchImage({ url, light, oEmbedUrl }: FetchImageParams) {
-		if (isElement) {
+		if (isElementLight) {
 			return;
 		}
 		if (typeof light === 'string') {
@@ -58,15 +65,34 @@
 		}
 	}
 
-	const flexCenter = 'display: flex; align-items: center; justify-content: center;';
-	$: preview = `width: 100%; height: 100%;${
-		image && !isElement ? `background-image: url(${image});` : ''
-	} background-size: cover; background-position: center; cursor: pointer; ${flexCenter}`;
-	$: shadow = `background: radial-gradient(rgb(0, 0, 0, 0.3), rgba(0, 0, 0, 0) 60%); border-radius: ${ICON_SIZE}; width: ${ICON_SIZE}; height: ${ICON_SIZE}; ${
-		isElement ? 'position: absolute;' : ''
-	} ${flexCenter}`;
-	const playIcon =
-		'border-style: solid; border-width: 16px 0 16px 26px; border-color: transparent transparent transparent white; margin-left: 7px;';
+	const flexCenter = `
+		display: flex;
+		align-items: center;
+		justify-content: center;
+	`;
+	$: preview = `
+		width: 100%;
+		height: 100%;
+		${image && !isElementLight ? `background-image: url(${image});` : ''} 
+		background-size: cover;
+		background-position: center; 
+		cursor: pointer; 
+		${flexCenter}
+	`;
+	$: shadow = `
+		background: radial-gradient(rgb(0, 0, 0, 0.3), rgba(0, 0, 0, 0) 60%);
+		border-radius: ${ICON_SIZE};
+		width: ${ICON_SIZE};
+		height: ${ICON_SIZE};
+		${isElementLight ? 'position: absolute;' : ''}
+		${flexCenter}
+	`;
+	const playIconStyle = `
+		border-style: solid;
+		border-width: 16px 0 16px 26px;
+		border-color: transparent transparent transparent white;
+		margin-left: 7px;
+	`;
 </script>
 
 <div
@@ -80,9 +106,9 @@
 	<slot name="light" />
 	<slot name="play-icon" />
 
-	{#if !isCustomPlayIcon}
+	{#if !playIcon}
 		<div style={shadow} class="svelte-player__shadow">
-			<div style={playIcon} class="svelte-player__play-icon" />
+			<div style={playIconStyle} class="svelte-player__play-icon" />
 		</div>
 	{/if}
 </div>

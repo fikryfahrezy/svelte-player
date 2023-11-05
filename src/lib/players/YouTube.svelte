@@ -1,8 +1,8 @@
 <script lang="ts">
 	import type { GlobalSDKYTKey } from './global.types';
 	import type { YTPlayer, YTPlayerOnStateChangeEvent, YTSDKReady } from './youtube.global.types';
-	import type { Dispatcher } from './types';
-	import type { ParsePlaylistFn, YouTubeConfig } from './youtube.types';
+	import type { PlayerDispatcher } from './types';
+	import type { ParsePlaylistFn, YouTubeConfig, YouTubeUrl } from './youtube.types';
 
 	import { createEventDispatcher, onMount } from 'svelte';
 	import { MATCH_URL_YOUTUBE } from './patterns';
@@ -15,17 +15,13 @@
 	export let config: YouTubeConfig;
 	export let display: string | undefined = undefined;
 
-	const playerVars = config?.playerVars;
-	const embedOptions = config?.embedOptions;
-	const onUnstarted = config?.onUnstarted;
-
 	const SDK_URL = 'https://www.youtube.com/iframe_api';
 	const SDK_GLOBAL: GlobalSDKYTKey = 'YT';
 	const SDK_GLOBAL_READY: YTSDKReady = 'onYouTubeIframeAPIReady';
 	const MATCH_PLAYLIST = /[?&](?:list|channel)=([a-zA-Z0-9_-]+)/;
 	const MATCH_USER_UPLOADS = /user\/([a-zA-Z0-9_-]+)\/?/;
 
-	const dispatch = createEventDispatcher<Dispatcher>();
+	const dispatch = createEventDispatcher<PlayerDispatcher>();
 
 	let container: HTMLDivElement;
 	let player: YTPlayer;
@@ -34,14 +30,15 @@
 		dispatch('mount');
 	});
 
-	function getID(url: string | string[]) {
+	function getID(url: YouTubeUrl) {
 		if (!url || url instanceof Array || MATCH_PLAYLIST.test(url)) {
 			return null;
 		}
 		return url.match(MATCH_URL_YOUTUBE)?.[1] ?? null;
 	}
 
-	export function load(url: string | string[], isReady?: boolean) {
+	export function load(url: YouTubeUrl, isReady?: boolean) {
+		const { playerVars, embedOptions } = config;
 		const id = String(getID(url));
 		if (isReady) {
 			if (url instanceof Array || MATCH_PLAYLIST.test(url) || MATCH_USER_UPLOADS.test(url)) {
@@ -51,8 +48,8 @@
 			}
 			player.cueVideoById({
 				videoId: id,
-				startSeconds: parseStartTime(url) || playerVars?.start,
-				endSeconds: parseEndTime(url) || playerVars?.end
+				startSeconds: parseStartTime(url) || playerVars.start,
+				endSeconds: parseEndTime(url) || playerVars.end
 			});
 			return;
 		}
@@ -113,7 +110,7 @@
 		}
 	}
 
-	function parsePlaylist(url: string | string[]): ReturnType<ParsePlaylistFn> {
+	function parsePlaylist(url: YouTubeUrl): ReturnType<ParsePlaylistFn> {
 		if (url instanceof Array) {
 			return {
 				listType: 'playlist',
@@ -139,9 +136,10 @@
 
 	export function onStateChange(event: YTPlayerOnStateChangeEvent) {
 		const { data } = event;
+		const { playerVars, onUnstarted } = config;
 		const { UNSTARTED, PLAYING, PAUSED, BUFFERING, ENDED, CUED } = window[SDK_GLOBAL].PlayerState;
 		if (data === UNSTARTED) {
-			onUnstarted?.();
+			onUnstarted();
 		}
 		if (data === PLAYING) {
 			dispatch('play');
@@ -157,7 +155,7 @@
 			const isPlaylist = !!player.getPlaylist();
 			// Only loop manually if not playing a playlist
 			if (loop && !isPlaylist) {
-				if (playerVars?.start) {
+				if (playerVars.start) {
 					seekTo(playerVars.start);
 				} else {
 					play();
@@ -227,7 +225,7 @@
 		return player;
 	}
 
-	export function setPlayer(newPlayer: YTPlayer) {
+	export function _setPlayer(newPlayer: YTPlayer) {
 		player = newPlayer;
 	}
 </script>

@@ -1,7 +1,7 @@
 <script lang="ts">
 	import type { GlobalSDKSoundCloudKey } from './global.types';
 	import type { SoundCloudPlayer } from './soundcloud.global.types';
-	import type { Dispatcher } from './types';
+	import type { PlayerDispatcher } from './types';
 	import type { SoundCloudConfig } from './soundcloud.types';
 
 	import { onMount, createEventDispatcher } from 'svelte';
@@ -15,7 +15,7 @@
 	const SDK_URL = 'https://w.soundcloud.com/player/api.js';
 	const SDK_GLOBAL: GlobalSDKSoundCloudKey = 'SC';
 
-	const dispatch = createEventDispatcher<Dispatcher>();
+	const dispatch = createEventDispatcher<PlayerDispatcher>();
 
 	let iframeContainer: HTMLIFrameElement;
 	let player: SoundCloudPlayer;
@@ -117,14 +117,26 @@
 		return player;
 	}
 
-	export function setPlayer(newPlayer: SoundCloudPlayer) {
+	export function _setPlayer(newPlayer: SoundCloudPlayer) {
 		player = newPlayer;
+	}
+
+	export function _setDuration(newDuration: number) {
+		duration = newDuration;
+	}
+
+	export function _setCurrentTime(newCurrentTime: number) {
+		currentTime = newCurrentTime;
+	}
+
+	export function _setFractionLoaded(newFractionLoaded: number) {
+		fractionLoaded = newFractionLoaded;
 	}
 </script>
 
 <iframe
 	bind:this={iframeContainer}
-	title="Sound Cloud Player"
+	title="SoundCloud Player"
 	class="soundcloud-player"
 	src={`https://w.soundcloud.com/player/?url=${encodeURIComponent(url)}`}
 	frameborder={0}

@@ -1,7 +1,7 @@
 <script lang="ts">
 	import type { GlobalSDKDailyMotionKey } from './global.types';
 	import type { DailyMotionPlayer, DailyMotionSDKReady } from './dailymotion.global.types';
-	import type { Dispatcher } from './types';
+	import type { PlayerDispatcher } from './types';
 	import type { DailyMotionConfig } from './dailymotion.types';
 
 	import { onMount, createEventDispatcher } from 'svelte';
@@ -18,7 +18,7 @@
 	const SDK_GLOBAL: GlobalSDKDailyMotionKey = 'DM';
 	const SDK_GLOBAL_READY: DailyMotionSDKReady = 'dmAsyncInit';
 
-	const dispatch = createEventDispatcher<Dispatcher>();
+	const dispatch = createEventDispatcher<PlayerDispatcher>();
 
 	let container: HTMLDivElement;
 	let player: DailyMotionPlayer;
@@ -66,7 +66,7 @@
 						video_end() {
 							dispatch('ended');
 						},
-						durationchange: onDurationChange,
+						durationchange: _onDurationChange,
 						pause() {
 							dispatch('pause');
 						},
@@ -88,7 +88,7 @@
 		);
 	}
 
-	function onDurationChange() {
+	export function _onDurationChange() {
 		const duration = getDuration();
 		dispatch('duration', duration);
 	}
@@ -137,7 +137,7 @@
 		return player;
 	}
 
-	export function setPlayer(newPlayer: DailyMotionPlayer) {
+	export function _setPlayer(newPlayer: DailyMotionPlayer) {
 		player = newPlayer;
 	}
 </script>

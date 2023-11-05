@@ -110,10 +110,7 @@ export interface TwitchPlayer {
 		event: Exclude<TwitchPlayerEVENT, TwitchPlayerSEEKEvent>,
 		callback: TwitchPlayerEVENTCallback
 	): void;
-	addEventListener(
-		event: Extract<TwitchPlayerEVENT, TwitchPlayerSEEKEvent>,
-		callback: TwitchPlayerSEEKEVENTCallback
-	): void;
+	addEventListener(event: TwitchPlayerSEEKEvent, callback: TwitchPlayerSEEKEVENTCallback): void;
 }
 
 export interface TwitchPlayerConstructor {

@@ -27,14 +27,14 @@ export type MixcloudWidgetProgressEVENTCallback = (seconds: number, duration: nu
 export type MixcloudWidgetErrorßEVENTCallback = (error: unknown) => void;
 
 export type MixcloudWidgetProgressEVENT = {
-	[l in Extract<MixcloudPlayerEVENT, MixcloudPROGRESSEvent>]: {
+	[l in MixcloudPROGRESSEvent]: {
 		on(callback: MixcloudWidgetProgressEVENTCallback): void;
 		off(callback: MixcloudWidgetEVENTCallback): void;
 	};
 };
 
 export type MixcloudWidgetErrorEVENT = {
-	[l in Extract<MixcloudPlayerEVENT, MixcloudERROREvent>]: {
+	[l in MixcloudERROREvent]: {
 		on(callback: MixcloudWidgetErrorßEVENTCallback): void;
 		off(callback: MixcloudWidgetEVENTCallback): void;
 	};

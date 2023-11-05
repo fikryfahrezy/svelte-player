@@ -1,14 +1,12 @@
-import type {
-	SoundCloud,
-	SoundCloudPlayer,
-	SoundCloudWidgetEvents
-} from '../../lib/players/soundcloud.global.types';
+import type { SoundCloudWidgetEvents } from '../../lib/players/soundcloud.global.types';
 import type { SoundCloudConfig } from '../../lib/players/soundcloud.types';
 
-import { describe } from 'vitest';
+import { test, vi, describe } from 'vitest';
+import { render } from '@testing-library/svelte';
 import testPlayerMethods from '../helpers/testPlayerMethods';
-
 import SoundCloudSvelte from '../../lib/players/SoundCloud.svelte';
+import * as utils from '../../lib/players/utils';
+import SoundCloudPlayerMock from './SoundCloudPlayer.mock';
 
 const TEST_URL = 'https://soundcloud.com/miami-nights-1984/accelerated';
 
@@ -21,66 +19,6 @@ const TEST_PROPS = {
 	url: TEST_URL,
 	config: TEST_CONFIG
 };
-
-class SoundCloudPlayerMock implements SoundCloudPlayer {
-	constructor() {
-		// do nothing
-	}
-	bind() {
-		// do nothing
-	}
-	unbind() {
-		// do nothing
-	}
-	load() {
-		// do nothing
-	}
-	play() {
-		// do nothing
-	}
-	pause() {
-		// do nothing
-	}
-	toggle() {
-		// do nothing
-	}
-	seekTo() {
-		// do nothing
-	}
-	setVolume() {
-		// do nothing
-	}
-	next() {
-		// do nothing
-	}
-	prev() {
-		// do nothing
-	}
-	skip() {
-		// do nothing
-	}
-	getVolume() {
-		return 0;
-	}
-	getDuration() {
-		return 0;
-	}
-	getPosition() {
-		return 0;
-	}
-	getSounds() {
-		return [];
-	}
-	getCurrentSound() {
-		return {};
-	}
-	getCurrentSoundIndex() {
-		return 0;
-	}
-	isPaused() {
-		return false;
-	}
-}
 
 const soundCloudWidgetEvents: SoundCloudWidgetEvents = {
 	LOAD_PROGRESS: 'loadProgress',
@@ -96,30 +34,100 @@ const soundCloudWidgetEvents: SoundCloudWidgetEvents = {
 	ERROR: 'error'
 };
 
-function Widget() {
-	return new SoundCloudPlayerMock();
-}
+describe('testPlayerMethods', function () {
+	testPlayerMethods(SoundCloudSvelte, new SoundCloudPlayerMock(), {
+		play: 'play',
+		pause: 'pause',
+		stop: null,
+		seekTo: 'seekTo',
+		setVolume: 'setVolume',
+		mute: 'setVolume',
+		unmute: 'setVolume'
+	});
+});
 
-Widget.Events = soundCloudWidgetEvents;
+test('load()', async function (t) {
+	t.expect.assertions(3);
 
-const PLAYERJS_SDK: SoundCloud = {
-	Widget
-};
+	vi.doMock('./SoundCloudPlayer.mock', function () {
+		const Player = vi.fn();
+		Player.prototype.bind = vi.fn();
+		Player.prototype.getDuration = vi.fn(function (fn) {
+			fn(1000);
+		});
+		Player.prototype.load = vi.fn(function (_, options) {
+			options.callback();
+		});
 
-describe('testPlayerMethods', () => {
-	testPlayerMethods({
-		Player: SoundCloudSvelte,
-		playerSDK: PLAYERJS_SDK,
-		loadParameters: [TEST_URL, false],
-		methods: {
-			play: 'play',
-			pause: 'pause',
-			stop: null,
-			seekTo: 'seekTo',
-			setVolume: 'setVolume',
-			mute: 'setVolume',
-			unmute: 'setVolume'
-		},
+		return { default: Player };
+	});
+
+	const SoundCloudPlayerMock = (await import('./SoundCloudPlayer.mock')).default;
+
+	function Widget(container: string | HTMLIFrameElement) {
+		t.expect((container as HTMLIFrameElement).className).contains('soundcloud-player');
+		return new SoundCloudPlayerMock();
+	}
+
+	Widget.Events = soundCloudWidgetEvents;
+
+	const getSDK = vi.spyOn(utils, 'getSDK').mockImplementation(async function () {
+		return { Widget };
+	});
+
+	return new Promise(function (resolve) {
+		const onReady = vi.fn(function () {
+			t.expect(true).toBeTruthy();
+			resolve(undefined);
+		});
+
+		const instance = new SoundCloudSvelte({
+			target: document.body,
+			props: TEST_PROPS
+		});
+
+		instance.$on('ready', onReady);
+		instance.load(TEST_URL);
+
+		t.expect(getSDK).toHaveBeenCalledOnce();
+		getSDK.mockRestore();
+	});
+});
+
+test('getDuration()', function (t) {
+	const instance = new SoundCloudSvelte({
+		target: document.body,
 		props: TEST_PROPS
 	});
+	instance._setDuration(10);
+	t.expect(instance.getDuration()).toStrictEqual(10);
+});
+
+test('getCurrentTime()', function (t) {
+	const instance = new SoundCloudSvelte({
+		target: document.body,
+		props: TEST_PROPS
+	});
+	instance._setCurrentTime(5);
+	t.expect(instance.getCurrentTime()).toStrictEqual(5);
+});
+
+test('getSecondsLoaded()', function (t) {
+	const instance = new SoundCloudSvelte({
+		target: document.body,
+		props: TEST_PROPS
+	});
+	instance._setDuration(10);
+	instance._setFractionLoaded(0.5);
+	t.expect(instance.getSecondsLoaded()).toStrictEqual(5);
+});
+
+test('render()', function (t) {
+	const wrapper = render(SoundCloudSvelte, TEST_PROPS);
+
+	const element = wrapper.container.querySelector('.soundcloud-player') as HTMLIFrameElement;
+	t.expect(element).not.toStrictEqual(null);
+	t.expect(element.frameBorder).toStrictEqual('0');
+	t.expect(element.className).includes('soundcloud-player');
+	t.expect(element.title).toStrictEqual('SoundCloud Player');
 });

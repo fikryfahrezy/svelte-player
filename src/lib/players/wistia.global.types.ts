@@ -490,7 +490,7 @@ export type WistiaPlayerControlClassOptionalProperties = {
 };
 
 export type WistiaPlayerControlClassOptionalFunctions = {
-	shouldMount(video: WistiaPlayerControllVideo): boolean; // TODO: fix `any` type
+	shouldMount(video: WistiaPlayerControllVideo): boolean;
 };
 
 export type WistiaPlayerControlClassProperties = WistiaPlayerControlClassRequiredProperties &
