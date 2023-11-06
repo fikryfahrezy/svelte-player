@@ -101,7 +101,15 @@
 		playerRef.seekTo(fraction, type, keepPlaying);
 	}
 
-	function handleReady() {
+	export function _getPlayer() {
+		return playerRef;
+	}
+
+	export function _setPlayer(newPlayer: PlayerMediaRef) {
+		playerRef = newPlayer;
+	}
+
+	export function handleReady() {
 		dispatch('ready');
 	}
 

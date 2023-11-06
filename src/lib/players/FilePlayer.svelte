@@ -82,7 +82,7 @@
 		};
 	});
 
-	export let _addListeners = (playerParams: FilePlayerElement) => {
+	export let _addListeners = function (playerParams: FilePlayerElement) {
 		player = playerParams;
 		playerParams.addEventListener('play', onPlay);
 		playerParams.addEventListener('waiting', onBuffer);
@@ -106,7 +106,7 @@
 		}
 	};
 
-	export let _removeListeners = (playerParams: FilePlayerElement, urlParams?: typeof url) => {
+	export let _removeListeners = function (playerParams: FilePlayerElement, urlParams?: typeof url) {
 		playerParams.removeEventListener('canplay', onReady);
 		playerParams.removeEventListener('play', onPlay);
 		playerParams.removeEventListener('waiting', onBuffer);
