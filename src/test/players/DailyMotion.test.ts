@@ -36,7 +36,7 @@ describe('testPlayerMethods', function () {
 	});
 });
 
-test.only('load()', async function (t) {
+test('load()', async function (t) {
 	t.expect.assertions(4);
 	vi.doMock('./DailyMotionPlayer.mock', function () {
 		const Player = vi.fn(function (container, options) {
@@ -90,7 +90,7 @@ test('load() - existing player', async function (t) {
 	t.expect(instance.getPlayer().load).toHaveBeenCalledWith(TEST_VIDEO_ID, expect.anything());
 });
 
-test.only('onDurationChange()', async function (t) {
+test('onDurationChange()', async function (t) {
 	vi.doMock('./DailyMotionPlayer.mock', function () {
 		const Player = vi.fn();
 		Player.prototype.duration = 10;

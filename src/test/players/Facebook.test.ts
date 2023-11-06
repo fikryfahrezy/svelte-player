@@ -87,7 +87,7 @@ test('load()', async function (t) {
 	return Promise.resolve();
 });
 
-test.only('load() when ready', async function (t) {
+test('load() when ready', async function (t) {
 	t.expect.assertions(2);
 	const FACEBOOK_SDK: Facebook = {
 		init: expect.anything(),
