@@ -82,14 +82,6 @@
 		};
 	});
 
-	function handleUrlChange(newUrl: FileUrl) {
-		if (player !== undefined && !isMediaStream(newUrl)) {
-			player.srcObject = null;
-		}
-	}
-
-	$: handleUrlChange(url);
-
 	export let _addListeners = (playerParams: FilePlayerElement) => {
 		player = playerParams;
 		playerParams.addEventListener('play', onPlay);
@@ -268,7 +260,7 @@
 					});
 				});
 				if (parseInt(dashVersion) < 3) {
-					dash.getDebug().setLogToBrowserConsole(false);
+					dash.getDebug().setLogToBrowserConsole?.(false);
 				} else {
 					dash.updateSettings({ debug: { logLevel: dashjs.Debug.LOG_LEVEL_NONE } });
 				}

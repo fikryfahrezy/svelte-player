@@ -4,22 +4,13 @@ import type {
 	FileInternalPlayerKey
 } from '../../lib/players/file.types';
 import type { AnyFunction } from '../../lib/players/utility.types';
-import type { DashJS, DashJSDebugLogLevel } from '../../lib/players/dash.types';
+import type { DashJS } from '../../lib/players/dash.types';
 
 import { test, beforeAll, afterAll, vi, expect, type TestContext } from 'vitest';
 
 import { defaultConfig } from '../../lib/props';
 import * as utils from '../../lib/players/utils';
 import FilePlayerSvelte from '../../lib/players/FilePlayer.svelte';
-
-const dashDebug: DashJSDebugLogLevel = {
-	LOG_LEVEL_NONE: 0,
-	LOG_LEVEL_FATAL: 1,
-	LOG_LEVEL_ERROR: 2,
-	LOG_LEVEL_WARNING: 3,
-	LOG_LEVEL_INFO: 4,
-	LOG_LEVEL_DEBUG: 5
-};
 
 const TEST_CONFIG: FileConfig = defaultConfig.file;
 
@@ -320,7 +311,14 @@ test('load - dash', async function (t) {
 	const dashjsSDK = (await import('dashjs')).default;
 	const dashjs: DashJS = {
 		...dashjsSDK,
-		Debug: dashDebug
+		Debug: {
+			LOG_LEVEL_NONE: 0,
+			LOG_LEVEL_FATAL: 1,
+			LOG_LEVEL_ERROR: 2,
+			LOG_LEVEL_WARNING: 3,
+			LOG_LEVEL_INFO: 4,
+			LOG_LEVEL_DEBUG: 5
+		}
 	};
 
 	const url = 'file.mpd';

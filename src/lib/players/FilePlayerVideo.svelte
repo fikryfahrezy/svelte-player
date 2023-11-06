@@ -3,6 +3,7 @@
 	import type { FileUrl, AddListenersFn, RemoveListenersFn } from './file.types';
 
 	import { onMount } from 'svelte';
+	import { isMediaStream } from './utils';
 
 	export let url: FileUrl;
 	export let src: string | undefined;
@@ -17,6 +18,14 @@
 	export let removeListeners: RemoveListenersFn;
 
 	let player: HTMLVideoElement;
+
+	function handleUrlChange(newUrl: FileUrl) {
+		if (player !== undefined && !isMediaStream(newUrl)) {
+			player.srcObject = null;
+		}
+	}
+
+	$: handleUrlChange(url);
 
 	onMount(function () {
 		addListeners(player);
