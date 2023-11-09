@@ -1,3 +1,36 @@
+<script lang="ts" context="module">
+	import type { Player as PlayerType } from './players/types';
+	import players from './players';
+
+	const customPlayers: PlayerType[] = [];
+
+	export function addCustomPlayer(player: PlayerType) {
+		customPlayers.push(player);
+	}
+
+	export function removeCustomPlayers() {
+		customPlayers.length = 0;
+	}
+
+	export function canPlay(url: PlayerUrl) {
+		for (const Player of [...customPlayers, ...players]) {
+			if (Player.canPlay(url)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	export function canEnablePIP(url: PlayerUrl) {
+		for (const Player of [...customPlayers, ...players]) {
+			if (Player.canEnablePIP && Player.canEnablePIP(url)) {
+				return true;
+			}
+		}
+		return false;
+	}
+</script>
+
 <script lang="ts">
 	import type { PlayerMediaRef, SeekToType, SveltePlayerDispatcher } from './types';
 	import type { RecursivePartial } from './players/utility.types';
@@ -13,7 +46,6 @@
 	import merge from 'deepmerge';
 	import memoize from 'memoize-one';
 	import Player from './PlayerMedia.svelte';
-	import players from './players';
 	import Preview from './Preview.svelte';
 	import { defaultConfig } from './props';
 
@@ -43,15 +75,6 @@
 	const dispatch = createEventDispatcher<SveltePlayerDispatcher>();
 
 	let playerRef: PlayerMediaRef;
-
-	export function canEnablePIP(url: PlayerUrl) {
-		for (const Player of [...players]) {
-			if (Player.canEnablePIP && Player.canEnablePIP(url)) {
-				return true;
-			}
-		}
-		return false;
-	}
 
 	$: showPreviewState = !!light;
 
@@ -138,7 +161,7 @@
 		</Preview>
 	{/if}
 {:else}
-	{#each players as player}
+	{#each [...customPlayers, ...players] as player}
 		{#if player.canPlay(url)}
 			<Player
 				{url}

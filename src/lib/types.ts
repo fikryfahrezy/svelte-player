@@ -1,9 +1,4 @@
-import type {
-	PlayerDispatcher,
-	PlayerUrl,
-	PlayerInternalPlayer,
-	PlayerGetPlayerKey
-} from './players/types';
+import type { PlayerDispatcher, PlayerInternalPlayer, PlayerGetPlayerKey } from './players/types';
 
 export type SeekToType = 'seconds' | 'fraction';
 
@@ -21,7 +16,6 @@ export type PreviewDispatcher = {
 };
 
 export type SveltePlayerRef = PlayerMediaRef & {
-	canEnablePIP(url: PlayerUrl): boolean;
 	showPreview(): void;
 };
 

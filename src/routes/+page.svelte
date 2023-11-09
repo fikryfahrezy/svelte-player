@@ -2,7 +2,7 @@
 	import type { SveltePlayerRef } from '../lib/types';
 	import type { OnProgressProps, PlayerUrl } from '../lib/players/types';
 
-	import SveltePlayer from '../lib/SveltePlayer.svelte';
+	import SveltePlayer, { canPlay } from '../lib/SveltePlayer.svelte';
 	import LoadButton from './LoadButton.svelte';
 	import Duration from './Duration.svelte';
 	import screenfull from 'screenfull';
@@ -166,7 +166,7 @@
 								Show preview
 							</button>
 						{/if}
-						{#if playerRef !== undefined && playerRef.canEnablePIP(url)}
+						{#if canPlay(url)}
 							<label>
 								<input type="checkbox" bind:checked={pip} />
 								{!pip ? 'Disable PiP' : 'Enable PiP'}

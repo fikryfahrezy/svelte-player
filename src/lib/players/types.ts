@@ -52,20 +52,21 @@ export type PlayerInternalPlayer = Omit<FileInternalPlayer, 'player'> & {
 
 export type PlayerGetPlayerKey = keyof PlayerInternalPlayer;
 
-export type PlayerKey =
-	| 'youtube'
-	| 'soundcloud'
-	| 'vimeo'
-	| 'facebook'
-	| 'streamable'
-	| 'wistia'
-	| 'twitch'
-	| 'dailymotion'
-	| 'mixcloud'
-	| 'vidyard'
-	| 'kaltura'
-	| 'file'
-	| 'not-implemented';
+export type PlayerConfig = {
+	youtube: YouTubeConfig;
+	soundcloud: SoundCloudConfig;
+	vimeo: ViemoConfig;
+	facebook: FacebookConfig;
+	streamable: undefined;
+	wistia: WistiaConfig;
+	twitch: TwitchConfig;
+	dailymotion: DailyMotionConfig;
+	mixcloud: MixcloudConfig;
+	vidyard: VidyardConfig;
+	kaltura: undefined;
+	file: FileConfig;
+	'not-implemented': NotImplementedConfig;
+};
 
 export type PlayerUrl = string | YouTubeUrl | FileUrl;
 
@@ -109,22 +110,6 @@ export type PlayerDispatcher = {
 	playbackRateChange: number;
 	playbackQualityChange: YTPlayerOnPlaybackQualityChangeEvent;
 	loaded: undefined;
-};
-
-export type PlayerConfig = {
-	youtube: YouTubeConfig;
-	soundcloud: SoundCloudConfig;
-	vimeo: ViemoConfig;
-	facebook: FacebookConfig;
-	streamable: undefined;
-	wistia: WistiaConfig;
-	twitch: TwitchConfig;
-	dailymotion: DailyMotionConfig;
-	mixcloud: MixcloudConfig;
-	vidyard: VidyardConfig;
-	kaltura: undefined;
-	file: FileConfig;
-	'not-implemented': NotImplementedConfig;
 };
 
 export type PlayerConfigKey = keyof PlayerConfig;
@@ -175,7 +160,8 @@ export type PlayerRef = {
 export type PlayerComponent = Constructor<SvelteComponent<Partial<PlayerProps>> & PlayerRef>;
 
 export type Player = {
-	key: PlayerKey;
+	key: PlayerConfigKey;
+	name: string;
 	loopOnEnded?: boolean;
 	forceLoad?: boolean;
 	canPlay(url: PlayerUrl): boolean;

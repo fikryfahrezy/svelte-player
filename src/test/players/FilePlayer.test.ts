@@ -52,6 +52,7 @@ afterAll(function () {
 });
 
 test('listeners', async function (t) {
+	t.expect.assertions(4);
 	const addListeners = vi.fn();
 	const removeListeners = vi.fn();
 	const instance = new FilePlayerSvelte({
@@ -904,6 +905,7 @@ test('auto width/height', function (t) {
 });
 
 test('clear srcObject on url change', async function (t) {
+	t.expect.assertions(2);
 	const url = new window.MediaStream();
 	const instance = new FilePlayerSvelte({
 		target: document.body,

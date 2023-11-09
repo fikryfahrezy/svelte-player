@@ -19,6 +19,7 @@ import { supportsWebKitPresentationMode } from './utils';
 const players: Player[] = [
 	{
 		key: 'youtube',
+		name: 'YouTube',
 		canPlay: canPlayYoutube,
 		canEnablePIP: undefined,
 		loopOnEnded: undefined,
@@ -29,6 +30,7 @@ const players: Player[] = [
 	},
 	{
 		key: 'soundcloud',
+		name: 'SoundCloud',
 		canPlay: canPlaySoundCloud,
 		canEnablePIP: undefined,
 		loopOnEnded: true,
@@ -39,6 +41,7 @@ const players: Player[] = [
 	},
 	{
 		key: 'vimeo',
+		name: 'Vimeo',
 		canPlay: canPlayVimeo,
 		canEnablePIP: undefined,
 		loopOnEnded: undefined,
@@ -49,6 +52,7 @@ const players: Player[] = [
 	},
 	{
 		key: 'facebook',
+		name: 'Facebook',
 		canPlay: canPlayFacebook,
 		canEnablePIP: undefined,
 		loopOnEnded: true,
@@ -59,6 +63,7 @@ const players: Player[] = [
 	},
 	{
 		key: 'streamable',
+		name: 'Streamable',
 		canPlay: canPlayStreamable,
 		canEnablePIP: undefined,
 		loopOnEnded: undefined,
@@ -69,6 +74,7 @@ const players: Player[] = [
 	},
 	{
 		key: 'wistia',
+		name: 'Wistia',
 		canPlay: canPlayWistia,
 		canEnablePIP: undefined,
 		loopOnEnded: true,
@@ -79,6 +85,7 @@ const players: Player[] = [
 	},
 	{
 		key: 'twitch',
+		name: 'Twitch',
 		canPlay: canPlayTwitch,
 		canEnablePIP: undefined,
 		loopOnEnded: true,
@@ -89,6 +96,7 @@ const players: Player[] = [
 	},
 	{
 		key: 'dailymotion',
+		name: 'DailyMotion',
 		canPlay: canPlayDailyMotion,
 		canEnablePIP: undefined,
 		loopOnEnded: true,
@@ -99,6 +107,7 @@ const players: Player[] = [
 	},
 	{
 		key: 'mixcloud',
+		name: 'Mixcloud',
 		canPlay: canPlayMixcloud,
 		canEnablePIP: undefined,
 		loopOnEnded: true,
@@ -109,6 +118,7 @@ const players: Player[] = [
 	},
 	{
 		key: 'vidyard',
+		name: 'Vidyard',
 		canPlay: canPlayVidyard,
 		canEnablePIP: undefined,
 		loopOnEnded: undefined,
@@ -119,6 +129,7 @@ const players: Player[] = [
 	},
 	{
 		key: 'kaltura',
+		name: 'Kaltura',
 		canPlay: canPlayKaltura,
 		canEnablePIP: undefined,
 		loopOnEnded: undefined,
@@ -129,6 +140,7 @@ const players: Player[] = [
 	},
 	{
 		key: 'file',
+		name: 'FilePlayer',
 		canPlay: canPlayFile,
 		loopOnEnded: undefined,
 		forceLoad: undefined,
@@ -146,6 +158,7 @@ const players: Player[] = [
 	},
 	{
 		key: 'not-implemented',
+		name: 'NotImplemented',
 		loopOnEnded: undefined,
 		forceLoad: undefined,
 		canPlay() {
