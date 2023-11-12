@@ -1,6 +1,11 @@
-import { canPlay, addCustomPlayer, removeCustomPlayers } from '../../lib/SveltePlayer.svelte';
+import SveletePlayer, {
+	canPlay,
+	addCustomPlayer,
+	removeCustomPlayers
+} from '../../lib/SveltePlayer.svelte';
 
 import { test } from 'vitest';
+import { waitFor, render, screen } from '@testing-library/svelte';
 
 test('canPlay()', function (t) {
 	t.expect(canPlay('https://www.youtube.com/watch?v=oUFJJNQGwhk')).toStrictEqual(true);
@@ -20,9 +25,8 @@ test('canPlay()', function (t) {
 	t.expect(canPlay('http://example.com/random/path')).toStrictEqual(false);
 });
 
-// TODO: check if player rendered
-test('addCustomPlayer()', async (t) => {
-	t.expect.assertions(2);
+test('addCustomPlayer()', async function (t) {
+	t.expect.assertions(3);
 	addCustomPlayer({
 		key: 'not-implemented',
 		name: 'CustomPlayer',
@@ -35,6 +39,12 @@ test('addCustomPlayer()', async (t) => {
 	});
 
 	t.expect(canPlay('http://example.com/random/path')).toStrictEqual(true);
+
+	render(SveletePlayer, { url: 'http://example.com/random/path' });
+	await waitFor(function () {
+		t.expect(screen.getByText('not implemented yet.')).toBeDefined();
+	});
+
 	removeCustomPlayers();
 	t.expect(canPlay('http://example.com/random/path')).toStrictEqual(false);
 });

@@ -70,7 +70,7 @@ test('load()', async function (t) {
 		instance.$on('ready', onReady);
 		instance.load();
 
-		setTimeout(() => {
+		setTimeout(function () {
 			t.expect(window._wq instanceof Array).toStrictEqual(true);
 			t.expect(window._wq.length === 1).toStrictEqual(true);
 			window._wq[0].onReady?.(new WistiaPlayerMock());

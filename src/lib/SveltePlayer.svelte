@@ -124,14 +124,6 @@
 		playerRef.seekTo(fraction, type, keepPlaying);
 	}
 
-	export function _getPlayer() {
-		return playerRef;
-	}
-
-	export function _setPlayer(newPlayer: PlayerMediaRef) {
-		playerRef = newPlayer;
-	}
-
 	export function handleReady() {
 		dispatch('ready');
 	}
@@ -142,6 +134,14 @@
 		});
 
 		return memoized(configUrl, configKey);
+	}
+
+	export function _getPlayer() {
+		return playerRef;
+	}
+
+	export function _setPlayer(newPlayer: PlayerMediaRef) {
+		playerRef = newPlayer;
 	}
 </script>
 

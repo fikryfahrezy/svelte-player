@@ -882,7 +882,7 @@ test('render - object array', function (t) {
 	t.expect(thirdChild.type).toStrictEqual('video/ogg');
 });
 
-test.todo('render tracks');
+test.skip('render tracks');
 
 test('auto width/height', function (t) {
 	const container = document.createElement('div');

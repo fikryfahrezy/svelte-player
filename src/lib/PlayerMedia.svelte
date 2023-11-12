@@ -34,7 +34,7 @@
 	export let loopOnEnded: boolean | undefined = undefined;
 	export let forceLoad: boolean | undefined = undefined;
 	export let display: string | undefined = undefined;
-	export let activePlayer: Player['loadComponent'];
+	export let activePlayer: Player['loadComponent'] | undefined = undefined;
 
 	const SEEK_ON_PLAY_EXPIRY = 5000;
 	const dispatch = createEventDispatcher<PlayerDispatcher>();
@@ -46,7 +46,7 @@
 	let loadOnReady: PlayerUrl | null = null;
 	let seekOnPlay: number | null = null;
 	let progressTimeout: number | undefined = undefined;
-	let durationCheckTimeout: number | undefined = undefined;
+	let durationCheckTimeout: number | null | undefined = undefined;
 	let prevPlayed: number | undefined = undefined;
 	let prevLoaded: number | undefined = undefined;
 	let onDurationCalled: boolean | undefined = undefined;
@@ -58,7 +58,7 @@
 
 		return function () {
 			clearTimeout(progressTimeout);
-			clearTimeout(durationCheckTimeout);
+			clearTimeout(durationCheckTimeout ?? undefined);
 			if (isReady && stopOnUnmount) {
 				player.stop();
 
@@ -185,7 +185,7 @@
 
 	$: handlePropsLoopChange(loop);
 
-	function handlePlayerMount() {
+	export function handlePlayerMount() {
 		player.load(url);
 		progress();
 	}
@@ -220,7 +220,7 @@
 		return player.getPlayer(key);
 	}
 
-	function progress() {
+	export function progress() {
 		if (url && player && isReady) {
 			const playedSeconds = getCurrentTime() || 0;
 			const loadedSeconds = getSecondsLoaded();
@@ -270,7 +270,7 @@
 		player.seekTo(amount, keepPlaying);
 	}
 
-	function handleReady() {
+	export function handleReady() {
 		if (!mounted) {
 			return;
 		}
@@ -291,7 +291,7 @@
 		handleDurationCheck();
 	}
 
-	function handlePlay() {
+	export function handlePlay() {
 		isPlaying = true;
 		isLoading = false;
 		if (startOnPlay) {
@@ -309,14 +309,14 @@
 		handleDurationCheck();
 	}
 
-	function handlePause() {
+	export function handlePause() {
 		isPlaying = false;
 		if (!isLoading) {
 			dispatch('pause');
 		}
 	}
 
-	function handleEnded() {
+	export function handleEnded() {
 		if (loopOnEnded && loop) {
 			seekTo(0);
 		}
@@ -331,9 +331,10 @@
 		dispatch('error', event.detail);
 	}
 
-	function handleDurationCheck() {
-		clearTimeout(durationCheckTimeout);
+	export function handleDurationCheck() {
+		clearTimeout(durationCheckTimeout ?? undefined);
 		const duration = getDuration();
+		console.log(duration, onDurationCalled);
 		if (duration) {
 			if (!onDurationCalled) {
 				dispatch('duration', duration);
@@ -349,34 +350,100 @@
 		// so this provides a way for players to avoid getting stuck
 		isLoading = false;
 	}
+
+	export function _setIsReady(ready: boolean) {
+		isReady = ready;
+	}
+
+	export function _setIsLoading(loading: boolean) {
+		isLoading = loading;
+	}
+
+	export function _getIsLoading() {
+		return isLoading;
+	}
+
+	export function _setStartOnPlay(onPlay: boolean) {
+		startOnPlay = onPlay;
+	}
+
+	export function _getStartOnPlay() {
+		return startOnPlay;
+	}
+
+	export function _setOnDurationCalled(durationCalled: boolean) {
+		onDurationCalled = durationCalled;
+	}
+
+	export function _getOnDurationCalled() {
+		return onDurationCalled;
+	}
+
+	export function _getIsPlaying() {
+		return isPlaying;
+	}
+
+	export function _setIsPlaying(playing: boolean) {
+		isPlaying = playing;
+	}
+
+	export function _setLoadOnReady(onReady: PlayerUrl) {
+		loadOnReady = onReady;
+	}
+
+	export function _getLoadOnReady() {
+		return loadOnReady;
+	}
+
+	export function _setSeekOnPlay(onPlay: number) {
+		seekOnPlay = onPlay;
+	}
+
+	export function _setDurationCheckTimeout(checkTimeout: number | null) {
+		durationCheckTimeout = checkTimeout;
+	}
+
+	export function _getDurationCheckTimeout() {
+		return durationCheckTimeout;
+	}
+
+	export function _getSeekOnPlay() {
+		return seekOnPlay;
+	}
+
+	export function _setPlayer(newPlayer: PlayerRef) {
+		player = newPlayer;
+	}
 </script>
 
-{#await activePlayer() then { default: ActivePlayer }}
-	<svelte:component
-		this={ActivePlayer}
-		{playing}
-		{controls}
-		{playsinline}
-		{loop}
-		{config}
-		{url}
-		{width}
-		{height}
-		{muted}
-		{volume}
-		{display}
-		bind:this={player}
-		on:mount={handlePlayerMount}
-		on:ready={handleReady}
-		on:play={handlePlay}
-		on:pause={handlePause}
-		on:ended={handleEnded}
-		on:loaded={handleLoaded}
-		on:error={handleError}
-		on:bufferEnd
-		on:buffer
-		on:playbackRateChange
-		on:seek
-		on:playbackQualityChange
-	/>
-{/await}
+{#if activePlayer !== undefined}
+	{#await activePlayer() then { default: ActivePlayer }}
+		<svelte:component
+			this={ActivePlayer}
+			{playing}
+			{controls}
+			{playsinline}
+			{loop}
+			{config}
+			{url}
+			{width}
+			{height}
+			{muted}
+			{volume}
+			{display}
+			bind:this={player}
+			on:mount={handlePlayerMount}
+			on:ready={handleReady}
+			on:play={handlePlay}
+			on:pause={handlePause}
+			on:ended={handleEnded}
+			on:loaded={handleLoaded}
+			on:error={handleError}
+			on:bufferEnd
+			on:buffer
+			on:playbackRateChange
+			on:seek
+			on:playbackQualityChange
+		/>
+	{/await}
+{/if}

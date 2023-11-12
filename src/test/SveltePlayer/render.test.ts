@@ -1,5 +1,5 @@
 import { test } from 'vitest';
 
-test.todo('render');
+test.skip('render');
 
-test.todo('fallback player');
+test.skip('fallback player');

@@ -37,7 +37,7 @@ describe('COMMON_METHODS', function () {
 
 			instance._setPlayer({
 				...playerMediaRefMock,
-				[method]: vi.fn().mockImplementation(() => {
+				[method]: vi.fn().mockImplementation(function () {
 					return 123;
 				})
 			});
@@ -45,7 +45,7 @@ describe('COMMON_METHODS', function () {
 			t.expect(instance[method]()).toStrictEqual(123);
 		});
 
-		test(`${method}() - null`, (t) => {
+		test(`${method}() - null`, function (t) {
 			const instance = new SveltePlayer({
 				target: document.body
 			});
@@ -55,12 +55,12 @@ describe('COMMON_METHODS', function () {
 	}
 });
 
-test('getInternalPlayer() - default', (t) => {
+test('getInternalPlayer() - default', function (t) {
 	const instance = new SveltePlayer({
 		target: document.body
 	});
 
-	const getInternalPlayer = vi.fn().mockImplementation(() => {
+	const getInternalPlayer = vi.fn().mockImplementation(function () {
 		return 'abc';
 	});
 	instance._setPlayer({ ...playerMediaRefMock, getInternalPlayer });
@@ -69,7 +69,7 @@ test('getInternalPlayer() - default', (t) => {
 	t.expect(getInternalPlayer).toHaveBeenNthCalledWith(1, 'player');
 });
 
-test('seekTo()', (t) => {
+test('seekTo()', function (t) {
 	const instance = new SveltePlayer({
 		target: document.body
 	});
@@ -81,14 +81,14 @@ test('seekTo()', (t) => {
 	t.expect(instance._getPlayer().seekTo).toHaveBeenCalledWith(5, undefined, undefined);
 });
 
-test('seekTo() - null', (t) => {
+test('seekTo() - null', function (t) {
 	const instance = new SveltePlayer({
 		target: document.body
 	});
 	t.expect(instance.seekTo(5)).toStrictEqual(null);
 });
 
-test('onReady()', (t) => {
+test('onReady()', function (t) {
 	const onReady = vi.fn();
 	const instance = new SveltePlayer({
 		target: document.body
@@ -100,7 +100,7 @@ test('onReady()', (t) => {
 	t.expect(onReady).toHaveBeenCalledOnce();
 });
 
-test('refs', (t) => {
+test('refs', function (t) {
 	const instance = new SveltePlayer({
 		target: document.body
 	});
