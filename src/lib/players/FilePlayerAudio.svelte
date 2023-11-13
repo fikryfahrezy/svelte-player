@@ -31,7 +31,7 @@
 		addListeners(player);
 
 		return function () {
-			player.src = '';
+			player.removeAttribute('src');
 			removeListeners(player, url);
 		};
 	});
