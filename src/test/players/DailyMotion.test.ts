@@ -1,7 +1,6 @@
 import type { DailyMotionConfig } from '../../lib/players/dailymotion.types';
 
 import { describe, test, vi, expect, beforeEach } from 'vitest';
-import { render } from '@testing-library/svelte';
 import * as utils from '../../lib/players/utils';
 import DailyMotionSvelte from '../../lib/players/DailyMotion.svelte';
 import testPlayerMethods from '../helpers/testPlayerMethods';
@@ -168,6 +167,6 @@ test('getSecondsLoaded()', async function (t) {
 });
 
 test('render()', function (t) {
-	const wrapper = render(DailyMotionSvelte, TEST_PROPS);
-	t.expect(wrapper.container.querySelector('.dailymotion-player')).not.toStrictEqual(null);
+	new DailyMotionSvelte({ target: document.body, props: TEST_PROPS });
+	t.expect(document.body.querySelector('.dailymotion-player')).not.toStrictEqual(null);
 });

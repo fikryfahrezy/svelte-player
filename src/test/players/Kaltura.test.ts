@@ -1,5 +1,4 @@
 import { vi, test, describe } from 'vitest';
-import { render } from '@testing-library/svelte';
 import testPlayerMethods from '../helpers/testPlayerMethods';
 import KalturaSvelte from '../../lib/players/Kaltura.svelte';
 import * as utils from '../../lib/players/utils';
@@ -102,9 +101,9 @@ test('getSecondsLoaded()', function (t) {
 });
 
 test('render()', function (t) {
-	const wrapper = render(KalturaSvelte, TEST_PROPS);
+	new KalturaSvelte({ target: document.body, props: TEST_PROPS });
 
-	const element = wrapper.container.querySelector('.kaltura-player') as HTMLIFrameElement;
+	const element = document.body.querySelector('.kaltura-player') as HTMLIFrameElement;
 	t.expect(element).not.toStrictEqual(null);
 	t.expect(element.frameBorder).toStrictEqual('0');
 	t.expect(element.scrolling).toStrictEqual('no');

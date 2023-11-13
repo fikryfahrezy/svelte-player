@@ -1,7 +1,6 @@
 import type { ViemoConfig } from '../../lib/players/vimeo.types';
 
 import { test, vi, describe } from 'vitest';
-import { render } from '@testing-library/svelte';
 import testPlayerMethods from '../helpers/testPlayerMethods';
 import VimeoSvelte from '../../lib/players/Vimeo.svelte';
 import * as utils from '../../lib/players/utils';
@@ -84,9 +83,9 @@ test('load()', async function (t) {
 });
 
 test('render()', function (t) {
-	const wrapper = render(VimeoSvelte, TEST_PROPS);
+	new VimeoSvelte({ target: document.body, props: TEST_PROPS });
 
-	const element = wrapper.container.querySelector('.vimeo-player') as HTMLIFrameElement;
+	const element = document.body.querySelector('.vimeo-player') as HTMLIFrameElement;
 	t.expect(element).not.toStrictEqual(null);
 	t.expect(element.className).includes('vimeo-player');
 });

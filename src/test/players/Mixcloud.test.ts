@@ -1,7 +1,6 @@
 import type { MixcloudConfig } from '../../lib/players/mixcloud.types';
 
 import { vi, test, describe } from 'vitest';
-import { render } from '@testing-library/svelte';
 import testPlayerMethods from '../helpers/testPlayerMethods';
 import MixcloudSvelte from '../../lib/players/Mixcloud.svelte';
 import * as utils from '../../lib/players/utils';
@@ -93,9 +92,9 @@ test('getCurrentTime()', function (t) {
 });
 
 test('render()', function (t) {
-	const wrapper = render(MixcloudSvelte, TEST_PROPS);
+	new MixcloudSvelte({ target: document.body, props: TEST_PROPS });
 
-	const element = wrapper.container.querySelector('.mixcloud-player') as HTMLIFrameElement;
+	const element = document.body.querySelector('.mixcloud-player') as HTMLIFrameElement;
 	t.expect(element).not.toStrictEqual(null);
 	t.expect(element.frameBorder).toStrictEqual('0');
 	t.expect(element.className).includes('mixcloud-player');

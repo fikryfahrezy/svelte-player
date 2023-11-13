@@ -4,7 +4,6 @@ import type { PlayerRef, PlayerInstance } from '../../lib/players/types';
 import type { Constructor, ObjectMethods } from '../../lib/players/utility.types';
 
 import { vi, test, expect } from 'vitest';
-import { render } from '@testing-library/svelte';
 
 type SvelteComponentOptions<C extends SvelteComponent> =
 	| ComponentProps<C>
@@ -22,7 +21,10 @@ export default function <TComponent extends SvelteComponent, TPlayer extends Pla
 ) {
 	for (const method of Object.keys(methods)) {
 		test(`${method}`, async function (t) {
-			const instance = render(PlayerComponent, props).component;
+			const instance = new PlayerComponent({
+				target: document.body,
+				props
+			});
 			t.expect(instance[method]).toBeTruthy();
 			instance._setPlayer(player);
 			const playerMethod = methods[method as keyof Methods<TPlayer>];

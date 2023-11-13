@@ -2,7 +2,6 @@ import type { Facebook } from '../../lib/players/facebook.global.types';
 import type { FacebookConfig } from '../../lib/players/facebook.types';
 
 import { describe, vi, test, expect } from 'vitest';
-import { render } from '@testing-library/svelte';
 
 import * as utils from '../../lib/players/utils';
 import FacebookSvelte from '../../lib/players/Facebook.svelte';
@@ -116,6 +115,6 @@ test('load() when ready', async function (t) {
 });
 
 test('render()', function (t) {
-	const wrapper = render(FacebookSvelte, TEST_PROPS);
-	t.expect(wrapper.container.querySelector('.facebook-player')).not.toStrictEqual(null);
+	new FacebookSvelte({ target: document.body, props: TEST_PROPS });
+	t.expect(document.body.querySelector('.facebook-player')).not.toStrictEqual(null);
 });

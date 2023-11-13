@@ -2,7 +2,6 @@ import type { YTPlayerState, YT } from '../../lib/players/youtube.global.types';
 import type { YouTubeConfig } from '../../lib/players/youtube.types';
 
 import { test, describe, beforeAll, afterAll, vi } from 'vitest';
-import { render } from '@testing-library/svelte';
 
 import * as utils from '../../lib/players/utils';
 import YouTubeSvelte from '../../lib/players/YouTube.svelte';
@@ -214,6 +213,6 @@ test('onStateChange() - ready', async function (t) {
 });
 
 test('render()', function (t) {
-	const wrapper = render(YouTubeSvelte, TEST_PROPS);
-	t.expect(wrapper.container.querySelector('.youtube-player')).not.toStrictEqual(null);
+	new YouTubeSvelte({ target: document.body, props: TEST_PROPS });
+	t.expect(document.body.querySelector('.youtube-player')).not.toStrictEqual(null);
 });

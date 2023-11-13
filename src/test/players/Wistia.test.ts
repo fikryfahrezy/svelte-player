@@ -1,7 +1,6 @@
 import type { WistiaConfig } from '../../lib/players/wistia.types';
 
 import { test, vi, describe } from 'vitest';
-import { render } from '@testing-library/svelte';
 import testPlayerMethods from '../helpers/testPlayerMethods';
 import WistiaSvelte from '../../lib/players/Wistia.svelte';
 import * as utils from '../../lib/players/utils';
@@ -82,9 +81,9 @@ test('load()', async function (t) {
 });
 
 test('render()', function (t) {
-	const wrapper = render(WistiaSvelte, TEST_PROPS);
+	new WistiaSvelte({ target: document.body, props: TEST_PROPS });
 
-	const element = wrapper.container.querySelector('.wistia-player') as HTMLIFrameElement;
+	const element = document.body.querySelector('.wistia-player') as HTMLIFrameElement;
 	t.expect(element).not.toStrictEqual(null);
 	t.expect(element.className).includes('wistia-player');
 	t.expect(element.id).includes('mock-player-id');

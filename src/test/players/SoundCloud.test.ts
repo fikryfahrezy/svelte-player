@@ -2,7 +2,6 @@ import type { SoundCloudWidgetEvents } from '../../lib/players/soundcloud.global
 import type { SoundCloudConfig } from '../../lib/players/soundcloud.types';
 
 import { test, vi, describe } from 'vitest';
-import { render } from '@testing-library/svelte';
 import testPlayerMethods from '../helpers/testPlayerMethods';
 import SoundCloudSvelte from '../../lib/players/SoundCloud.svelte';
 import * as utils from '../../lib/players/utils';
@@ -123,9 +122,9 @@ test('getSecondsLoaded()', function (t) {
 });
 
 test('render()', function (t) {
-	const wrapper = render(SoundCloudSvelte, TEST_PROPS);
+	new SoundCloudSvelte({ target: document.body, props: TEST_PROPS });
 
-	const element = wrapper.container.querySelector('.soundcloud-player') as HTMLIFrameElement;
+	const element = document.body.querySelector('.soundcloud-player') as HTMLIFrameElement;
 	t.expect(element).not.toStrictEqual(null);
 	t.expect(element.frameBorder).toStrictEqual('0');
 	t.expect(element.className).includes('soundcloud-player');

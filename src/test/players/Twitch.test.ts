@@ -1,7 +1,6 @@
 import type { TwitchConfig } from '../../lib/players/twitch.types';
 
 import { test, vi, describe } from 'vitest';
-import { render } from '@testing-library/svelte';
 import testPlayerMethods from '../helpers/testPlayerMethods';
 import TwitchSvelte from '../../lib/players/Twitch.svelte';
 import * as utils from '../../lib/players/utils';
@@ -88,9 +87,9 @@ test('load()', async function (t) {
 });
 
 test('render()', function (t) {
-	const wrapper = render(TwitchSvelte, TEST_PROPS);
+	new TwitchSvelte({ target: document.body, props: TEST_PROPS });
 
-	const element = wrapper.container.querySelector('.twitch-player') as HTMLIFrameElement;
+	const element = document.body.querySelector('.twitch-player') as HTMLIFrameElement;
 	t.expect(element).not.toStrictEqual(null);
 	t.expect(element.className).includes('twitch-player');
 	t.expect(element.id).toStrictEqual('mock-player-id');
