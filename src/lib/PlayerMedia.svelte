@@ -245,7 +245,7 @@
 		progressTimeout = window.setTimeout(progress, progressFrequency || progressInterval);
 	}
 
-	export function seekTo(amount: number, type?: SeekToType, keepPlaying = false) {
+	export function seekTo(amount: number, type?: SeekToType, keepPlaying?: boolean) {
 		// When seeking before player is ready, store value and seek later
 		if (!isReady) {
 			if (amount !== 0) {

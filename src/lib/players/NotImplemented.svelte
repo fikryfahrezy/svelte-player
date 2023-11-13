@@ -1,4 +1,5 @@
 <script lang="ts">
+	/* eslint-disable @typescript-eslint/no-unused-vars -- this is fine for documentation */
 	import type { NotImplementedPlayer } from './notimplemented.global.types';
 	import type { PlayerUrl, PlayerDispatcher } from './types';
 	import type { NotImplementedConfig } from './notimplemented.types';

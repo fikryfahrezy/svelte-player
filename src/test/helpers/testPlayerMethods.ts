@@ -29,8 +29,8 @@ export default function <TComponent extends SvelteComponent, TPlayer extends Pla
 
 			let methodSpy: SpyInstance | undefined = undefined;
 			if (playerMethod) {
-				// TODO: fix type and async implementation
 				methodSpy = vi
+					/* eslint-disable-next-line @typescript-eslint/no-explicit-any -- TODO: fix type and async implementation */
 					.spyOn(player as any, playerMethod as string)
 					.mockImplementation(async function () {
 						return vi.fn();

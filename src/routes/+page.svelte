@@ -129,16 +129,16 @@
 					// console.log('onBuffer');
 				}}
 				on:playbackRateChange={handleOnPlaybackRateChange}
-				on:seek={(e) => {
+				on:seek={(_) => {
 					// console.log('onSeek', e);
 				}}
 				on:ended={handleEnded}
-				on:error={(e) => {
+				on:error={(_) => {
 					// console.log('onError', e);
 				}}
 				on:progress={handleProgress}
 				on:duration={handleDuration}
-				on:playbackQualityChange={(e) => {
+				on:playbackQualityChange={(_) => {
 					// console.log('onPlaybackQualityChange', e);
 				}}
 			/>

@@ -83,8 +83,11 @@
 		// Nothing to do
 	}
 
-	export function seekTo(seconds: number) {
+	export function seekTo(seconds: number, keepPlaying = true) {
 		player.seekTo(seconds * 1000);
+		if (!keepPlaying) {
+			pause();
+		}
 	}
 
 	export function setVolume(fraction: number) {

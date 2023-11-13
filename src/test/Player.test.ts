@@ -371,7 +371,7 @@ test('seekTo() - seconds', function (t) {
 	instance._setPlayer({ ...playerRefMock, load, seekTo });
 	instance._setIsReady(true);
 	instance.seekTo(10);
-	t.expect(seekTo).toHaveBeenCalledWith(10, false);
+	t.expect(seekTo).toHaveBeenCalledWith(10, undefined);
 });
 
 test('seekTo() - fraction', function (t) {
@@ -391,7 +391,7 @@ test('seekTo() - fraction', function (t) {
 	instance._setIsReady(true);
 	instance.seekTo(0.5);
 
-	t.expect(seekTo).toHaveBeenCalledWith(5, false);
+	t.expect(seekTo).toHaveBeenCalledWith(5, undefined);
 });
 
 test('seekTo() - warning', function (t) {
@@ -514,7 +514,7 @@ test('seekOnPlay', function (t) {
 	instance._setIsReady(true);
 	instance._setSeekOnPlay(10);
 	instance.handlePlay();
-	t.expect(seekTo).toHaveBeenCalledWith(10, false);
+	t.expect(seekTo).toHaveBeenCalledWith(10, undefined);
 	t.expect(instance._getSeekOnPlay()).toStrictEqual(null);
 });
 
@@ -569,7 +569,7 @@ test('loopOnEnded', function (t) {
 	instance._setIsReady(true);
 	instance._setIsPlaying(true);
 	instance.handleEnded();
-	t.expect(seekTo).toHaveBeenCalledWith(0, false);
+	t.expect(seekTo).toHaveBeenCalledWith(0, undefined);
 	t.expect(instance._getIsPlaying()).toStrictEqual(true);
 });
 

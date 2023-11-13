@@ -42,7 +42,7 @@
 				xfbml: true,
 				version: config.version
 			});
-			FB.Event.subscribe('xfbml.render', function (msg) {
+			FB.Event.subscribe('xfbml.render', function (_) {
 				// Here we know the SDK has loaded, even if onReady/onPlay
 				// is not called due to a video that cannot be embedded
 				dispatch('loaded');
@@ -101,8 +101,11 @@
 		// Nothing to do
 	}
 
-	export function seekTo(seconds: number) {
+	export function seekTo(seconds: number, keepPlaying = true) {
 		player.seek(seconds);
+		if (keepPlaying) {
+			pause();
+		}
 	}
 
 	export function setVolume(fraction: number) {

@@ -29,7 +29,7 @@ class WistiaPlayerMock implements WistiaPlayer {
 	}
 	email(): string;
 	email(_: string): void;
-	email(_?: string): string | void {
+	email(): string | void {
 		// do nothing
 	}
 	embedded() {
@@ -49,7 +49,7 @@ class WistiaPlayerMock implements WistiaPlayer {
 	}
 	height(): number;
 	height(height: number, options?: Partial<WistiaHeightOption>): void;
-	height(_?: number, __?: Partial<WistiaHeightOption>): number | void {
+	height(): number | void {
 		// do nothing
 	}
 	inFullscreen() {
@@ -60,7 +60,7 @@ class WistiaPlayerMock implements WistiaPlayer {
 	}
 	look(): WistiaLOOKCHANGEEventCallbackData;
 	look(options: Partial<WistiaLookOption>): void;
-	look(_?: Partial<WistiaLookOption>): WistiaLOOKCHANGEEventCallbackData | void {
+	look(): WistiaLOOKCHANGEEventCallbackData | void {
 		// do nothing
 	}
 	mute() {
@@ -99,7 +99,7 @@ class WistiaPlayerMock implements WistiaPlayer {
 	secondsWatchedVector() {
 		return [];
 	}
-	setSubtitlesScale(scale: number) {
+	setSubtitlesScale() {
 		// do nothing
 	}
 	state(): WistiaPlayerState {
@@ -107,7 +107,7 @@ class WistiaPlayerMock implements WistiaPlayer {
 	}
 	time(): number;
 	time(seconds: number): void;
-	time(_?: number): number | void {
+	time(): number | void {
 		// do nothing
 	}
 	unbind() {
@@ -118,17 +118,17 @@ class WistiaPlayerMock implements WistiaPlayer {
 	}
 	videoHeight(): number;
 	videoHeight(pixels: number, options?: Partial<WistiaHeightOption>): void;
-	videoHeight(_?: number, __?: Partial<WistiaHeightOption>): number | void {
+	videoHeight(): number | void {
 		// do nothing
 	}
 	videoQuality(): WistiaQualityOption;
 	videoQuality(quality: WistiaQualityOption): void;
-	videoQuality(_?: WistiaQualityOption): WistiaQualityOption | void {
+	videoQuality(): WistiaQualityOption | void {
 		// do nothing
 	}
 	videoWidth(): number;
 	videoWidth(pixels: number, options?: Partial<WistiaHeightOption>): void;
-	videoWidth(_?: number, __?: Partial<WistiaHeightOption>): number | void {
+	videoWidth(): number | void {
 		// do nothing
 	}
 	visitorKey() {
@@ -136,12 +136,12 @@ class WistiaPlayerMock implements WistiaPlayer {
 	}
 	volume(): number;
 	volume(volume: number): void;
-	volume(_?: number): number | void {
+	volume(): number | void {
 		// do nothing
 	}
 	width(): number;
 	width(pixels: number): void;
-	width(_?: number): number | void {
+	width(): number | void {
 		// do nothing
 	}
 }

@@ -110,8 +110,11 @@
 		player.remove();
 	}
 
-	export function seekTo(seconds: number) {
+	export function seekTo(seconds: number, keepPlaying = true) {
 		player.time(seconds);
+		if (!keepPlaying) {
+			pause();
+		}
 	}
 
 	export function setVolume(fraction: number) {

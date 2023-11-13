@@ -91,8 +91,11 @@
 		// Nothing to do
 	}
 
-	export function seekTo(seconds: number) {
+	export function seekTo(seconds: number, keepPlaying = true) {
 		player.setCurrentTime(seconds);
+		if (!keepPlaying) {
+			pause();
+		}
 	}
 
 	export function setVolume(fraction: number) {

@@ -114,7 +114,9 @@ function getGlobal<T extends GlobalSDKType>(key: T): GlobalSDK[T] | null {
 // Util function to load an external SDK
 // or return the SDK if it is already loaded
 type Request = {
+	/* eslint-disable-next-line @typescript-eslint/no-explicit-any -- this is fine*/
 	resolve: (value: any) => void;
+	/* eslint-disable-next-line @typescript-eslint/no-explicit-any -- this is fine*/
 	reject: (reason?: any) => void;
 };
 

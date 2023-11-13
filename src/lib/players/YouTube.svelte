@@ -183,7 +183,7 @@
 		player.stopVideo();
 	}
 
-	export function seekTo(amount: number, keepPlaying?: boolean) {
+	export function seekTo(amount: number, keepPlaying = false) {
 		player.seekTo(amount);
 		if (!keepPlaying && !playing) {
 			pause();
