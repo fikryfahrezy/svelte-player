@@ -20,7 +20,11 @@
 	let player: HTMLAudioElement;
 
 	function handleUrlChange(newUrl: FileUrl) {
-		if (player !== undefined && !isMediaStream(newUrl)) {
+		if (
+			player !== undefined &&
+			!isMediaStream(newUrl) &&
+			!(newUrl instanceof Array) // Avoid infinite loop
+		) {
 			player.srcObject = null;
 		}
 	}
