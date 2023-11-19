@@ -116,6 +116,7 @@
 				{controls}
 				{loop}
 				{pip}
+				{light}
 				bind:this={playerRef}
 				on:ready={function () {
 					// console.log('onReady');
@@ -158,9 +159,7 @@
 						{#if light}
 							<button
 								on:click={function () {
-									if (playerRef !== undefined) {
-										playerRef.showPreview();
-									}
+									playerRef.showPreview();
 								}}
 							>
 								Show preview

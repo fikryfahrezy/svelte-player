@@ -55,7 +55,7 @@
 	export let playing = false;
 	export let loop = false;
 	export let controls = false;
-	export let light: boolean | string = false;
+	export let light: boolean = false;
 	export let volume: number | null = null;
 	export let muted = false;
 	export let playbackRate = 1;
@@ -75,8 +75,8 @@
 	const dispatch = createEventDispatcher<SveltePlayerDispatcher>();
 
 	let playerRef: PlayerMediaRef;
-
-	$: showPreviewState = !!light;
+	let isElementLight = !!$$slots['light'];
+	let showPreviewState = !!light || isElementLight;
 
 	function handleClickPreview(e: Event) {
 		showPreviewState = false;
@@ -153,7 +153,7 @@
 			{oEmbedUrl}
 			url={typeof url !== 'string' ? '' : url}
 			playIcon={$$slots['play-icon']}
-			isElementLight={$$slots['light']}
+			{isElementLight}
 			on:click={handleClickPreview}
 		>
 			<slot name="light" slot="light" />

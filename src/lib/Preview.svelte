@@ -76,7 +76,9 @@
 		${image && !isElementLight ? `background-image: url(${image});` : ''} 
 		background-size: cover;
 		background-position: center; 
-		cursor: pointer; 
+		cursor: pointer;
+		overflow: hidden;
+		position: relative;
 		${flexCenter}
 	`;
 	$: shadow = `
@@ -93,6 +95,16 @@
 		border-color: transparent transparent transparent white;
 		margin-left: 7px;
 	`;
+
+	$: playIconWrapperStyle = `
+		width: 100%;
+		position: absolute;
+		height: 100%;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		display: ${playIcon ? 'flex' : 'none'}
+	`;
 </script>
 
 <div
@@ -104,7 +116,9 @@
 	on:keypress={handleKeyPress}
 >
 	<slot name="light" />
-	<slot name="play-icon" />
+	<div style={playIconWrapperStyle}>
+		<slot name="play-icon" />
+	</div>
 
 	{#if !playIcon}
 		<div style={shadow} class="svelte-player__shadow">
