@@ -114,7 +114,7 @@
 		if (url instanceof Array) {
 			return {
 				listType: 'playlist',
-				list: url.map(getID).join(',')
+				playlist: url.map(getID).join(',')
 			};
 		}
 		if (MATCH_PLAYLIST.test(url)) {

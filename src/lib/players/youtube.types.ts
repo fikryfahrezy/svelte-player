@@ -11,6 +11,12 @@ export type ParsePlaylistFn = (url: YouTubeUrl) =>
 	| {
 			listType: YTListPlaylistType;
 			list: string;
+			playlist?: undefined;
+	  }
+	| {
+			listType: YTListPlaylistType;
+			list?: undefined;
+			playlist: string;
 	  }
 	| {
 			listType: YTListUserUploadsType;
