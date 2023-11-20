@@ -73,9 +73,7 @@
 
 	function handleSeekMouseUp() {
 		seeking = false;
-		if (playerRef !== undefined) {
-			playerRef.seekTo(parseFloat(String(played)));
-		}
+		playerRef.seekTo(parseFloat(String(played)));
 	}
 
 	function handleProgress(event: CustomEvent<OnProgressProps>) {
