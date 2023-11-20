@@ -98,11 +98,13 @@ There is a single `config` prop to override settings for each type of player:
 	url={url}
 	config={{
 		youtube: {
-			playerVars: { showinfo: 1 }
+			playerVars: {
+				showinfo: 1,
+			},
 		},
 		facebook: {
-			appId: '12345'
-		}
+			appId: '12345',
+		},
 	}}
 />
 ```
