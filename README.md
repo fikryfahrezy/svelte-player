@@ -282,7 +282,7 @@ You can also specify a `type` for each source by using objects with `src` and `t
 <SveltePlayer
 	playing={true}
 	url="foo.webm"
-	config={{
+	config={ {
 		file: {
 			tracks: [
 				{ kind: "subtitles", src: "subs/subtitles.en.vtt", srclang: "en", default: true },
@@ -290,7 +290,7 @@ You can also specify a `type` for each source by using objects with `src` and `t
 				{ kind: "subtitles", src: "subs/subtitles.de.vtt", srclang: "de" }
 			]
 		}
-	}}
+	} }
 />
 ```
 
