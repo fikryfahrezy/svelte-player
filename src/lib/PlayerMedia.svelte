@@ -7,7 +7,7 @@
 		Player,
 		PlayerRef,
 		PlayerDispatcher,
-		PlayerConfigObject,
+		PlayerConfigProps,
 		PlayerGetPlayerKey,
 		PlayerInternalPlayer
 	} from './players/types';
@@ -27,7 +27,7 @@
 	export let playsinline: boolean;
 	export let pip: boolean;
 	export let stopOnUnmount: boolean;
-	export let config: PlayerConfigObject;
+	export let config: PlayerConfigProps;
 
 	export let progressFrequency: number | undefined = undefined;
 	export let disableDeferredLoading: boolean | undefined = undefined;

@@ -12,7 +12,7 @@ import { defaultConfig } from '../../lib/props';
 import * as utils from '../../lib/players/utils';
 import FilePlayerSvelte from '../../lib/players/FilePlayer.svelte';
 
-const TEST_CONFIG: FileConfig = defaultConfig.file;
+const TEST_CONFIG = defaultConfig.file as FileConfig;
 
 const TEST_PROPS = {
 	playing: false,
