@@ -96,7 +96,7 @@ There is a single `config` prop to override settings for each type of player:
 ```ts
 <SveltePlayer
 	url={url}
-	config={{
+	config={ {
 		youtube: {
 			playerVars: {
 				showinfo: 1,
@@ -105,7 +105,7 @@ There is a single `config` prop to override settings for each type of player:
 		facebook: {
 			appId: '12345',
 		},
-	}}
+	} }
 />
 ```
 
