@@ -334,7 +334,6 @@
 	export function handleDurationCheck() {
 		clearTimeout(durationCheckTimeout ?? undefined);
 		const duration = getDuration();
-		console.log(duration, onDurationCalled);
 		if (duration) {
 			if (!onDurationCalled) {
 				dispatch('duration', duration);

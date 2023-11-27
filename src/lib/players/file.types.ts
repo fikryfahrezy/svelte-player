@@ -6,12 +6,13 @@ import type {
 
 import type { GlobalSDKFLV, GlobalSDKHLS } from './global.types';
 import type { HlsConfig, HLSClass, ErrorData } from './hls.types';
-import type { DashJSMediaPlayerClass } from './dash.types';
+import type { MediaPlayerClass } from './dash.types';
 import type { FlvJSPlayer } from './flv.types';
 
-export type { DashJSMediaPlayerClass } from './dash.types';
 export type { FlvJSPlayer } from './flv.types';
 export type { HLSClass } from './hls.types';
+
+export type DashJSMediaPlayerClass = MediaPlayerClass;
 
 export type FileMedia = { src: string; type: string };
 

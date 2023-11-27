@@ -61,7 +61,7 @@
 
 			player.load(url, {
 				...config.options,
-				callback: function () {
+				callback() {
 					player.getDuration(function (durationParam) {
 						duration = durationParam / 1000;
 						dispatch('ready');

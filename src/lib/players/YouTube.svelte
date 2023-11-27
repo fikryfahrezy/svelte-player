@@ -75,20 +75,20 @@
 						...playerVars
 					},
 					events: {
-						onReady: function () {
+						onReady() {
 							if (loop) {
 								player.setLoop(true);
 							}
 							dispatch('ready');
 						},
-						onPlaybackRateChange: function (event) {
+						onPlaybackRateChange(event) {
 							dispatch('playbackRateChange', event.data);
 						},
-						onPlaybackQualityChange: function (event) {
+						onPlaybackQualityChange(event) {
 							dispatch('playbackQualityChange', event);
 						},
 						onStateChange,
-						onError: function (event) {
+						onError(event) {
 							dispatch('error', {
 								error: event.data
 							});

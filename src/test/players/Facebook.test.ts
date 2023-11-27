@@ -48,7 +48,7 @@ describe('testPlayerMethods', function () {
 test('load()', async function (t) {
 	t.expect.assertions(2);
 	const FACEBOOK_SDK: Facebook = {
-		init: function () {
+		init() {
 			return null;
 		},
 		Event: {
@@ -92,7 +92,7 @@ test('load() when ready', async function (t) {
 		init: expect.anything(),
 		Event: expect.anything(),
 		XFBML: {
-			parse: function () {
+			parse() {
 				t.expect(true).toBeTruthy();
 			}
 		}

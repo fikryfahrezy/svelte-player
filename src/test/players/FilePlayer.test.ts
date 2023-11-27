@@ -275,26 +275,26 @@ test('onError - flv', async function (t) {
 test('load - dash', async function (t) {
 	t.expect.assertions(2);
 
-	vi.doMock('dashjs', function () {
+	vi.doMock('./DashJS.mock', function () {
 		const dashjs = {
-			MediaPlayer: function () {
+			MediaPlayer() {
 				return {
-					create: function () {
+					create() {
 						return {
-							on: function () {
+							on() {
 								return null;
 							},
-							initialize: function () {
+							initialize() {
 								return null;
 							},
-							getDebug: function () {
+							getDebug() {
 								return {
-									setLogToBrowserConsole: function () {
+									setLogToBrowserConsole() {
 										return null;
 									}
 								};
 							},
-							updateSettings: function () {
+							updateSettings() {
 								return null;
 							}
 						};
@@ -309,7 +309,7 @@ test('load - dash', async function (t) {
 		return { default: dashjs };
 	});
 
-	const dashjsSDK = (await import('dashjs')).default;
+	const dashjsSDK = (await import('./DashJS.mock')).default;
 	const dashjs: DashJS = {
 		...dashjsSDK,
 		Debug: {
@@ -383,10 +383,10 @@ test('load - MediaStream (srcObject not supported)', async function (t) {
 	assertPlayerNotNull(t, player);
 
 	Object.defineProperty(player, 'srcObject', {
-		get: function () {
+		get() {
 			return null;
 		},
-		set: function () {
+		set() {
 			throw new Error('Browser does not support srcObject');
 		}
 	});
@@ -511,7 +511,7 @@ test('play() - promise', async function (t) {
 
 	player.play = vi.fn().mockImplementation(function () {
 		return {
-			catch: function (cb: AnyFunction) {
+			catch(cb: AnyFunction) {
 				cb();
 			}
 		};
@@ -559,11 +559,11 @@ test('stop()', function (t) {
 test('stop() - dash', async function (t) {
 	t.expect.assertions(2);
 
-	vi.doMock('dashjs', function () {
+	vi.doMock('./DashJS.mock', function () {
 		const dashjs = {
-			MediaPlayer: function () {
+			MediaPlayer() {
 				return {
-					create: function () {
+					create() {
 						return {
 							reset: vi.fn()
 						};
@@ -575,7 +575,7 @@ test('stop() - dash', async function (t) {
 		return { default: dashjs };
 	});
 
-	const dashjsSDK = (await import('dashjs')).default;
+	const dashjsSDK = (await import('./DashJS.mock')).default;
 
 	const instance = new FilePlayerSvelte({
 		target: document.body,
@@ -735,7 +735,7 @@ test('getSecondsLoaded()', function (t) {
 
 	Object.defineProperty(player, 'buffered', {
 		value: {
-			end: function () {
+			end() {
 				return 10;
 			}
 		}
