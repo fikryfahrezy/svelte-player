@@ -208,7 +208,7 @@ test('onError - hls', async function (t) {
 test('onError - flv', async function (t) {
 	t.expect.assertions(2);
 
-	vi.doMock('flv.js', function () {
+	vi.doMock('./FlvJS.mock', function () {
 		class FlvPlayer {
 			attachMediaElement() {
 				// do nothing
@@ -244,7 +244,7 @@ test('onError - flv', async function (t) {
 		return { default: FlvJS };
 	});
 
-	const flv = (await import('flv.js')).default;
+	const flv = (await import('./FlvJS.mock')).default;
 
 	return new Promise(function (resolve) {
 		function onError() {

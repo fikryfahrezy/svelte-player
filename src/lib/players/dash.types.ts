@@ -1,4 +1,5 @@
-// import type { MediaPlayerClass } from 'dashjs';
+// Ref:
+// https://github.com/Dash-Industry-Forum/dash.js/blob/development/index.d.ts
 
 /* eslint-disable @typescript-eslint/no-explicit-any -- this is fine*/
 export interface Logger {
