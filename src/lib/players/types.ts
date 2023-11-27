@@ -30,7 +30,6 @@ import type {
 	FileErrorSDKGlobal,
 	FileInternalPlayer
 } from './file.types';
-import type { NotImplementedConfig } from './notimplemented.types';
 
 export type PlayerInstance =
 	| YTPlayer
@@ -52,20 +51,32 @@ export type PlayerInternalPlayer = Omit<FileInternalPlayer, 'player'> & {
 
 export type PlayerGetPlayerKey = keyof PlayerInternalPlayer;
 
-export type PlayerConfig = {
+export type PlayerConfigObject = {
 	youtube: YouTubeConfig;
 	soundcloud: SoundCloudConfig;
 	vimeo: ViemoConfig;
 	facebook: FacebookConfig;
-	streamable: undefined;
 	wistia: WistiaConfig;
 	twitch: TwitchConfig;
 	dailymotion: DailyMotionConfig;
 	mixcloud: MixcloudConfig;
 	vidyard: VidyardConfig;
-	kaltura: undefined;
 	file: FileConfig;
-	'not-implemented': NotImplementedConfig;
+};
+
+export type PlayerConfigKey = keyof PlayerConfigObject;
+
+export type PlayerConfigValue = PlayerConfigObject[PlayerConfigKey];
+
+/* eslint-disable-next-line @typescript-eslint/ban-types
+-- This is hacky trick to preserve auto-complete the possible union string
+ meanwhile still able to assign string value outside the unioin string  */
+export type PlayerKey = PlayerConfigKey | (string & {});
+
+export type PlayerConfig = {
+	[Property in PlayerKey]: Property extends PlayerConfigKey
+		? PlayerConfigObject[Property]
+		: unknown;
 };
 
 export type PlayerUrl = string | YouTubeUrl | FileUrl;
@@ -112,9 +123,7 @@ export type PlayerDispatcher = {
 	loaded: undefined;
 };
 
-export type PlayerConfigKey = keyof PlayerConfig;
-
-export type PlayerConfigObject = PlayerConfig[PlayerConfigKey];
+export type PlayerConfigProps = RecursivePartial<PlayerConfigValue>;
 
 export type PlayerProps = {
 	url: PlayerUrl;
@@ -132,7 +141,7 @@ export type PlayerProps = {
 	pip: boolean;
 	stopOnUnmount: boolean;
 	previewTabIndex: number;
-	config: RecursivePartial<PlayerConfigObject>;
+	config: PlayerConfigProps;
 	oEmbedUrl: string;
 	display: string;
 };
@@ -160,7 +169,7 @@ export type PlayerRef = {
 export type PlayerComponent = Constructor<SvelteComponent<Partial<PlayerProps>> & PlayerRef>;
 
 export type Player = {
-	key: PlayerConfigKey;
+	key: PlayerKey;
 	name: string;
 	loopOnEnded?: boolean;
 	forceLoad?: boolean;

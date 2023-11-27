@@ -37,7 +37,7 @@
 	import type {
 		PlayerUrl,
 		PlayerConfig,
-		PlayerConfigKey,
+		PlayerConfigProps,
 		PlayerGetPlayerKey,
 		PlayerInternalPlayer
 	} from './players/types';
@@ -128,9 +128,12 @@
 		dispatch('ready');
 	}
 
-	function getConfig<T extends PlayerConfigKey>(configUrl: PlayerUrl, configKey: T) {
-		const memoized = memoize<(url: typeof configUrl, key: T) => PlayerConfig[T]>((_, key) => {
-			return merge<PlayerConfig[T]>(defaultConfig[key] || {}, config[key] || {});
+	function getConfig<TUrl extends PlayerUrl, TKey extends string>(
+		configUrl: TUrl,
+		configKey: TKey
+	) {
+		const memoized = memoize<(url: TUrl, key: TKey) => PlayerConfigProps>((_, key) => {
+			return merge<PlayerConfigProps>(defaultConfig[key] || {}, config[key] || {});
 		});
 
 		return memoized(configUrl, configKey);

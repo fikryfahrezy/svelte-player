@@ -63,7 +63,7 @@ test('load()', async function (t) {
 	return Promise.resolve();
 });
 
-// TODO: Add test for this, this behaciour cannot
+// TODO: Add test for this, this behaviour cannot
 // be tested yet because we can't set container
 // programmatically
 test('load() - no container', async function (t) {

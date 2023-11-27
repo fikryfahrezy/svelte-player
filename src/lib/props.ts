@@ -11,7 +11,6 @@ export const defaultConfig: PlayerConfig = {
 			show_playcount: false
 		}
 	},
-	streamable: undefined,
 	youtube: {
 		playerVars: {
 			playsinline: 1,
@@ -43,7 +42,6 @@ export const defaultConfig: PlayerConfig = {
 		},
 		title: null
 	},
-	kaltura: undefined,
 	file: {
 		attributes: {},
 		tracks: [],
@@ -74,6 +72,5 @@ export const defaultConfig: PlayerConfig = {
 	},
 	vidyard: {
 		options: {}
-	},
-	'not-implemented': {}
+	}
 };
