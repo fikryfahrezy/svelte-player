@@ -9,70 +9,36 @@ class YouTubePlayerMock implements YTPlayer {
 		// do nothiing
 	}
 
-	cueVideoById() {
-		// do nothing
-	}
+	cueVideoById() {}
 
-	loadVideoById() {
-		// do nothing
-	}
+	loadVideoById() {}
 
-	cueVideoByUrl() {
-		// do nothing
-	}
+	cueVideoByUrl() {}
 
-	loadVideoByUrl() {
-		// do nothing
-	}
+	loadVideoByUrl() {}
 
-	cuePlaylist() {
-		// do nothing
-	}
+	cuePlaylist() {}
 
-	loadPlaylist() {
-		// do nothing
-	}
+	loadPlaylist() {}
 
-	playVideo() {
-		// do nothing
-	}
-	pauseVideo() {
-		// do nothing
-	}
-	stopVideo() {
-		// do nothing
-	}
-	seekTo() {
-		// do nothing
-	}
+	playVideo() {}
+	pauseVideo() {}
+	stopVideo() {}
+	seekTo() {}
 	getSphericalProperties() {
 		return {};
 	}
 
-	setSphericalProperties() {
-		// do nothing
-	}
-	nextVideo() {
-		// do nothing
-	}
-	previousVideo() {
-		// do nothing
-	}
-	playVideoAt() {
-		// do nothing
-	}
-	mute() {
-		// do nothing
-	}
-	unMute() {
-		// do nothing
-	}
+	setSphericalProperties() {}
+	nextVideo() {}
+	previousVideo() {}
+	playVideoAt() {}
+	mute() {}
+	unMute() {}
 	isMuted() {
 		return false;
 	}
-	setVolume() {
-		// do nothing
-	}
+	setVolume() {}
 	getVolume() {
 		return 0;
 	}
@@ -82,18 +48,12 @@ class YouTubePlayerMock implements YTPlayer {
 	getPlaybackRate(): YTPlaybackRate {
 		return 1;
 	}
-	setPlaybackRate() {
-		// do nothing
-	}
+	setPlaybackRate() {}
 	getAvailablePlaybackRates(): YTPlaybackRate[] {
 		return [1];
 	}
-	setLoop() {
-		// do nothing
-	}
-	setShuffle() {
-		// do nothing
-	}
+	setLoop() {}
+	setShuffle() {}
 	getVideoLoadedFraction() {
 		return 0;
 	}
@@ -118,18 +78,12 @@ class YouTubePlayerMock implements YTPlayer {
 	getPlaylistIndex() {
 		return 0;
 	}
-	addEventListener() {
-		// do nothing
-	}
-	removeEventListener() {
-		// do nothing
-	}
+	addEventListener() {}
+	removeEventListener() {}
 	getIframe() {
 		return document.createElement('iframe');
 	}
-	destroy() {
-		// do nothing
-	}
+	destroy() {}
 }
 
 export default YouTubePlayerMock;

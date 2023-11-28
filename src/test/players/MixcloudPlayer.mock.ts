@@ -1,21 +1,11 @@
 import type { MixcloudWidget } from '../../lib/players/mixcloud.global.types';
 
 class MixcloudWidgetMock implements MixcloudWidget {
-	constructor() {
-		// do nothing
-	}
-	load() {
-		// do nothing
-	}
-	play() {
-		// do nothing
-	}
-	pause() {
-		// do nothing
-	}
-	togglePlay() {
-		// do nothing
-	}
+	constructor() {}
+	load() {}
+	play() {}
+	pause() {}
+	togglePlay() {}
 	async seek() {
 		return false;
 	}
@@ -31,52 +21,28 @@ class MixcloudWidgetMock implements MixcloudWidget {
 	ready = Promise.resolve(null as never);
 	events = {
 		buffering: {
-			on() {
-				// do nothing
-			},
-			off() {
-				// do nothing
-			}
+			on() {},
+			off() {}
 		},
 		play: {
-			on() {
-				// do nothing
-			},
-			off() {
-				// do nothing
-			}
+			on() {},
+			off() {}
 		},
 		pause: {
-			on() {
-				// do nothing
-			},
-			off() {
-				// do nothing
-			}
+			on() {},
+			off() {}
 		},
 		ended: {
-			on() {
-				// do nothing
-			},
-			off() {
-				// do nothing
-			}
+			on() {},
+			off() {}
 		},
 		progress: {
-			on() {
-				// do nothing
-			},
-			off() {
-				// do nothing
-			}
+			on() {},
+			off() {}
 		},
 		error: {
-			on() {
-				// do nothing
-			},
-			off() {
-				// do nothing
-			}
+			on() {},
+			off() {}
 		}
 	};
 }

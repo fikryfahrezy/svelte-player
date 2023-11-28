@@ -13,48 +13,24 @@ const twitchPlaybackStats: TwitchPlaybackStats = {
 };
 
 class TwitchPlayerMock implements TwitchPlayer {
-	constructor() {
-		// do nothing
-	}
-	disableCaptions() {
-		// do nothing
-	}
-	enableCaptions() {
-		// do nothing
-	}
-	pause() {
-		// do nothing
-	}
-	play() {
-		// do nothing
-	}
-	seek() {
-		// do nothing
-	}
-	setChannel() {
-		// do nothing
-	}
-	setCollection() {
-		// do nothing
-	}
-	setQuality() {
-		// do nothing
-	}
-	setVideo() {
-		// do nothing
-	}
+	constructor() {}
+	disableCaptions() {}
+	enableCaptions() {}
+	pause() {}
+	play() {}
+	seek() {}
+	setChannel() {}
+	setCollection() {}
+	setQuality() {}
+	setVideo() {}
 	getMuted() {
 		return false;
 	}
-	setMuted() {
-		// do nothing
-	}
+	setMuted() {}
 	getVolume() {
 		return 0;
 	}
-	setVolume() {
-		// do nothing
-	}
+	setVolume() {}
 	getPlaybackStats() {
 		return twitchPlaybackStats;
 	}
@@ -82,9 +58,7 @@ class TwitchPlayerMock implements TwitchPlayer {
 	isPaused() {
 		return false;
 	}
-	addEventListener() {
-		// do nothing
-	}
+	addEventListener() {}
 
 	static CAPTIONS = 'captions' as const;
 	static ENDED = 'ended' as const;

@@ -13,31 +13,17 @@ const facebookPlayer: FacebookPlayer = {
 	isMuted() {
 		return false;
 	},
-	mute() {
-		// do nothing
-	},
-	pause() {
-		// do nothing
-	},
-	play() {
-		// do nothing
-	},
-	seek() {
-		// do nothing
-	},
-	setVolume() {
-		// do nothing
-	},
+	mute() {},
+	pause() {},
+	play() {},
+	seek() {},
+	setVolume() {},
 	subscribe() {
 		return {
-			release() {
-				// do nothing
-			}
+			release() {}
 		};
 	},
-	unmute() {
-		// do nothing
-	}
+	unmute() {}
 };
 
 export default facebookPlayer;

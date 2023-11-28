@@ -3,54 +3,28 @@ import type { PlayerJSPlayer } from '../../lib/players/playerjs.global.types';
 class PlayerJSPlayerMock implements PlayerJSPlayer {
 	isReady = false;
 
-	constructor() {
-		// do nothing
-	}
-	getCurrentTime() {
-		// do nothing
-	}
-	getMuted() {
-		// do nothing
-	}
+	constructor() {}
+	getCurrentTime() {}
+	getMuted() {}
 	getDuration() {
 		return 0;
 	}
-	getPaused() {
-		// do nothing
-	}
+	getPaused() {}
 	getVolume() {
 		return 0;
 	}
-	mute() {
-		// do nothing
-	}
-	off() {
-		// do nothing
-	}
-	on() {
-		// do nothing
-	}
-	pause() {
-		// do nothing
-	}
-	play() {
-		// do nothing
-	}
-	setCurrentTime() {
-		// do nothing
-	}
-	setLoop() {
-		// do nothing
-	}
-	setVolume() {
-		// do nothing
-	}
+	mute() {}
+	off() {}
+	on() {}
+	pause() {}
+	play() {}
+	setCurrentTime() {}
+	setLoop() {}
+	setVolume() {}
 	supports() {
 		return false;
 	}
-	unmute() {
-		// do nothing
-	}
+	unmute() {}
 }
 
 export default PlayerJSPlayerMock;

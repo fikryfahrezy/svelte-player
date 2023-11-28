@@ -1,8 +1,31 @@
-import type Hls from 'hls.js';
-export type { HlsConfig, ErrorData } from 'hls.js';
+export type ErrorData = object;
 
-export type HlsJS = typeof Hls;
+export type HlsConfig = object;
 
-export type HLSClass = Hls;
+export type ManifestParsedData = object;
 
-export type HlsInternalPlayerKey = 'hls';
+export enum Events {
+	MANIFEST_PARSED = 'hlsManifestParsed',
+	ERROR = 'hlsError'
+}
+
+export type HlsListeners = {
+	[Events.MANIFEST_PARSED]: (event: Events.MANIFEST_PARSED, data: ManifestParsedData) => void;
+	[Events.ERROR]: (event: Events.ERROR, data: ErrorData) => void;
+};
+
+export interface HLSClass {
+	on<E extends keyof HlsListeners, Context = undefined>(
+		event: E,
+		listener: HlsListeners[E],
+		context?: Context
+	): void;
+	destroy(): void;
+	loadSource(url: string): void;
+	attachMedia(media: HTMLMediaElement): void;
+}
+
+export interface HlsJS {
+	new (userConfig?: Partial<HlsConfig>): HLSClass;
+	Events: typeof Events;
+}

@@ -1,42 +1,18 @@
 import type { SoundCloudPlayer } from '../../lib/players/soundcloud.global.types';
 
 class SoundCloudPlayerMock implements SoundCloudPlayer {
-	constructor() {
-		// do nothing
-	}
-	bind() {
-		// do nothing
-	}
-	unbind() {
-		// do nothing
-	}
-	load() {
-		// do nothing
-	}
-	play() {
-		// do nothing
-	}
-	pause() {
-		// do nothing
-	}
-	toggle() {
-		// do nothing
-	}
-	seekTo() {
-		// do nothing
-	}
-	setVolume() {
-		// do nothing
-	}
-	next() {
-		// do nothing
-	}
-	prev() {
-		// do nothing
-	}
-	skip() {
-		// do nothing
-	}
+	constructor() {}
+	bind() {}
+	unbind() {}
+	load() {}
+	play() {}
+	pause() {}
+	toggle() {}
+	seekTo() {}
+	setVolume() {}
+	next() {}
+	prev() {}
+	skip() {}
 	getVolume() {
 		return 0;
 	}

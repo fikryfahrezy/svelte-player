@@ -5,27 +5,13 @@ class DailyMotionPlayerMock implements DailyMotionPlayer {
 	currentTime = 0;
 	duration = 0;
 
-	constructor() {
-		// do nothing
-	}
-	load() {
-		// do nothing
-	}
-	pause() {
-		// do nothing
-	}
-	play() {
-		// do nothing
-	}
-	seek() {
-		// do nothing
-	}
-	setMuted() {
-		// do nothing
-	}
-	setVolume() {
-		// do nothing
-	}
+	constructor() {}
+	load() {}
+	pause() {}
+	play() {}
+	seek() {}
+	setMuted() {}
+	setVolume() {}
 }
 
 export default DailyMotionPlayerMock;

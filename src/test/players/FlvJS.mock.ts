@@ -1,9 +1,7 @@
 import type { Player, FlvJS } from '../../lib/players/flv.types';
 
 class FlvPlayerMock implements Player {
-	attachMediaElement() {
-		// do nothing
-	}
+	attachMediaElement() {}
 
 	on(event: string, cb: (...args: unknown[]) => void) {
 		if (event === 'error') {
@@ -13,9 +11,7 @@ class FlvPlayerMock implements Player {
 		}
 	}
 
-	load() {
-		// do nothing
-	}
+	load() {}
 }
 
 const flvjs: FlvJS = {

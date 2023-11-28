@@ -21,9 +21,7 @@ const vimeoPlayerChapter: VimeoPlayerChapter = {
 };
 
 class VimeoPlayerMock implements VimeoPlayer {
-	constructor() {
-		// do nothing
-	}
+	constructor() {}
 	async getAutopause() {
 		return false;
 	}
@@ -48,12 +46,8 @@ class VimeoPlayerMock implements VimeoPlayer {
 	async getVolume() {
 		return 0;
 	}
-	async pause() {
-		// do nothing
-	}
-	async play() {
-		// do nothing
-	}
+	async pause() {}
+	async play() {}
 	setAutopause<T extends VimeoEmbedOptions['autopause']>(params: VimeoPlayerSetAutopauseParams<T>) {
 		return params.autopause;
 	}
@@ -84,18 +78,14 @@ class VimeoPlayerMock implements VimeoPlayer {
 	async removeCuePoint<T extends string>(id: T) {
 		return id;
 	}
-	async disableTextTrack() {
-		// do nothing
-	}
+	async disableTextTrack() {}
 	async enableTextTrack() {
 		return vimeoPlayerTextTrack;
 	}
 	async getTextTracks() {
 		return [];
 	}
-	async destroy() {
-		// do nothing
-	}
+	async destroy() {}
 	async getColor() {
 		return '';
 	}
@@ -120,27 +110,19 @@ class VimeoPlayerMock implements VimeoPlayer {
 	async getVideoWidth() {
 		return 0;
 	}
-	async ready() {
-		// do nothing
-	}
+	async ready() {}
 	setColor<T extends VimeoPlayerOptions['color']>(color: T) {
 		return color;
 	}
 	setColors<T extends VimeoPlayerOptions['colors']>(colors: T) {
 		return colors;
 	}
-	unload() {
-		// do nothing
-	}
+	unload() {}
 	async loadVideo() {
 		return 0;
 	}
-	on() {
-		// do nothing
-	}
-	off() {
-		// do nothing
-	}
+	on() {}
+	off() {}
 }
 
 export default VimeoPlayerMock;

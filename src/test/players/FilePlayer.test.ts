@@ -110,7 +110,7 @@ test('onSeek', function (t) {
 test('load - hls', async function (t) {
 	t.expect.assertions(2);
 
-	vi.doMock('hls.js', function () {
+	vi.doMock('./HlsJS.mock', function () {
 		class Hls {
 			static Events = { ERROR: 'ERROR' };
 			on() {
@@ -127,7 +127,7 @@ test('load - hls', async function (t) {
 		return { default: Hls };
 	});
 
-	const Hls = (await import('hls.js')).default;
+	const Hls = (await import('./HlsJS.mock')).default;
 
 	const url = 'file.m3u8';
 	const getSDK = vi.spyOn(utils, 'getSDK').mockImplementation(async function () {
@@ -157,7 +157,7 @@ test('load - hls', async function (t) {
 test('onError - hls', async function (t) {
 	t.expect.assertions(2);
 
-	vi.doMock('hls.js', function () {
+	vi.doMock('./HlsJS.mock', function () {
 		class Hls {
 			static Events = { ERROR: 'ERROR' };
 			on(event: string, cb: () => void) {
@@ -177,7 +177,7 @@ test('onError - hls', async function (t) {
 		return { default: Hls };
 	});
 
-	const Hls = (await import('hls.js')).default;
+	const Hls = (await import('./HlsJS.mock')).default;
 
 	return new Promise(function (resolve) {
 		function onError() {
@@ -210,9 +210,7 @@ test('onError - flv', async function (t) {
 
 	vi.doMock('./FlvJS.mock', function () {
 		class FlvPlayer {
-			attachMediaElement() {
-				// do nothing
-			}
+			attachMediaElement() {}
 
 			on(event: string, cb: (...args: unknown[]) => void) {
 				if (event === 'error') {
@@ -222,9 +220,7 @@ test('onError - flv', async function (t) {
 				}
 			}
 
-			load() {
-				// do nothing
-			}
+			load() {}
 		}
 
 		class FlvJS {
