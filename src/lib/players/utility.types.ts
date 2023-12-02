@@ -29,3 +29,6 @@ export type MethodParameters<T> = T extends (...args: infer P) => any ? P : neve
 
 /* eslint-disable-next-line @typescript-eslint/no-explicit-any -- this is fine*/
 export type MethodReturnType<T> = T extends (...args: any) => infer R ? R : any;
+
+/* eslint-disable-next-line @typescript-eslint/no-explicit-any -- this is fine*/
+export type Tail<T extends any[]> = T extends [infer _, ...infer Rest] ? Rest : never;

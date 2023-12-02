@@ -1,3 +1,5 @@
+// Ref:
+// https://github.com/video-dev/hls.js/blob/master/src/hls.ts
 export type ErrorData = object;
 
 export type HlsConfig = object;

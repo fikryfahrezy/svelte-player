@@ -55,33 +55,76 @@ export type TwitchPlaybackStats = {
 };
 
 export type TwitchPlayerCAPTIONSEvent = 'captions';
+type TwitchPlayerCAPTIONSListenerFn = (params: Record<string, never>) => void;
+type TwitchPlayerCAPTIONSListener = {
+	[k in TwitchPlayerCAPTIONSEvent]: TwitchPlayerCAPTIONSListenerFn;
+};
+
 export type TwitchPlayerENDEDEvent = 'ended';
+type TwitchPlayerENDEDListenerFn = (params: Record<string, never>) => void;
+type TwitchPlayerENDEDListener = {
+	[k in TwitchPlayerENDEDEvent]: TwitchPlayerENDEDListenerFn;
+};
+
 export type TwitchPlayerPAUSEEvent = 'pause';
+type TwitchPlayerPAUSEListenerFn = (params: Record<string, never>) => void;
+type TwitchPlayerPAUSEListener = {
+	[k in TwitchPlayerPAUSEEvent]: TwitchPlayerPAUSEListenerFn;
+};
+
 export type TwitchPlayerPLAYEvent = 'play';
+type TwitchPlayerPLAYListenerFn = (params: Record<string, never>) => void;
+type TwitchPlayerPLAYListener = {
+	[k in TwitchPlayerPLAYEvent]: TwitchPlayerPLAYListenerFn;
+};
+
 export type TwitchPlayerPLAYBACK_BLOCKEDEvent = 'playbackBlocked';
+type TwitchPlayerPLAYBACK_BLOCKEDListenerFn = (params: Record<string, never>) => void;
+type TwitchPlayerPLAYBACK_BLOCKEDListener = {
+	[k in TwitchPlayerPLAYBACK_BLOCKEDEvent]: TwitchPlayerPLAYBACK_BLOCKEDListenerFn;
+};
+
 export type TwitchPlayerPLAYINGEvent = 'playing';
+type TwitchPlayerPLAYINGListenerFn = (params: Record<string, never>) => void;
+type TwitchPlayerPLAYINGListener = {
+	[k in TwitchPlayerPLAYINGEvent]: TwitchPlayerPLAYINGListenerFn;
+};
+
 export type TwitchPlayerOFFLINEEvent = 'offline';
+type TwitchPlayerOFFLINEListenerFn = (params: Record<string, never>) => void;
+type TwitchPlayerOFFLINEListener = {
+	[k in TwitchPlayerOFFLINEEvent]: TwitchPlayerOFFLINEListenerFn;
+};
+
 export type TwitchPlayerONLINEEvent = 'online';
+type TwitchPlayerONLINEListenerFn = (params: Record<string, never>) => void;
+type TwitchPlayerONLINEListener = {
+	[k in TwitchPlayerONLINEEvent]: TwitchPlayerONLINEListenerFn;
+};
+
 export type TwitchPlayerREADYEvent = 'ready';
-export type TwitchPlayerSEEKEvent = 'seek';
-
-export type TwitchPlayerEVENT =
-	| TwitchPlayerCAPTIONSEvent
-	| TwitchPlayerENDEDEvent
-	| TwitchPlayerPAUSEEvent
-	| TwitchPlayerPLAYEvent
-	| TwitchPlayerPLAYBACK_BLOCKEDEvent
-	| TwitchPlayerPLAYINGEvent
-	| TwitchPlayerOFFLINEEvent
-	| TwitchPlayerONLINEEvent
-	| TwitchPlayerREADYEvent
-	| TwitchPlayerSEEKEvent;
-
-export type TwitchPlayerEVENTCallback = (params: Record<string, never>) => void;
+type TwitchPlayerREADYListenerFn = (params: Record<string, never>) => void;
+type TwitchPlayerREADYListener = {
+	[k in TwitchPlayerREADYEvent]: TwitchPlayerREADYListenerFn;
+};
 
 export type TwitchPlayerSEEKEVENTCallbackParams = { position: number };
+export type TwitchPlayerSEEKEvent = 'seek';
+type TwitchPlayerSEEKListenerFn = (params: TwitchPlayerSEEKEVENTCallbackParams) => void;
+type TwitchPlayerSEEKListener = {
+	[k in TwitchPlayerSEEKEvent]: TwitchPlayerSEEKListenerFn;
+};
 
-export type TwitchPlayerSEEKEVENTCallback = (params: TwitchPlayerSEEKEVENTCallbackParams) => void;
+export type TwitchListeners = TwitchPlayerCAPTIONSListener &
+	TwitchPlayerENDEDListener &
+	TwitchPlayerPAUSEListener &
+	TwitchPlayerPLAYListener &
+	TwitchPlayerPLAYBACK_BLOCKEDListener &
+	TwitchPlayerPLAYINGListener &
+	TwitchPlayerOFFLINEListener &
+	TwitchPlayerONLINEListener &
+	TwitchPlayerREADYListener &
+	TwitchPlayerSEEKListener;
 
 export interface TwitchPlayer {
 	disableCaptions(): void;
@@ -106,11 +149,7 @@ export interface TwitchPlayer {
 	getQuality(): string;
 	getVideo(): string;
 	isPaused(): boolean;
-	addEventListener(
-		event: Exclude<TwitchPlayerEVENT, TwitchPlayerSEEKEvent>,
-		callback: TwitchPlayerEVENTCallback
-	): void;
-	addEventListener(event: TwitchPlayerSEEKEvent, callback: TwitchPlayerSEEKEVENTCallback): void;
+	addEventListener<E extends keyof TwitchListeners>(event: E, listener: TwitchListeners[E]): void;
 }
 
 export interface TwitchPlayerConstructor {

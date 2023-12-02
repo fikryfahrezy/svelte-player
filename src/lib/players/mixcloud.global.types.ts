@@ -7,25 +7,10 @@ export type MixcloudPlayerLoadOptions = {
 	light: boolean;
 };
 
-export type MixcloudPROGRESSEvent = 'progress';
-export type MixcloudBUFFERINGEvent = 'buffering';
-export type MixcloudPLAYEvent = 'play';
-export type MixcloudPAUSEEvent = 'pause';
-export type MixcloudENDEDEvent = 'ended';
-export type MixcloudERROREvent = 'error';
-
-export type MixcloudPlayerEVENT =
-	| MixcloudPROGRESSEvent
-	| MixcloudBUFFERINGEvent
-	| MixcloudPLAYEvent
-	| MixcloudPAUSEEvent
-	| MixcloudENDEDEvent
-	| MixcloudERROREvent;
-
 export type MixcloudWidgetEVENTCallback = () => void;
-export type MixcloudWidgetProgressEVENTCallback = (seconds: number, duration: number) => void;
-export type MixcloudWidgetErrorßEVENTCallback = (error: unknown) => void;
 
+export type MixcloudPROGRESSEvent = 'progress';
+export type MixcloudWidgetProgressEVENTCallback = (seconds: number, duration: number) => void;
 export type MixcloudWidgetProgressEVENT = {
 	[l in MixcloudPROGRESSEvent]: {
 		on(callback: MixcloudWidgetProgressEVENTCallback): void;
@@ -33,20 +18,53 @@ export type MixcloudWidgetProgressEVENT = {
 	};
 };
 
+export type MixcloudBUFFERINGEvent = 'buffering';
+export type MixcloudWidgetBufferingEVENT = {
+	[k in MixcloudBUFFERINGEvent]: {
+		on(callback: MixcloudWidgetEVENTCallback): void;
+		off(callback: MixcloudWidgetEVENTCallback): void;
+	};
+};
+
+export type MixcloudPLAYEvent = 'play';
+export type MixcloudWidgetPlayEVENT = {
+	[k in MixcloudPLAYEvent]: {
+		on(callback: MixcloudWidgetEVENTCallback): void;
+		off(callback: MixcloudWidgetEVENTCallback): void;
+	};
+};
+
+export type MixcloudPAUSEEvent = 'pause';
+export type MixcloudWidgetPauseEVENT = {
+	[k in MixcloudPAUSEEvent]: {
+		on(callback: MixcloudWidgetEVENTCallback): void;
+		off(callback: MixcloudWidgetEVENTCallback): void;
+	};
+};
+
+export type MixcloudENDEDEvent = 'ended';
+export type MixcloudWidgetEventEVENT = {
+	[k in MixcloudENDEDEvent]: {
+		on(callback: MixcloudWidgetEVENTCallback): void;
+		off(callback: MixcloudWidgetEVENTCallback): void;
+	};
+};
+
+export type MixcloudERROREvent = 'error';
+export type MixcloudWidgetErrorEVENTCallback = (error: unknown) => void;
 export type MixcloudWidgetErrorEVENT = {
 	[l in MixcloudERROREvent]: {
-		on(callback: MixcloudWidgetErrorßEVENTCallback): void;
+		on(callback: MixcloudWidgetErrorEVENTCallback): void;
 		off(callback: MixcloudWidgetEVENTCallback): void;
 	};
 };
 
 export type MixcloudWidgetEVENT = MixcloudWidgetProgressEVENT &
-	MixcloudWidgetErrorEVENT & {
-		[k in Exclude<MixcloudPlayerEVENT, MixcloudPROGRESSEvent | MixcloudERROREvent>]: {
-			on(callback: MixcloudWidgetEVENTCallback): void;
-			off(callback: MixcloudWidgetEVENTCallback): void;
-		};
-	};
+	MixcloudWidgetErrorEVENT &
+	MixcloudWidgetBufferingEVENT &
+	MixcloudWidgetPlayEVENT &
+	MixcloudWidgetPauseEVENT &
+	MixcloudWidgetEventEVENT;
 
 export type MixcloudWidget = {
 	load(cloudcastKey: string, startPlaying: boolean): void;

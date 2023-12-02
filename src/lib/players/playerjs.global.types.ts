@@ -3,47 +3,65 @@ import type { AnyFunction } from './utility.types';
 // https://github.com/embedly/player.js
 // Also some copied from https://github.com/cookpete/react-player
 export type PlayerJSPlayerREADYEvent = 'ready';
-export type PlayerJSPlayerPROGRESSEvent = 'progress';
-export type PlayerJSPlayerTIMEUPDATEEvent = 'timeupdate';
+type PlayerJSPlayerREADYListener = {
+	[k in PlayerJSPlayerREADYEvent]: () => void;
+};
+
 export type PlayerJSPlayerPLAYEvent = 'play';
+type PlayerJSPlayerPLAYListener = {
+	[k in PlayerJSPlayerPLAYEvent]: () => void;
+};
+
 export type PlayerJSPlayerPAUSEEvent = 'pause';
+type PlayerJSPlayerPAUSEListener = {
+	[k in PlayerJSPlayerPAUSEEvent]: () => void;
+};
+
 export type PlayerJSPlayerENDEDEvent = 'ended';
+type PlayerJSPlayerENDEDListener = {
+	[k in PlayerJSPlayerENDEDEvent]: () => void;
+};
+
 export type PlayerJSPlayerSEEKEDEvent = 'seeked';
-export type PlayerJSPlayerERROREvent = 'error';
-export type PlayerJSPlayerBUFFEREDEvent = 'buffered';
+type PlayerJSPlayerSEEKEDListener = {
+	[k in PlayerJSPlayerSEEKEDEvent]: () => void;
+};
 
-export type PlayerJSPProgressEvents = PlayerJSPlayerPROGRESSEvent | PlayerJSPlayerBUFFEREDEvent;
-
-export type PlayerJSPlayerEvents =
-	| PlayerJSPProgressEvents
-	| PlayerJSPlayerREADYEvent
-	| PlayerJSPlayerTIMEUPDATEEvent
-	| PlayerJSPlayerPLAYEvent
-	| PlayerJSPlayerPAUSEEvent
-	| PlayerJSPlayerENDEDEvent
-	| PlayerJSPlayerSEEKEDEvent
-	| PlayerJSPlayerERROREvent;
-
-export type PlayerJSPlayerNoDataEvents = Exclude<
-	PlayerJSPlayerEvents,
-	PlayerJSPProgressEvents | PlayerJSPlayerTIMEUPDATEEvent | PlayerJSPlayerERROREvent
->;
-
-export type PlayerJSWithDataEventCallback<T> = (data: T) => void;
-
-export type PlayerJSNoDataEventCallback = PlayerJSWithDataEventCallback<undefined>;
-
+export type PlayerJSPlayerPROGRESSEvent = 'progress';
 export type PlayerJSProgressEventCallbackData = { percent: number };
-export type PlayerJSProgressEventCallback =
-	PlayerJSWithDataEventCallback<PlayerJSProgressEventCallbackData>;
+export type PlayerJSProgressEventCallback = (data: PlayerJSProgressEventCallbackData) => void;
+type PlayerJSPlayerPROGRESSListener = {
+	[k in PlayerJSPlayerPROGRESSEvent]: PlayerJSProgressEventCallback;
+};
 
+export type PlayerJSPlayerBUFFEREDEvent = 'buffered';
+type PlayerJSPlayerBUFFEREDListener = {
+	[k in PlayerJSPlayerBUFFEREDEvent]: PlayerJSProgressEventCallback;
+};
+
+export type PlayerJSPlayerTIMEUPDATEEvent = 'timeupdate';
 export type PlayerJSTimeupdateEventCallbackData = { seconds: number; duration: number };
-export type PlayerJSTimeupdateEventCallback =
-	PlayerJSWithDataEventCallback<PlayerJSTimeupdateEventCallbackData>;
+export type PlayerJSTimeupdateEventCallback = (data: PlayerJSTimeupdateEventCallbackData) => void;
+type PlayerJSPlayerTIMEUPDATEListener = {
+	[k in PlayerJSPlayerTIMEUPDATEEvent]: PlayerJSTimeupdateEventCallback;
+};
 
+export type PlayerJSPlayerERROREvent = 'error';
 export type PlayerJSErrorEventCallbackData = unknown;
-export type PlayerJSTErrorEventCallback =
-	PlayerJSWithDataEventCallback<PlayerJSErrorEventCallbackData>;
+export type PlayerJSTErrorEventCallback = (data: PlayerJSErrorEventCallbackData) => void;
+type PlayerJSPlayerERRORListener = {
+	[k in PlayerJSPlayerERROREvent]: PlayerJSTErrorEventCallback;
+};
+
+type PlayerJSListeners = PlayerJSPlayerREADYListener &
+	PlayerJSPlayerPLAYListener &
+	PlayerJSPlayerPAUSEListener &
+	PlayerJSPlayerENDEDListener &
+	PlayerJSPlayerSEEKEDListener &
+	PlayerJSPlayerPROGRESSListener &
+	PlayerJSPlayerBUFFEREDListener &
+	PlayerJSPlayerTIMEUPDATEListener &
+	PlayerJSPlayerERRORListener;
 
 export type PlayerJSPlayerGetPausedCallback = (value: boolean) => void;
 export type PlayerJSPlayerGetMutedCallback = (value: boolean) => void;
@@ -63,11 +81,8 @@ export interface PlayerJSPlayer {
 	getDuration(callback: PlayerJSPlayerGetDurationCallback): number;
 	setCurrentTime(value: number /* in seconds */): void;
 	getCurrentTime(callback: PlayerJSPlayerGetCurrentTimeCallback): void;
-	off(event: PlayerJSPlayerEvents, callback?: AnyFunction): void;
-	on(event: PlayerJSPlayerTIMEUPDATEEvent, callback: PlayerJSTimeupdateEventCallback): void;
-	on(event: PlayerJSPProgressEvents, callback: PlayerJSProgressEventCallback): void;
-	on(event: PlayerJSPlayerNoDataEvents, callback: PlayerJSNoDataEventCallback): void;
-	on(event: PlayerJSPlayerERROREvent, callback: PlayerJSTErrorEventCallback): void;
+	off(event: keyof PlayerJSListeners, callback?: AnyFunction): void;
+	on<E extends keyof PlayerJSListeners>(event: E, listener: PlayerJSListeners[E]): void;
 	supports(method: string, event: string): boolean;
 	setLoop?(value: boolean): void;
 	isReady: boolean;

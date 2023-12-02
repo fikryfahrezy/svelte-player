@@ -1,4 +1,4 @@
-import type { AnyFunction } from './utility.types';
+import type { AnyFunction, Tail } from './utility.types';
 
 // https://wistia.com/support/developers/embed-options
 export type WistiaTurnstileRequiredOptions = {
@@ -233,66 +233,144 @@ export type WistiaEmbedOptions = {
 	plugin: WistiaEmbedOptionsPlugin;
 };
 
+type WistiaNoDataListenerCb<E> = (event: E, callback: AnyFunction) => void | AnyFunction;
+
 export type WistiaBEFOREREMOVEEvent = 'beforeremove';
+type WistiaBEFOREREMOVEListener<E extends WistiaBEFOREREMOVEEvent = WistiaBEFOREREMOVEEvent> = {
+	bind: {
+		[k in E]: WistiaNoDataListenerCb<k>;
+	};
+	unbind: {
+		[k in E]: WistiaNoDataListenerCb<k>;
+	};
+};
+
 export type WistiaBEFOREREPLACEEvent = 'beforereplace';
-export type WistiaBETWEENTIMESEvent = 'betweentimes';
+type WistiaBEFOREREPLACEListener<E extends WistiaBEFOREREPLACEEvent = WistiaBEFOREREPLACEEvent> = {
+	bind: {
+		[k in E]: WistiaNoDataListenerCb<k>;
+	};
+	unbind: {
+		[k in E]: WistiaNoDataListenerCb<k>;
+	};
+};
+
 export type WistiaCANCELFULLSCREENEvent = 'cancelfullscreen';
-export type WistiaCAPTIONSCHANGEEvent = 'captionschange';
-export type WistiaCONVERSIONEvent = 'conversion';
-export type WistiaCROSSTIMEEvent = 'crosstime';
+type WistiaCANCELFULLSCREENListener<
+	E extends WistiaCANCELFULLSCREENEvent = WistiaCANCELFULLSCREENEvent
+> = {
+	bind: {
+		[k in E]: WistiaNoDataListenerCb<k>;
+	};
+	unbind: {
+		[k in E]: WistiaNoDataListenerCb<k>;
+	};
+};
+
 export type WistiaENDEvent = 'end';
+type WistiaENDListener<E extends WistiaENDEvent = WistiaENDEvent> = {
+	bind: {
+		[k in E]: WistiaNoDataListenerCb<k>;
+	};
+	unbind: {
+		[k in E]: WistiaNoDataListenerCb<k>;
+	};
+};
+
 export type WistiaENTERFULLSCREEEvent = 'enterfullcreen';
+type WistiaENTERFULLSCREEListener<E extends WistiaENTERFULLSCREEEvent = WistiaENTERFULLSCREEEvent> =
+	{
+		bind: {
+			[k in E]: WistiaNoDataListenerCb<k>;
+		};
+		unbind: {
+			[k in E]: WistiaNoDataListenerCb<k>;
+		};
+	};
+
 export type WistiaHEIGHTCHANGEEvent = 'heightchange';
-export type WistiaLOOKCHANGEEvent = 'lookchange';
-export type WistiaMUTECHANGEEvent = 'mutechange';
+type WistiaHEIGHTCHANGEListener<E extends WistiaHEIGHTCHANGEEvent = WistiaHEIGHTCHANGEEvent> = {
+	bind: {
+		[k in E]: WistiaNoDataListenerCb<k>;
+	};
+	unbind: {
+		[k in E]: WistiaNoDataListenerCb<k>;
+	};
+};
+
 export type WistiaPAUSEEvent = 'pause';
-export type WistiaPERCENTWATCHEDCHANGEDEvent = 'percentwatchedchanged';
+type WistiaPAUSEListener<E extends WistiaPAUSEEvent = WistiaPAUSEEvent> = {
+	bind: {
+		[k in E]: WistiaNoDataListenerCb<k>;
+	};
+	unbind: {
+		[k in E]: WistiaNoDataListenerCb<k>;
+	};
+};
+
 export type WistiaPLAYEvent = 'play';
-export type WistiaPLAYBACKRATECHANGEEvent = 'playbackratechange';
-export type WistiaSECONDSCHANGEEvent = 'secondschange';
-export type WistiaSEEKEvent = 'seek';
-export type WistiaSILENTPLAYBACKMODECHANGEEvent = 'silentplaybackmodechange';
-export type WistiaTIMECHANGEEvent = 'timechange';
-export type WistiaVOLUMECHANGEEvent = 'volumechnage';
+type WistiaPLAYListener<E extends WistiaPLAYEvent = WistiaPLAYEvent> = {
+	bind: {
+		[k in E]: WistiaNoDataListenerCb<k>;
+	};
+	unbind: {
+		[k in E]: WistiaNoDataListenerCb<k>;
+	};
+};
+
 export type WistiaWIDTHCHANGEEvent = 'widthchange';
+type WistiaWIDTHCHANGEListener<E extends WistiaWIDTHCHANGEEvent = WistiaWIDTHCHANGEEvent> = {
+	bind: {
+		[k in E]: WistiaNoDataListenerCb<k>;
+	};
+	unbind: {
+		[k in E]: WistiaNoDataListenerCb<k>;
+	};
+};
 
-export type WistiaNoDataEvent =
-	| WistiaBEFOREREMOVEEvent
-	| WistiaBEFOREREPLACEEvent
-	| WistiaCANCELFULLSCREENEvent
-	| WistiaENDEvent
-	| WistiaENTERFULLSCREEEvent
-	| WistiaHEIGHTCHANGEEvent
-	| WistiaPAUSEEvent
-	| WistiaPLAYEvent
-	| WistiaWIDTHCHANGEEvent;
+export type WistiaBETWEENTIMESEvent = 'betweentimes';
+export type WistiaBETWEENTIMESEventCallback = (data: boolean) => void;
+type WistiaBETWEENTIMESListenerFn<
+	TEvent,
+	TReturn extends void | AnyFunction = void | AnyFunction
+> = (
+	event: TEvent,
+	timeStart: number,
+	timeEnd: number,
+	callback: WistiaBETWEENTIMESEventCallback
+) => TReturn;
+type WistiaBETWEENTIMESListener<E extends WistiaBETWEENTIMESEvent = WistiaBETWEENTIMESEvent> = {
+	bind: {
+		[k in E]: WistiaBETWEENTIMESListenerFn<k>;
+	};
+	unbind: {
+		[k in E]: WistiaBETWEENTIMESListenerFn<k, void>;
+	};
+};
 
-export type WistiaEvents =
-	| WistiaNoDataEvent
-	| WistiaBETWEENTIMESEvent
-	| WistiaCAPTIONSCHANGEEvent
-	| WistiaCONVERSIONEvent
-	| WistiaCROSSTIMEEvent
-	| WistiaLOOKCHANGEEvent
-	| WistiaMUTECHANGEEvent
-	| WistiaPERCENTWATCHEDCHANGEDEvent
-	| WistiaPLAYBACKRATECHANGEEvent
-	| WistiaSECONDSCHANGEEvent
-	| WistiaSEEKEvent
-	| WistiaSILENTPLAYBACKMODECHANGEEvent
-	| WistiaTIMECHANGEEvent
-	| WistiaVOLUMECHANGEEvent;
-
-export type WistiaWithDataEventCallback<T> = (data: T) => void;
-export type WistiaBETWEENTIMESEventCallback = WistiaWithDataEventCallback<boolean>;
-
+export type WistiaCAPTIONSCHANGEEvent = 'captionschange';
 export type WistiaCAPTIONSCHANGEEventCallbackData = {
 	visible: boolean;
 	language: string;
 };
-export type WistiaCAPTIONSCHANGEEventCallback =
-	WistiaWithDataEventCallback<WistiaCAPTIONSCHANGEEventCallbackData>;
+export type WistiaCAPTIONSCHANGEEventCallback = (
+	data: WistiaCAPTIONSCHANGEEventCallbackData
+) => void;
+type WistiaCAPTIONSCHANGEListenerFn<E> = (
+	event: E,
+	callback: WistiaCAPTIONSCHANGEEventCallback
+) => void | AnyFunction;
+type WistiaCAPTIONSCHANGEListener<E extends WistiaCAPTIONSCHANGEEvent = WistiaCAPTIONSCHANGEEvent> =
+	{
+		bind: {
+			[k in E]: WistiaCAPTIONSCHANGEListenerFn<k>;
+		};
+		unbind: {
+			[k in E]: WistiaNoDataListenerCb<k>;
+		};
+	};
 
+export type WistiaCONVERSIONEvent = 'conversion';
 export type WistiaCONVERSIONEventCallbackTypeData =
 	| 'pre-roll-email'
 	| 'mid-roll-email'
@@ -303,33 +381,225 @@ export type WistiaCONVERSIONEventCallback = (
 	firstName: string,
 	lastName: string
 ) => void;
+type WistiaCONVERSIONListenerFn<E> = (
+	event: E,
+	callback: WistiaCONVERSIONEventCallback
+) => void | AnyFunction;
+type WistiaCONVERSIONListener<E extends WistiaCONVERSIONEvent = WistiaCONVERSIONEvent> = {
+	bind: {
+		[k in E]: WistiaCONVERSIONListenerFn<k>;
+	};
+	unbind: {
+		[k in E]: WistiaNoDataListenerCb<k>;
+	};
+};
 
+export type WistiaCROSSTIMEEvent = 'crosstime';
+type WistiaCROSSTIMEListenerFn<TEvent, TReturn extends void | AnyFunction = void | AnyFunction> = (
+	event: TEvent,
+	time: number,
+	callback: AnyFunction
+) => TReturn;
+type WistiaCROSSTIMEListener<E extends WistiaCROSSTIMEEvent = WistiaCROSSTIMEEvent> = {
+	bind: {
+		[k in E]: WistiaCROSSTIMEListenerFn<k>;
+	};
+	unbind: {
+		[k in E]: WistiaCROSSTIMEListenerFn<k, void>;
+	};
+};
+
+export type WistiaLOOKCHANGEEvent = 'lookchange';
 export type WistiaLOOKCHANGEEventCallbackData = {
 	heading: number;
 	pitch: number;
 	fov: number;
 };
-export type WistiaLOOKCHANGEEventCallback =
-	WistiaWithDataEventCallback<WistiaLOOKCHANGEEventCallbackData>;
+export type WistiaLOOKCHANGEEventCallback = (data: WistiaLOOKCHANGEEventCallbackData) => void;
+type WistiaLOOKCHANGEListenerFn<E> = (
+	event: E,
+	callback: WistiaLOOKCHANGEEventCallback
+) => void | AnyFunction;
+type WistiaLOOKCHANGEListener<E extends WistiaLOOKCHANGEEvent = WistiaLOOKCHANGEEvent> = {
+	bind: {
+		[k in E]: WistiaLOOKCHANGEListenerFn<k>;
+	};
+	unbind: {
+		[k in E]: WistiaNoDataListenerCb<k>;
+	};
+};
 
-export type WistiaMUTECHANGEEventCallback = WistiaWithDataEventCallback<boolean>;
+export type WistiaMUTECHANGEEvent = 'mutechange';
+export type WistiaMUTECHANGEEventCallback = (data: boolean) => void;
+type WistiaMUTECHANGEListenerFn<E> = (
+	event: E,
+	callback: WistiaMUTECHANGEEventCallback
+) => void | AnyFunction;
+type WistiaMUTECHANGEListener<E extends WistiaMUTECHANGEEvent = WistiaMUTECHANGEEvent> = {
+	bind: {
+		[k in E]: WistiaMUTECHANGEListenerFn<k>;
+	};
+	unbind: {
+		[k in E]: WistiaNoDataListenerCb<k>;
+	};
+};
 
+export type WistiaPERCENTWATCHEDCHANGEDEvent = 'percentwatchedchanged';
 export type WistiaPERCENTWATCHEDCHANGEDEventCallback = (
 	percent: number,
 	lastPercent: number
 ) => void;
+type WistiaPERCENTWATCHEDCHANGEDListenerFn<E> = (
+	event: E,
+	callback: WistiaPERCENTWATCHEDCHANGEDEventCallback
+) => void | AnyFunction;
+type WistiaPERCENTWATCHEDCHANGEDListener<
+	E extends WistiaPERCENTWATCHEDCHANGEDEvent = WistiaPERCENTWATCHEDCHANGEDEvent
+> = {
+	bind: {
+		[k in E]: WistiaPERCENTWATCHEDCHANGEDListenerFn<k>;
+	};
+	unbind: {
+		[k in E]: WistiaNoDataListenerCb<k>;
+	};
+};
 
-export type WistiaPLAYBACKRATECHANGEEventCallback = WistiaWithDataEventCallback<number>;
+export type WistiaPLAYBACKRATECHANGEEvent = 'playbackratechange';
+export type WistiaPLAYBACKRATECHANGEEventCallback = (data: number) => void;
+type WistiaPLAYBACKRATECHANGEListenerFn<E> = (
+	event: E,
+	callback: WistiaPLAYBACKRATECHANGEEventCallback
+) => void | AnyFunction;
+type WistiaPLAYBACKRATECHANGEListener<
+	E extends WistiaPLAYBACKRATECHANGEEvent = WistiaPLAYBACKRATECHANGEEvent
+> = {
+	bind: {
+		[k in E]: WistiaPLAYBACKRATECHANGEListenerFn<k>;
+	};
+	unbind: {
+		[k in E]: WistiaNoDataListenerCb<k>;
+	};
+};
 
-export type WistiaSECONDSCHANGEEventCallback = WistiaWithDataEventCallback<number>;
+export type WistiaSECONDSCHANGEEvent = 'secondschange';
+export type WistiaSECONDSCHANGEEventCallback = (data: number) => void;
+type WistiaSECONDSCHANGEListenerFn<E> = (
+	event: E,
+	callback: WistiaSECONDSCHANGEEventCallback
+) => void | AnyFunction;
+type WistiaSECONDSCHANGEListener<E extends WistiaSECONDSCHANGEEvent = WistiaSECONDSCHANGEEvent> = {
+	bind: {
+		[k in E]: WistiaSECONDSCHANGEListenerFn<k>;
+	};
+	unbind: {
+		[k in E]: WistiaNoDataListenerCb<k>;
+	};
+};
 
+export type WistiaSEEKEvent = 'seek';
 export type WistiaSEEKEventCallback = (currentTime: number, lastTime: number) => void;
+type WistiaSEEKListenerFn<E> = (event: E, callback: WistiaSEEKEventCallback) => void | AnyFunction;
+type WistiaSEEKListener<E extends WistiaSEEKEvent = WistiaSEEKEvent> = {
+	bind: {
+		[k in E]: WistiaSEEKListenerFn<k>;
+	};
+	unbind: {
+		[k in E]: WistiaNoDataListenerCb<k>;
+	};
+};
 
-export type WistiaSILENTPLAYBACKMODECHANGEEventCallback = WistiaWithDataEventCallback<boolean>;
+export type WistiaSILENTPLAYBACKMODECHANGEEvent = 'silentplaybackmodechange';
+export type WistiaSILENTPLAYBACKMODECHANGEEventCallback = (data: boolean) => void;
+type WistiaSILENTPLAYBACKMODECHANGEListenerFn<E> = (
+	event: E,
+	callback: WistiaSILENTPLAYBACKMODECHANGEEventCallback
+) => void | AnyFunction;
+type WistiaSILENTPLAYBACKMODECHANGEListener<
+	E extends WistiaSILENTPLAYBACKMODECHANGEEvent = WistiaSILENTPLAYBACKMODECHANGEEvent
+> = {
+	bind: {
+		[k in E]: WistiaSILENTPLAYBACKMODECHANGEListenerFn<k>;
+	};
+	unbind: {
+		[k in E]: WistiaNoDataListenerCb<k>;
+	};
+};
 
-export type WistiaTIMECHANGEEventCallback = WistiaWithDataEventCallback<number>;
+export type WistiaTIMECHANGEEvent = 'timechange';
+export type WistiaTIMECHANGEEventCallback = (data: number) => void;
+type WistiaTIMECHANGEListenerFn<E> = (
+	event: E,
+	callback: WistiaTIMECHANGEEventCallback
+) => void | AnyFunction;
+type WistiaTIMECHANGEListener<E extends WistiaTIMECHANGEEvent = WistiaTIMECHANGEEvent> = {
+	bind: {
+		[k in E]: WistiaTIMECHANGEListenerFn<k>;
+	};
+	unbind: {
+		[k in E]: WistiaNoDataListenerCb<k>;
+	};
+};
 
+export type WistiaVOLUMECHANGEEvent = 'volumechnage';
 export type WistiaVOLUMECHANGEEventCallback = (volume: number, isMuted: boolean) => void;
+type WistiaVOLUMECHANGEListenerFn<E> = (
+	event: E,
+	callback: WistiaVOLUMECHANGEEventCallback
+) => void | AnyFunction;
+type WistiaVOLUMECHANGEListener<E extends WistiaVOLUMECHANGEEvent = WistiaVOLUMECHANGEEvent> = {
+	bind: {
+		[k in E]: WistiaVOLUMECHANGEListenerFn<k>;
+	};
+	unbind: {
+		[k in E]: WistiaNoDataListenerCb<k>;
+	};
+};
+
+type WistiaListeners = WistiaBEFOREREMOVEListener['bind'] &
+	WistiaBEFOREREPLACEListener['bind'] &
+	WistiaBETWEENTIMESListener['bind'] &
+	WistiaCANCELFULLSCREENListener['bind'] &
+	WistiaCAPTIONSCHANGEListener['bind'] &
+	WistiaCONVERSIONListener['bind'] &
+	WistiaCROSSTIMEListener['bind'] &
+	WistiaENDListener['bind'] &
+	WistiaENTERFULLSCREEListener['bind'] &
+	WistiaHEIGHTCHANGEListener['bind'] &
+	WistiaLOOKCHANGEListener['bind'] &
+	WistiaMUTECHANGEListener['bind'] &
+	WistiaPAUSEListener['bind'] &
+	WistiaPERCENTWATCHEDCHANGEDListener['bind'] &
+	WistiaPLAYListener['bind'] &
+	WistiaPLAYBACKRATECHANGEListener['bind'] &
+	WistiaSECONDSCHANGEListener['bind'] &
+	WistiaSEEKListener['bind'] &
+	WistiaSILENTPLAYBACKMODECHANGEListener['bind'] &
+	WistiaTIMECHANGEListener['bind'] &
+	WistiaVOLUMECHANGEListener['bind'] &
+	WistiaWIDTHCHANGEListener['bind'];
+
+type WistiaUnbind = WistiaBEFOREREMOVEListener['unbind'] &
+	WistiaBEFOREREPLACEListener['unbind'] &
+	WistiaBETWEENTIMESListener['unbind'] &
+	WistiaCANCELFULLSCREENListener['unbind'] &
+	WistiaCAPTIONSCHANGEListener['unbind'] &
+	WistiaCONVERSIONListener['unbind'] &
+	WistiaCROSSTIMEListener['unbind'] &
+	WistiaENDListener['unbind'] &
+	WistiaENTERFULLSCREEListener['unbind'] &
+	WistiaHEIGHTCHANGEListener['unbind'] &
+	WistiaLOOKCHANGEListener['unbind'] &
+	WistiaMUTECHANGEListener['unbind'] &
+	WistiaPAUSEListener['unbind'] &
+	WistiaPERCENTWATCHEDCHANGEDListener['unbind'] &
+	WistiaPLAYListener['unbind'] &
+	WistiaPLAYBACKRATECHANGEListener['unbind'] &
+	WistiaSECONDSCHANGEListener['unbind'] &
+	WistiaSEEKListener['unbind'] &
+	WistiaSILENTPLAYBACKMODECHANGEListener['unbind'] &
+	WistiaTIMECHANGEListener['unbind'] &
+	WistiaVOLUMECHANGEListener['unbind'] &
+	WistiaWIDTHCHANGEListener['unbind'];
 
 export type WistiaAddToPlaylistBeforeHashedIdPosition = {
 	before: string;
@@ -366,43 +636,10 @@ export type WistiaPlayer = {
 		position?: WistiaAddToPlaylistPosition
 	): void;
 	aspect(): number; // ratio (width/height) originally uploaded video
-	bind(event: WistiaNoDataEvent, callback: AnyFunction): void | AnyFunction;
-	bind(
-		event: WistiaBETWEENTIMESEvent,
-		timeStart: number,
-		timeEnd: number,
-		callback: WistiaBETWEENTIMESEventCallback
-	): void | AnyFunction;
-	bind(
-		event: WistiaCAPTIONSCHANGEEvent,
-		callback: WistiaCAPTIONSCHANGEEventCallback
-	): void | AnyFunction;
-	bind(event: WistiaCONVERSIONEvent, callback: WistiaCONVERSIONEventCallback): void | AnyFunction;
-	bind(event: WistiaCROSSTIMEEvent, time: number, callback: AnyFunction): void | AnyFunction;
-	bind(event: WistiaLOOKCHANGEEvent, callback: WistiaLOOKCHANGEEventCallback): void | AnyFunction;
-	bind(event: WistiaMUTECHANGEEvent, callback: WistiaMUTECHANGEEventCallback): void | AnyFunction;
-	bind(
-		event: WistiaPERCENTWATCHEDCHANGEDEvent,
-		callback: WistiaPERCENTWATCHEDCHANGEDEventCallback
-	): void | AnyFunction;
-	bind(
-		event: WistiaPLAYBACKRATECHANGEEvent,
-		callback: WistiaPLAYBACKRATECHANGEEventCallback
-	): void | AnyFunction;
-	bind(
-		event: WistiaSECONDSCHANGEEvent,
-		callback: WistiaSECONDSCHANGEEventCallback
-	): void | AnyFunction;
-	bind(event: WistiaSEEKEvent, callback: WistiaSEEKEventCallback): void | AnyFunction;
-	bind(
-		event: WistiaSILENTPLAYBACKMODECHANGEEvent,
-		callback: WistiaSILENTPLAYBACKMODECHANGEEventCallback
-	): void | AnyFunction;
-	bind(event: WistiaTIMECHANGEEvent, callback: WistiaTIMECHANGEEventCallback): void | AnyFunction;
-	bind(
-		event: WistiaVOLUMECHANGEEvent,
-		callback: WistiaVOLUMECHANGEEventCallback
-	): void | AnyFunction;
+	bind<E extends keyof WistiaListeners>(
+		event: E,
+		...restParams: Tail<Parameters<WistiaListeners[E]>>
+	): void;
 	cancelFullscreen(): void;
 	duration(): number;
 	email(): string | null; // return null if hasData() is true
@@ -434,14 +671,10 @@ export type WistiaPlayer = {
 	state(): WistiaPlayerState;
 	time(): number; // in seconds
 	time(seconds: number): void;
-	unbind(event: WistiaEvents, callback: AnyFunction): void;
-	unbind(
-		event: WistiaBETWEENTIMESEvent,
-		timeStart: number,
-		timeEnd: number,
-		callback: WistiaBETWEENTIMESEventCallback
+	unbind<E extends keyof WistiaUnbind>(
+		event: E,
+		...restParams: Tail<Parameters<WistiaUnbind[E]>>
 	): void;
-	unbind(event: WistiaCROSSTIMEEvent, time: number, callback: AnyFunction): void;
 	unmute(): void;
 	videoHeight(): number; // in pixels
 	videoHeight(pixels: number, options?: Partial<WistiaHeightOption>): void;

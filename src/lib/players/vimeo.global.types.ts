@@ -40,88 +40,6 @@ export type VimeoPlayerOptions = {
 
 export type VimeoEmbedOptions = (VimeoEmbedIDOption | VimeoEmbedURLOption) & VimeoPlayerOptions;
 
-export type VimeoPlayerBUFFERENDEvent = 'bufferend';
-export type VimeoPlayerBUFFERSTARTEvent = 'bufferstart';
-export type VimeoPlayerENDEDEvent = 'ended';
-export type VimeoPlayerERROREvent = 'error';
-export type VimeoPlayerLOADEDEvent = 'loaded';
-export type VimeoPlayerPAUSEEvent = 'pause';
-export type VimeoPlayerPLAYEvent = 'play';
-export type VimeoPlayerPLAYBACKRATECHANGEEvent = 'playbackratechange';
-export type VimeoPlayerPROGRESSEvent = 'progress';
-export type VimeoPlayerSEEKEDEvent = 'seeked';
-export type VimeoPlayerTIMEUPDATEEvent = 'timeupdate';
-export type VimeoPlayerVOLUMECHANGEEvent = 'volumechange';
-export type VimeoPlayerCHAPTESRCHANGEEvent = 'chapterchange';
-export type VimeoPlayerCUECHANGEEvent = 'cuechange';
-export type VimeoPlayerCUEPOINTEvent = 'cuepoint';
-export type VimeoPlayerTEXTTRACKCHANGEEvent = 'texttrackchange';
-export type VimeoPlayerINTERACTIVEHOTSPOTCLICKEDEvent = 'interactivehotspotclicked';
-export type VimeoPlayerINTERACTIVEOVERPLAYPANELCLICKEDEvent = 'interactiveoverlaypanelclicked';
-
-export type VimeoPlayerNoDataEventEvents = VimeoPlayerBUFFERENDEvent | VimeoPlayerBUFFERSTARTEvent;
-
-export type VimeoPlayerProgressEvents =
-	| VimeoPlayerENDEDEvent
-	| VimeoPlayerPAUSEEvent
-	| VimeoPlayerPLAYEvent
-	| VimeoPlayerPROGRESSEvent
-	| VimeoPlayerSEEKEDEvent
-	| VimeoPlayerTIMEUPDATEEvent;
-
-export type VimeoPlayerEvents =
-	| VimeoPlayerNoDataEventEvents
-	| VimeoPlayerProgressEvents
-	| VimeoPlayerERROREvent
-	| VimeoPlayerPLAYBACKRATECHANGEEvent
-	| VimeoPlayerVOLUMECHANGEEvent
-	| VimeoPlayerCHAPTESRCHANGEEvent
-	| VimeoPlayerCUECHANGEEvent
-	| VimeoPlayerCUEPOINTEvent
-	| VimeoPlayerTEXTTRACKCHANGEEvent;
-
-export type VimeoPlayerPROGRESSEventCallbackData = {
-	duration: number; // in seconds
-	percent: number;
-	seconds: number;
-};
-
-export type VimeoPlayerERROREventCallbackData = {
-	message: string;
-	method: string;
-	name: string;
-};
-
-export type VimeoPlayerLOADEDEventCallbackData = {
-	id: VimeoEmbedIDOption['id'];
-};
-
-export type VimeoPlayerPLAYBACKRATECHANGEEventCallbackData = {
-	playbackRate: number;
-};
-
-export type VimeoPlayerVOLUMECHANGEEventCallbackData = {
-	volume: number;
-};
-
-export type VimeoPlayerChapter = {
-	index: number;
-	startTime: number;
-	title: string;
-};
-
-export type VimeoPlayerCUECHANGEEventCallbackCue = {
-	html: string;
-	text: string;
-};
-
-export type VimeoPlayerCUECHANGEEventCallbackData = {
-	cues: VimeoPlayerCUECHANGEEventCallbackCue[];
-	kind: string;
-	label: string;
-	language: string;
-};
-
 export type CuePointData = Record<string, unknown>;
 
 export type VimeoPlayerCuePoint = {
@@ -130,14 +48,144 @@ export type VimeoPlayerCuePoint = {
 	id: string;
 };
 
+export type VimeoPlayerChapter = {
+	index: number;
+	startTime: number;
+	title: string;
+};
+
+export type VimeoPlayerBUFFERENDEvent = 'bufferend';
+type VimeoPlayerBUFFERENDListenerFn = () => void;
+type VimeoPlayerBUFFERENDListener = {
+	[k in VimeoPlayerBUFFERENDEvent]: VimeoPlayerBUFFERENDListenerFn;
+};
+
+export type VimeoPlayerBUFFERSTARTEvent = 'bufferstart';
+type VimeoPlayerBUFFERSTARTListenerFn = () => void;
+type VimeoPlayerBUFFERSTARTListener = {
+	[k in VimeoPlayerBUFFERSTARTEvent]: VimeoPlayerBUFFERSTARTListenerFn;
+};
+
+export type VimeoPlayerPROGRESSEventCallbackData = {
+	duration: number; // in seconds
+	percent: number;
+	seconds: number;
+};
+export type VimeoPlayerENDEDEvent = 'ended';
+type VimeoPlayerENDEDListenerFn = (data: VimeoPlayerPROGRESSEventCallbackData) => void;
+type VimeoPlayerENDEDListener = {
+	[k in VimeoPlayerENDEDEvent]: VimeoPlayerENDEDListenerFn;
+};
+
+export type VimeoPlayerPAUSEEvent = 'pause';
+type VimeoPlayerPAUSEListenerFn = (data: VimeoPlayerPROGRESSEventCallbackData) => void;
+type VimeoPlayerPAUSEListener = {
+	[k in VimeoPlayerPAUSEEvent]: VimeoPlayerPAUSEListenerFn;
+};
+
+export type VimeoPlayerPLAYEvent = 'play';
+type VimeoPlayerPLAYListenerFn = (data: VimeoPlayerPROGRESSEventCallbackData) => void;
+type VimeoPlayerPLAYListener = {
+	[k in VimeoPlayerPLAYEvent]: VimeoPlayerPLAYListenerFn;
+};
+
+export type VimeoPlayerPROGRESSEvent = 'progress';
+type VimeoPlayerPROGRESSListenerFn = (data: VimeoPlayerPROGRESSEventCallbackData) => void;
+type VimeoPlayerPROGRESSListener = {
+	[k in VimeoPlayerPROGRESSEvent]: VimeoPlayerPROGRESSListenerFn;
+};
+
+export type VimeoPlayerSEEKEDEvent = 'seeked';
+type VimeoPlayerSEEKEDListenerFn = (data: VimeoPlayerPROGRESSEventCallbackData) => void;
+type VimeoPlayerSEEKEDListener = {
+	[k in VimeoPlayerSEEKEDEvent]: VimeoPlayerSEEKEDListenerFn;
+};
+
+export type VimeoPlayerTIMEUPDATEEvent = 'timeupdate';
+type VimeoPlayerTIMEUPDATEListenerFn = (data: VimeoPlayerPROGRESSEventCallbackData) => void;
+type VimeoPlayerTIMEUPDATEListener = {
+	[k in VimeoPlayerTIMEUPDATEEvent]: VimeoPlayerTIMEUPDATEListenerFn;
+};
+
+export type VimeoPlayerERROREventCallbackData = {
+	message: string;
+	method: string;
+	name: string;
+};
+export type VimeoPlayerERROREvent = 'error';
+type VimeoPlayerERRORListenerFn = (data: VimeoPlayerERROREventCallbackData) => void;
+type VimeoPlayerERRORListener = {
+	[k in VimeoPlayerERROREvent]: VimeoPlayerERRORListenerFn;
+};
+
+export type VimeoPlayerLOADEDEventCallbackData = {
+	id: VimeoEmbedIDOption['id'];
+};
+export type VimeoPlayerLOADEDEvent = 'loaded';
+type VimeoPlayerLOADEDListenerFn = (data: VimeoPlayerLOADEDEventCallbackData) => void;
+type VimeoPlayerLOADEDListener = {
+	[k in VimeoPlayerLOADEDEvent]: VimeoPlayerLOADEDListenerFn;
+};
+
+export type VimeoPlayerPLAYBACKRATECHANGEEventCallbackData = {
+	playbackRate: number;
+};
+export type VimeoPlayerPLAYBACKRATECHANGEEvent = 'playbackratechange';
+type VimeoPlayerPLAYBACKRATECHANGEListenerFn = (
+	data: VimeoPlayerPLAYBACKRATECHANGEEventCallbackData
+) => void;
+type VimeoPlayerPLAYBACKRATECHANGEListener = {
+	[k in VimeoPlayerPLAYBACKRATECHANGEEvent]: VimeoPlayerPLAYBACKRATECHANGEListenerFn;
+};
+
+export type VimeoPlayerVOLUMECHANGEEventCallbackData = {
+	volume: number;
+};
+export type VimeoPlayerVOLUMECHANGEEvent = 'volumechange';
+type VimeoPlayerVOLUMECHANGEListenerFn = (data: VimeoPlayerVOLUMECHANGEEventCallbackData) => void;
+type VimeoPlayerVOLUMECHANGEListener = {
+	[k in VimeoPlayerVOLUMECHANGEEvent]: VimeoPlayerVOLUMECHANGEListenerFn;
+};
+
+export type VimeoPlayerCHAPTESRCHANGEEvent = 'chapterchange';
+type VimeoPlayerCHAPTESRCHANGEListenerFn = (data: VimeoPlayerChapter) => void;
+type VimeoPlayerCHAPTESRCHANGEListener = {
+	[k in VimeoPlayerCHAPTESRCHANGEEvent]: VimeoPlayerCHAPTESRCHANGEListenerFn;
+};
+
+export type VimeoPlayerCUECHANGEEventCallbackCue = {
+	html: string;
+	text: string;
+};
+export type VimeoPlayerCUECHANGEEventCallbackData = {
+	cues: VimeoPlayerCUECHANGEEventCallbackCue[];
+	kind: string;
+	label: string;
+	language: string;
+};
+export type VimeoPlayerCUECHANGEEvent = 'cuechange';
+type VimeoPlayerCUECHANGEListenerFn = (data: VimeoPlayerCUECHANGEEventCallbackData) => void;
+type VimeoPlayerCUECHANGEListener = {
+	[k in VimeoPlayerCUECHANGEEvent]: VimeoPlayerCUECHANGEListenerFn;
+};
+
+export type VimeoPlayerCUEPOINTEvent = 'cuepoint';
+type VimeoPlayerCUEPOINTListenerFn = (data: VimeoPlayerCuePoint) => void;
+type VimeoPlayerCUEPOINTListener = {
+	[k in VimeoPlayerCUEPOINTEvent]: VimeoPlayerCUEPOINTListenerFn;
+};
+
 export type VimeoPlayerTEXTTRACKCHANGEEventCallbackData = {
 	label: string;
 	language: string;
 	kind: string;
 };
-
-export type VimeoPlayerTextTrack = VimeoPlayerTEXTTRACKCHANGEEventCallbackData & {
-	mode: string;
+export type VimeoPlayerTEXTTRACKCHANGEEvent = 'texttrackchange';
+type VimeoPlayerTEXTTRACKCHANGEListenerFn = (
+	data: VimeoPlayerTEXTTRACKCHANGEEventCallbackData
+) => void;
+type VimeoPlayerTEXTTRACKCHANGEListener = {
+	[k in VimeoPlayerTEXTTRACKCHANGEEvent]: VimeoPlayerTEXTTRACKCHANGEListenerFn;
 };
 
 export type VimeoPlayerINTERACTIVEHOTSPOTCLICKEDActionPreference = {
@@ -146,7 +194,6 @@ export type VimeoPlayerINTERACTIVEHOTSPOTCLICKEDActionPreference = {
 	seekTo: number; // in seconds
 	url: string;
 };
-
 export type VimeoPlayerINTERACTIVEHOTSPOTCLICKEDEventCallbackData = {
 	action: string;
 	actionPreference: VimeoPlayerINTERACTIVEHOTSPOTCLICKEDActionPreference;
@@ -154,13 +201,19 @@ export type VimeoPlayerINTERACTIVEHOTSPOTCLICKEDEventCallbackData = {
 	customPayloadData: unknown | null;
 	hotspotId: number;
 };
+export type VimeoPlayerINTERACTIVEHOTSPOTCLICKEDEvent = 'interactivehotspotclicked';
+type VimeoPlayerINTERACTIVEHOTSPOTCLICKEDListenerFn = (
+	data: VimeoPlayerINTERACTIVEHOTSPOTCLICKEDEventCallbackData
+) => void;
+type VimeoPlayerINTERACTIVEHOTSPOTCLICKEDListener = {
+	[k in VimeoPlayerINTERACTIVEHOTSPOTCLICKEDEvent]: VimeoPlayerINTERACTIVEHOTSPOTCLICKEDListenerFn;
+};
 
 export type VimeoPlayerINTERACTIVEOVERPLAYPANELCLICKEDActionPreference = {
 	pauseOnAction: boolean;
 	seekTo: number; // in seconds
 	url: string;
 };
-
 export type VimeoPlayerINTERACTIVEOVERPLAYPANELCLICKEDEventCallbackData = {
 	action: string;
 	actionPreference: VimeoPlayerINTERACTIVEOVERPLAYPANELCLICKEDActionPreference;
@@ -169,43 +222,36 @@ export type VimeoPlayerINTERACTIVEOVERPLAYPANELCLICKEDEventCallbackData = {
 	overlayId: number;
 	panelId: string;
 };
+export type VimeoPlayerINTERACTIVEOVERPLAYPANELCLICKEDEvent = 'interactiveoverlaypanelclicked';
+type VimeoPlayerINTERACTIVEOVERPLAYPANELCLICKEDListenerFn = (
+	data: VimeoPlayerINTERACTIVEOVERPLAYPANELCLICKEDEventCallbackData
+) => void;
+type VimeoPlayerINTERACTIVEOVERPLAYPANELCLICKEDListener = {
+	[k in VimeoPlayerINTERACTIVEOVERPLAYPANELCLICKEDEvent]: VimeoPlayerINTERACTIVEOVERPLAYPANELCLICKEDListenerFn;
+};
 
-export type VimeoPlayerWithDataEventCallback<T> = (data: T) => void;
+export type VimeoPlayerListeners = VimeoPlayerBUFFERENDListener &
+	VimeoPlayerBUFFERSTARTListener &
+	VimeoPlayerENDEDListener &
+	VimeoPlayerERRORListener &
+	VimeoPlayerLOADEDListener &
+	VimeoPlayerPAUSEListener &
+	VimeoPlayerPLAYListener &
+	VimeoPlayerPLAYBACKRATECHANGEListener &
+	VimeoPlayerPROGRESSListener &
+	VimeoPlayerSEEKEDListener &
+	VimeoPlayerTIMEUPDATEListener &
+	VimeoPlayerVOLUMECHANGEListener &
+	VimeoPlayerCHAPTESRCHANGEListener &
+	VimeoPlayerCUECHANGEListener &
+	VimeoPlayerCUEPOINTListener &
+	VimeoPlayerTEXTTRACKCHANGEListener &
+	VimeoPlayerINTERACTIVEHOTSPOTCLICKEDListener &
+	VimeoPlayerINTERACTIVEOVERPLAYPANELCLICKEDListener;
 
-export type VimeoPlayerNoDataEventCallback = VimeoPlayerWithDataEventCallback<undefined>;
-
-export type VimeoPlayerPROGRESSEventCallback =
-	VimeoPlayerWithDataEventCallback<VimeoPlayerPROGRESSEventCallbackData>;
-
-export type VimeoPlayerERROREventCallback =
-	VimeoPlayerWithDataEventCallback<VimeoPlayerERROREventCallbackData>;
-
-export type VimeoPlayerLOADEDEventCallback =
-	VimeoPlayerWithDataEventCallback<VimeoPlayerLOADEDEventCallbackData>;
-
-export type VimeoPlayerPLAYBACKRATECHANGEEventCallback =
-	VimeoPlayerWithDataEventCallback<VimeoPlayerPLAYBACKRATECHANGEEventCallbackData>;
-
-export type VimeoPlayerVOLUMECHANGEEventCallback =
-	VimeoPlayerWithDataEventCallback<VimeoPlayerVOLUMECHANGEEventCallbackData>;
-
-export type VimeoPlayerCHAPTERCHANGEEventCallback =
-	VimeoPlayerWithDataEventCallback<VimeoPlayerChapter>;
-
-export type VimeoPlayerCUECHANGEEventCallback =
-	VimeoPlayerWithDataEventCallback<VimeoPlayerCUECHANGEEventCallbackData>;
-
-export type VimeoPlayerCUEPOINTEventCallback =
-	VimeoPlayerWithDataEventCallback<VimeoPlayerCuePoint>;
-
-export type VimeoPlayerTEXTTRACKCHANGEEventCallback =
-	VimeoPlayerWithDataEventCallback<VimeoPlayerTEXTTRACKCHANGEEventCallbackData>;
-
-export type VimeoPlayerINTERACTIVEHOTSPOTCLICKEDEventCallback =
-	VimeoPlayerWithDataEventCallback<VimeoPlayerINTERACTIVEHOTSPOTCLICKEDEventCallbackData>;
-
-export type VimeoPlayerINTERACTIVEOVERPLAYPANELCLICKEDEventCallback =
-	VimeoPlayerWithDataEventCallback<VimeoPlayerINTERACTIVEOVERPLAYPANELCLICKEDEventCallbackData>;
+export type VimeoPlayerTextTrack = VimeoPlayerTEXTTRACKCHANGEEventCallbackData & {
+	mode: string;
+};
 
 export type VimeoPlayerSetAutopauseParams<T extends VimeoEmbedOptions['autopause']> = {
 	autopause: T;
@@ -253,31 +299,8 @@ export interface VimeoPlayer {
 	loadVideo(
 		idOrUrl: VimeoEmbedIDOption['id'] | VimeoEmbedURLOption['url']
 	): Promise<VimeoEmbedIDOption['id']>;
-	on(event: VimeoPlayerNoDataEventEvents, callback: VimeoPlayerNoDataEventCallback): void;
-	on(event: VimeoPlayerProgressEvents, callback: VimeoPlayerPROGRESSEventCallback): void;
-	on(event: VimeoPlayerERROREvent, callback: VimeoPlayerERROREventCallback): void;
-	on(event: VimeoPlayerLOADEDEvent, callback: VimeoPlayerLOADEDEventCallback): void;
-	on(
-		event: VimeoPlayerPLAYBACKRATECHANGEEvent,
-		callback: VimeoPlayerPLAYBACKRATECHANGEEventCallback
-	): void;
-	on(event: VimeoPlayerVOLUMECHANGEEvent, callback: VimeoPlayerVOLUMECHANGEEventCallback): void;
-	on(event: VimeoPlayerCHAPTESRCHANGEEvent, callback: VimeoPlayerCHAPTERCHANGEEventCallback): void;
-	on(event: VimeoPlayerCUECHANGEEvent, callback: VimeoPlayerCUECHANGEEventCallback): void;
-	on(event: VimeoPlayerCUEPOINTEvent, callback: VimeoPlayerCUEPOINTEventCallback): void;
-	on(
-		event: VimeoPlayerTEXTTRACKCHANGEEvent,
-		callback: VimeoPlayerTEXTTRACKCHANGEEventCallback
-	): void;
-	on(
-		event: VimeoPlayerINTERACTIVEHOTSPOTCLICKEDEvent,
-		callback: VimeoPlayerINTERACTIVEHOTSPOTCLICKEDEventCallback
-	): void;
-	on(
-		event: VimeoPlayerINTERACTIVEOVERPLAYPANELCLICKEDEvent,
-		callback: VimeoPlayerINTERACTIVEOVERPLAYPANELCLICKEDEventCallback
-	): void;
-	off(event: VimeoPlayerEvents, callback?: AnyFunction): void;
+	on<E extends keyof VimeoPlayerListeners>(event: E, listener: VimeoPlayerListeners[E]): void;
+	off(event: keyof VimeoPlayerListeners, callback?: AnyFunction): void;
 }
 
 export interface VimeoPlayerConstructor {

@@ -50,26 +50,31 @@ export type FacebookInitOptions = {
 };
 
 export type FacebookXFBMLReadyEvent = 'xfbml.ready';
-
-// This not in documentation but there is this event
-// Copied from https://github.com/cookpete/react-player
-export type FacebookXFBMLRenderEvent = 'xfbml.render';
-
-export type FacebookSubscribeEvents = FacebookXFBMLReadyEvent | FacebookXFBMLRenderEvent;
-
 export type FacebookSubscribeCallbackMsg = {
 	instance: FacebookPlayer;
 	type: string;
 	id: string;
 };
+type FacebookXFBMLReadyListenerFn = (msg: FacebookSubscribeCallbackMsg) => void;
+type FacebookXFBMLReadyListener = {
+	[k in FacebookXFBMLReadyEvent]: FacebookXFBMLReadyListenerFn;
+};
 
-export type FacebookSubscribeReadyCallback = (msg: FacebookSubscribeCallbackMsg) => void;
+// This not in documentation but there is this event
+// Copied from https://github.com/cookpete/react-player
+export type FacebookXFBMLRenderEvent = 'xfbml.render';
+export type FacebookXFBMLRenderListenerFn = (msg: number) => void;
+type FacebookXFBMLRenderListener = {
+	[k in FacebookXFBMLRenderEvent]: FacebookXFBMLRenderListenerFn;
+};
 
-export type FacebookSubscribeRenderCallback = (msg: number) => void;
+type FacebookEventListeners = FacebookXFBMLReadyListener & FacebookXFBMLRenderListener;
 
 export type FacebookEvent = {
-	subscribe(event: FacebookXFBMLReadyEvent, callback: FacebookSubscribeReadyCallback): void;
-	subscribe(event: FacebookXFBMLRenderEvent, callback: FacebookSubscribeRenderCallback): void;
+	subscribe<E extends keyof FacebookEventListeners>(
+		event: E,
+		listener: FacebookEventListeners[E]
+	): void;
 };
 
 export type FacebookXFBML = {

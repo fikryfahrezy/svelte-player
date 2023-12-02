@@ -54,58 +54,86 @@ export type VidyardPlayerMetadata = {
 };
 
 export type VidyardPlayerREADYEvent = 'ready';
+type VidyardPlayerREADYLitenerFn = AnyFunction;
+type VidyardPlayerREADYLitener = {
+	[k in VidyardPlayerREADYEvent]: VidyardPlayerREADYLitenerFn;
+};
+
 export type VidyardPlayerPLAYEvent = 'play';
+type VidyardPlayerPLAYLitenerFn = (data: number) => void; // in seconds
+type VidyardPlayerPLAYLitener = {
+	[k in VidyardPlayerPLAYEvent]: VidyardPlayerPLAYLitenerFn;
+};
+
 export type VidyardPlayerPAUSEEvent = 'pause';
+type VidyardPlayerPAUSELitenerFn = AnyFunction;
+type VidyardPlayerPAUSELitener = {
+	[k in VidyardPlayerPAUSEEvent]: VidyardPlayerPAUSELitenerFn;
+};
+
 export type VidyardPlayerBEFORESEEKEvent = 'beforeSeek';
-export type VidyardPlayerSEEKEvent = 'seek';
-export type VidyardPlayerPLAYERCOMPLETEEvent = 'playerComplete';
-export type VidyardPlayerVIDEOCOMPLETEEvent = 'videoComplete';
-export type VidyardPlayerTIMEUPDATEEvent = 'timeupdate';
-export type VidyardPlayerVOLUMECHANGEEvent = 'volumeChange';
-export type VidyardPlayerLIGHTBOXCLOSEEvent = 'lightboxClose';
-export type VidyardPlayerMETADATAEvent = 'metadata';
-
-export type VidyardPlayerNoDataEvents =
-	| VidyardPlayerREADYEvent
-	| VidyardPlayerPAUSEEvent
-	| VidyardPlayerPLAYERCOMPLETEEvent
-	| VidyardPlayerLIGHTBOXCLOSEEvent;
-
-export type VidyardPlayerEvents =
-	| VidyardPlayerNoDataEvents
-	| VidyardPlayerPLAYEvent
-	| VidyardPlayerBEFORESEEKEvent
-	| VidyardPlayerSEEKEvent
-	| VidyardPlayerVIDEOCOMPLETEEvent
-	| VidyardPlayerTIMEUPDATEEvent
-	| VidyardPlayerVOLUMECHANGEEvent
-	| VidyardPlayerMETADATAEvent;
-
-export type VidyardPlayerDataEventCallback<T> = (data: T) => void;
-
-export type VidyardPlayerPLAYEventCallback = VidyardPlayerDataEventCallback<number>; // in seconds
-
 export type VidyardPlayerBEFORESEEKEventCallbackData = {
 	start: number; // in seconds
 };
+type VidyardPlayerBEFORESEEKLitenerFn = (data: VidyardPlayerBEFORESEEKEventCallbackData) => void;
+type VidyardPlayerBEFORESEEKLitener = {
+	[k in VidyardPlayerBEFORESEEKEvent]: VidyardPlayerBEFORESEEKLitenerFn;
+};
 
-export type VidyardPlayerBEFORESEEKEventCallback =
-	VidyardPlayerDataEventCallback<VidyardPlayerBEFORESEEKEventCallbackData>;
-
+export type VidyardPlayerSEEKEvent = 'seek';
 export type VidyardPlayerSEEKEventCallbackData = [number, number]; // seeking from and seeking to in seconds
+type VidyardPlayerSEEKLitenerFn = (data: VidyardPlayerSEEKEventCallbackData) => void;
+type VidyardPlayerSEEKLitener = {
+	[k in VidyardPlayerSEEKEvent]: VidyardPlayerSEEKLitenerFn;
+};
 
-export type VidyardPlayerSEEKEventCallback =
-	VidyardPlayerDataEventCallback<VidyardPlayerSEEKEventCallbackData>;
+export type VidyardPlayerPLAYERCOMPLETEEvent = 'playerComplete';
+type VidyardPlayerPLAYERCOMPLETELitenerFn = AnyFunction;
+type VidyardPlayerPLAYERCOMPLETELitener = {
+	[k in VidyardPlayerPLAYERCOMPLETEEvent]: VidyardPlayerPLAYERCOMPLETELitenerFn;
+};
 
-export type VidyardPlayerVIDEOCOMPLETEEventCallback = VidyardPlayerDataEventCallback<number>; // index, start from 0
+export type VidyardPlayerVIDEOCOMPLETEEvent = 'videoComplete';
+type VidyardPlayerVIDEOCOMPLETELitenerFn = (data: number) => void; // index, start from 0
+type VidyardPlayerVIDEOCOMPLETELitener = {
+	[k in VidyardPlayerVIDEOCOMPLETEEvent]: VidyardPlayerVIDEOCOMPLETELitenerFn;
+};
 
-export type VidyardPlayerTIMEUPDATEEventCallback = VidyardPlayerDataEventCallback<number>; // in seconds
+export type VidyardPlayerTIMEUPDATEEvent = 'timeupdate';
+type VidyardPlayerTIMEUPDATELitenerFn = (data: number) => void; // in seconds
+type VidyardPlayerTIMEUPDATELitener = {
+	[k in VidyardPlayerTIMEUPDATEEvent]: VidyardPlayerTIMEUPDATELitenerFn;
+};
 
-export type VidyardPlayerVOLUMECHANGEEventCallback = VidyardPlayerDataEventCallback<number>; // range between 0-1
+export type VidyardPlayerVOLUMECHANGEEvent = 'volumeChange';
+type VidyardPlayerVOLUMECHANGELitenerFn = (data: number) => void; // range between 0-1
+type VidyardPlayerVOLUMECHANGELitener = {
+	[k in VidyardPlayerVOLUMECHANGEEvent]: VidyardPlayerVOLUMECHANGELitenerFn;
+};
 
-export type VidyardPlayerMETADATAEventCallback = VidyardPlayerDataEventCallback<
-	VidyardPlayerMetadata[]
->;
+export type VidyardPlayerLIGHTBOXCLOSEEvent = 'lightboxClose';
+type VidyardPlayerLIGHTBOXCLOSELitenerFn = AnyFunction;
+type VidyardPlayerLIGHTBOXCLOSELitener = {
+	[k in VidyardPlayerLIGHTBOXCLOSEEvent]: VidyardPlayerLIGHTBOXCLOSELitenerFn;
+};
+
+export type VidyardPlayerMETADATAEvent = 'metadata';
+type VidyardPlayerMETADATALitenerFn = (data: VidyardPlayerMetadata[]) => void;
+type VidyardPlayerMETADATALitener = {
+	[k in VidyardPlayerMETADATAEvent]: VidyardPlayerMETADATALitenerFn;
+};
+
+type VidyardLiteners = VidyardPlayerREADYLitener &
+	VidyardPlayerPLAYLitener &
+	VidyardPlayerPAUSELitener &
+	VidyardPlayerBEFORESEEKLitener &
+	VidyardPlayerSEEKLitener &
+	VidyardPlayerPLAYERCOMPLETELitener &
+	VidyardPlayerVIDEOCOMPLETELitener &
+	VidyardPlayerTIMEUPDATELitener &
+	VidyardPlayerVOLUMECHANGELitener &
+	VidyardPlayerLIGHTBOXCLOSELitener &
+	VidyardPlayerMETADATALitener;
 
 export type VidyardPlayerAddEventOptionalOptions = {
 	duration: number;
@@ -138,17 +166,7 @@ export type VidyardPlayer = {
 	setPlaybackSpeed(rate: VidyardPlayerSetPlaybackSpeedValues): void;
 	showLightbox(): void;
 	hideLightbox(): void;
-	on(event: VidyardPlayerNoDataEvents, callback: AnyFunction): void;
-	on(event: VidyardPlayerPLAYEvent, callback: VidyardPlayerPLAYEventCallback): void;
-	on(event: VidyardPlayerBEFORESEEKEvent, callback: VidyardPlayerBEFORESEEKEventCallback): void;
-	on(event: VidyardPlayerSEEKEvent, callback: VidyardPlayerSEEKEventCallback): void;
-	on(
-		event: VidyardPlayerVIDEOCOMPLETEEvent,
-		callback: VidyardPlayerVIDEOCOMPLETEEventCallback
-	): void;
-	on(event: VidyardPlayerTIMEUPDATEEvent, callback: VidyardPlayerTIMEUPDATEEventCallback): void;
-	on(event: VidyardPlayerVOLUMECHANGEEvent, callback: VidyardPlayerVOLUMECHANGEEventCallback): void;
-	on(event: VidyardPlayerMETADATAEvent, callback: VidyardPlayerMETADATAEventCallback): void;
+	on<E extends keyof VidyardLiteners>(event: E, listener: VidyardLiteners[E]): void;
 	metadata: VidyardPlayerMetadata | null;
 };
 

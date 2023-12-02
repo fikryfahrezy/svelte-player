@@ -1,45 +1,95 @@
 import type { AnyFunction } from './utility.types';
 
 // https://developers.soundcloud.com/docs/api/html5-widget
-export type SoundCloudWidgetLOAD_PROGRESSEvent = 'loadProgress';
-export type SoundCloudWidgetPLAY_PROGRESSEvent = 'playProgress';
-export type SoundCloudWidgetPLAYEvent = 'play';
-export type SoundCloudWidgetPAUSEEvent = 'pause';
-export type SoundCloudWidgetFINISHEvent = 'finish';
-export type SoundCloudWidgetSEEKEvent = 'seek';
-
-export type SoundCloudUIREADYEvent = 'ready';
-export type SoundCloudUICLICK_DOWNLOADEvent = 'downloadClicked';
-export type SoundCloudUICLICK_BUYEvent = 'buyClicked';
-export type SoundCloudUIOPEN_SHARE_PANELEvent = 'sharePanelOpened';
-export type SoundCloudUIERROREvent = 'error';
-
-export type SoundCloudPlayerEVENT =
-	| SoundCloudWidgetLOAD_PROGRESSEvent
-	| SoundCloudWidgetPLAY_PROGRESSEvent
-	| SoundCloudWidgetPLAYEvent
-	| SoundCloudWidgetPAUSEEvent
-	| SoundCloudWidgetFINISHEvent
-	| SoundCloudWidgetSEEKEvent
-	| SoundCloudUIREADYEvent
-	| SoundCloudUICLICK_DOWNLOADEvent
-	| SoundCloudUICLICK_BUYEvent
-	| SoundCloudUIOPEN_SHARE_PANELEvent
-	| SoundCloudUIERROREvent;
 
 export type SoundCloudWidgetEvents = {
-	LOAD_PROGRESS: SoundCloudWidgetLOAD_PROGRESSEvent;
-	PLAY_PROGRESS: SoundCloudWidgetPLAY_PROGRESSEvent;
-	PLAY: SoundCloudWidgetPLAYEvent;
-	PAUSE: SoundCloudWidgetPAUSEEvent;
-	FINISH: SoundCloudWidgetFINISHEvent;
-	SEEK: SoundCloudWidgetSEEKEvent;
-	READY: SoundCloudUIREADYEvent;
-	CLICK_DOWNLOAD: SoundCloudUICLICK_DOWNLOADEvent;
-	CLICK_BUY: SoundCloudUICLICK_BUYEvent;
-	OPEN_SHARE_PANEL: SoundCloudUIOPEN_SHARE_PANELEvent;
-	ERROR: SoundCloudUIERROREvent;
+	LOAD_PROGRESS: 'loadProgress';
+	PLAY_PROGRESS: 'playProgress';
+	PLAY: 'play';
+	PAUSE: 'pause';
+	FINISH: 'finish';
+	SEEK: 'seek';
+	READY: 'ready';
+	CLICK_DOWNLOAD: 'downloadClicked';
+	CLICK_BUY: 'buyClicked';
+	OPEN_SHARE_PANEL: 'sharePanelOpened';
+	ERROR: 'error';
 };
+
+export type SoundCloudPlayerBindCallbackParams = {
+	soundId: number;
+	loadedProgress: number;
+	currentPosition: number;
+	relativePosition: number;
+};
+
+type SoundCloudWidgetLOAD_PROGRESSFn = (params: SoundCloudPlayerBindCallbackParams) => void;
+type SoundCloudWidgetLOAD_PROGRESSListener = {
+	[k in SoundCloudWidgetEvents['LOAD_PROGRESS']]: SoundCloudWidgetLOAD_PROGRESSFn;
+};
+
+type SoundCloudWidgetPLAY_PROGRESSFn = (params: SoundCloudPlayerBindCallbackParams) => void;
+type SoundCloudWidgetPLAY_PROGRESSListener = {
+	[k in SoundCloudWidgetEvents['PLAY_PROGRESS']]: SoundCloudWidgetPLAY_PROGRESSFn;
+};
+
+type SoundCloudWidgetPLAYFn = (params: SoundCloudPlayerBindCallbackParams) => void;
+type SoundCloudWidgetPLAYListener = {
+	[k in SoundCloudWidgetEvents['PLAY']]: SoundCloudWidgetPLAYFn;
+};
+
+type SoundCloudWidgetPAUSEFn = (params: SoundCloudPlayerBindCallbackParams) => void;
+type SoundCloudWidgetPAUSEListener = {
+	[k in SoundCloudWidgetEvents['PAUSE']]: SoundCloudWidgetPAUSEFn;
+};
+
+type SoundCloudWidgetFINISHFn = (params: SoundCloudPlayerBindCallbackParams) => void;
+type SoundCloudWidgetFINISHListener = {
+	[k in SoundCloudWidgetEvents['FINISH']]: SoundCloudWidgetFINISHFn;
+};
+
+type SoundCloudWidgetSEEKFn = (params: SoundCloudPlayerBindCallbackParams) => void;
+type SoundCloudWidgetSEEKListener = {
+	[k in SoundCloudWidgetEvents['SEEK']]: SoundCloudWidgetSEEKFn;
+};
+
+type SoundCloudUIREADYFn = (params: SoundCloudPlayerBindCallbackParams) => void;
+type SoundCloudUIREADYListener = {
+	[k in SoundCloudWidgetEvents['READY']]: SoundCloudUIREADYFn;
+};
+
+type SoundCloudUICLICK_DOWNLOADFn = (params: SoundCloudPlayerBindCallbackParams) => void;
+type SoundCloudUICLICK_DOWNLOADListener = {
+	[k in SoundCloudWidgetEvents['CLICK_DOWNLOAD']]: SoundCloudUICLICK_DOWNLOADFn;
+};
+
+type SoundCloudUICLICK_BUYFn = (params: SoundCloudPlayerBindCallbackParams) => void;
+type SoundCloudUICLICK_BUYListener = {
+	[k in SoundCloudWidgetEvents['CLICK_BUY']]: SoundCloudUICLICK_BUYFn;
+};
+
+type SoundCloudUIOPEN_SHARE_PANELFn = (params: SoundCloudPlayerBindCallbackParams) => void;
+type SoundCloudUIOPEN_SHARE_PANELListener = {
+	[k in SoundCloudWidgetEvents['OPEN_SHARE_PANEL']]: SoundCloudUIOPEN_SHARE_PANELFn;
+};
+
+// TODO: Fix the unknown types
+type SoundCloudUIERRORFn = (e: unknown) => void;
+type SoundCloudUIERRORListener = {
+	[k in SoundCloudWidgetEvents['ERROR']]: SoundCloudUIERRORFn;
+};
+
+type SoundCloudListeners = SoundCloudWidgetLOAD_PROGRESSListener &
+	SoundCloudWidgetPLAY_PROGRESSListener &
+	SoundCloudWidgetPLAYListener &
+	SoundCloudWidgetPAUSEListener &
+	SoundCloudWidgetFINISHListener &
+	SoundCloudWidgetSEEKListener &
+	SoundCloudUIREADYListener &
+	SoundCloudUICLICK_DOWNLOADListener &
+	SoundCloudUICLICK_BUYListener &
+	SoundCloudUIOPEN_SHARE_PANELListener &
+	SoundCloudUIERRORListener;
 
 export type SoundCloudPlayerLoadOptions = {
 	auto_play: boolean;
@@ -56,22 +106,9 @@ export type SoundCloudPlayerLoadOptions = {
 	visual: boolean; // Undocumented, but makes player fill container and look better
 };
 
-export type SoundCloudPlayerBindCallbackParams = {
-	soundId: number;
-	loadedProgress: number;
-	currentPosition: number;
-	relativePosition: number;
-};
-
-export type SoundCloudPlayerBindCallbackFn = (params: SoundCloudPlayerBindCallbackParams) => void;
-
 export type SoundCloudPlayer = {
-	bind(
-		event: Exclude<SoundCloudPlayerEVENT, SoundCloudUIERROREvent>,
-		listener: SoundCloudPlayerBindCallbackFn
-	): void;
-	bind(event: SoundCloudUIERROREvent, listener: (e: unknown) => void): void; // TODO: Fix the unknown types
-	unbind(event: SoundCloudPlayerEVENT): void;
+	bind<E extends keyof SoundCloudListeners>(event: E, listener: SoundCloudListeners[E]): void;
+	unbind(event: keyof SoundCloudListeners): void;
 	load(url: string, options?: Partial<SoundCloudPlayerLoadOptions>): void;
 	play(): void;
 	pause(): void;
