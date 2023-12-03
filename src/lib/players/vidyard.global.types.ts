@@ -3,7 +3,6 @@ import type { AnyFunction } from './utility.types';
 // https://developer.vidyard.com/responsive-player-embed-api.html
 // https://knowledge.vidyard.com/hc/en-us/articles/360019034753-Using-the-Vidyard-Player-API
 
-// TODO: fix type
 export type ThumbnailUrls = Record<string, never>;
 
 export type Caption = {
@@ -37,7 +36,7 @@ export type CustomAttributeNumber = {
 
 export type CustomAttribute = (CustomAttributeString | CustomAttributeNumber) & {
 	is_public: boolean;
-	list_options: null | unknown; // TODO: fix this
+	list_options: null | unknown;
 	name: string;
 };
 
@@ -177,8 +176,7 @@ export type VidyardGDPR = {
 	hasConsentOnReady(callback: VidyardGDPRHasConsentOnReadyCallback): void;
 };
 
-// TODO: fix `unknown` type
-export type VidyardAPIAddReadyListenerCallback = (data: unknown, player: VidyardPlayer) => void;
+export type VidyardAPIAddReadyListenerCallback = (data: undefined, player: VidyardPlayer) => void;
 
 export type VidyardAPIGetPlayersByUUIDCallbackData = {
 	player: VidyardPlayer;

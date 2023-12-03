@@ -1,15 +1,15 @@
 // Ref:
 // https://github.com/Dash-Industry-Forum/dash.js/blob/development/index.d.ts
 
-/* eslint-disable @typescript-eslint/no-explicit-any -- this is fine*/
+import type { VoidFunction } from './utility.types';
+
 export interface Logger {
-	debug(...params: any[]): void;
-	info(...params: any[]): void;
-	warn(...params: any[]): void;
-	error(...params: any[]): void;
-	fatal(...params: any[]): void;
+	debug: VoidFunction;
+	info: VoidFunction;
+	warn: VoidFunction;
+	error: VoidFunction;
+	fatal: VoidFunction;
 }
-/* eslint-enable @typescript-eslint/no-explicit-any */
 
 export type Debug = {
 	getLogger(): Logger;

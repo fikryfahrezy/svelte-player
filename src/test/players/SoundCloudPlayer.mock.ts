@@ -14,13 +14,13 @@ class SoundCloudPlayerMock implements SoundCloudPlayer {
 	prev() {}
 	skip() {}
 	getVolume() {
-		return 0;
+		return {};
 	}
 	getDuration() {
-		return 0;
+		return {};
 	}
 	getPosition() {
-		return 0;
+		return {};
 	}
 	getSounds() {
 		return [];
@@ -29,10 +29,10 @@ class SoundCloudPlayerMock implements SoundCloudPlayer {
 		return {};
 	}
 	getCurrentSoundIndex() {
-		return 0;
+		return {};
 	}
 	isPaused() {
-		return false;
+		return {};
 	}
 }
 

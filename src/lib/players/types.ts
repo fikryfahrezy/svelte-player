@@ -1,8 +1,8 @@
 import type { SvelteComponent } from 'svelte';
 
 import type { RecursivePartial, Constructor } from './utility.types';
-import type { NotImplementedPlayer } from './notimplemented.global.types';
 import type { YTPlayerOnPlaybackQualityChangeEvent, YTPlayer } from './youtube.global.types';
+export type { YTPlayer } from './youtube.global.types';
 import type { TwitchPlayer } from './twitch.global.types';
 import type { SoundCloudPlayer } from './soundcloud.global.types';
 import type { MixcloudWidget } from './mixcloud.global.types';
@@ -35,7 +35,6 @@ export type PlayerInstance =
 	| YTPlayer
 	| TwitchPlayer
 	| FilePlayer
-	| NotImplementedPlayer
 	| SoundCloudPlayer
 	| DailyMotionPlayer
 	| MixcloudWidget
@@ -94,7 +93,6 @@ export type ErrorSDKInstance = FileErrorSDKInstance;
 
 export type ErrorSDKGlobal = FileErrorSDKGlobal;
 
-// TODO: to implement corrent type
 export type OnErrorProps = {
 	error: unknown;
 	data?: ErrorData | unknown;
@@ -115,7 +113,7 @@ export type PlayerDispatcher = {
 	seek: number | [number, number];
 	ended: undefined | Event;
 	error: OnErrorProps;
-	clickPreview: unknown; // TODO: to implement corrent type
+	clickPreview: Event;
 	enablePIP: Event;
 	disablePIP: Event;
 	playbackRateChange: number;

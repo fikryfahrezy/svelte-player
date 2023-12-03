@@ -43,7 +43,7 @@ class YouTubePlayerMock implements YTPlayer {
 		return 0;
 	}
 	setSize() {
-		return {};
+		return this as unknown as YTPlayer;
 	}
 	getPlaybackRate(): YTPlaybackRate {
 		return 1;
@@ -84,6 +84,9 @@ class YouTubePlayerMock implements YTPlayer {
 		return document.createElement('iframe');
 	}
 	destroy() {}
+	getOption() {}
+	getOptions() {}
+	setOption() {}
 }
 
 export default YouTubePlayerMock;

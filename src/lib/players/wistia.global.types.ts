@@ -1,6 +1,8 @@
 import type { AnyFunction, Tail } from './utility.types';
 
 // https://wistia.com/support/developers/embed-options
+// https://docs.wistia.com/docs/player-controls-framework
+
 export type WistiaTurnstileRequiredOptions = {
 	topText: string; // fill with '' if want leave blank
 	bottomText: string; // fill with '' if want leave blank
@@ -689,8 +691,8 @@ export type WistiaPlayer = {
 	width(pixels: number): void;
 };
 
-// TODO: the types are not defined in API reference page
-// these `unknown` typs just placehlder
+// The types are not defined in API reference page
+// these `unknown` types just placeholder
 export type WistiaPlayerControllVideo = Record<string, unknown> & {
 	requestControls(requesterName: unknown): unknown;
 	releaseControls(requesterName: unknown): unknown;
@@ -744,7 +746,7 @@ export type WistiaPlayerControlTypeControlProps = {
 	top: number;
 };
 
-// TODO: the values type is not defined in API reference page
+// The values type is not defined in API reference page
 // these values type may be incorrect
 export type WistiaPlayerControlSharedProps = {
 	chromeless: boolean;
@@ -778,7 +780,7 @@ export type WistiaPlayerControlCustomInstanceOptionalFunctions = {
 	mountDialog(dialogRoot: HTMLElement): void;
 	onControlPropsUpdated(prevProps: WistiaPlayerControlDefaultProps): void;
 	destroy(): void;
-	onClickButton(event: Event): void; // TODO: fix `Event` type
+	onClickButton(event: unknown): void;
 	setButtonLabel(label: string): void;
 	controlDialogWillOpen(): void;
 	controlDialogOpened(): void;

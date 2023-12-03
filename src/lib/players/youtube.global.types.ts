@@ -54,6 +54,7 @@ export type YTPlayerPlayerVars = {
 
 export type YTPlayerOnReadyEvent = {
 	target: YTPlayer;
+	data: null;
 };
 
 export type YTPlayerOnStateChangeEvent = {
@@ -76,13 +77,18 @@ export type YTPlayerOnErrorEvent = {
 	data: YTPlayerOnErrorValue;
 };
 
+export type YTPlayerOnApiChangeEvent = {
+	target: YTPlayer;
+	data: null;
+};
+
 export type YTPlayerEvents = {
 	onReady(event: YTPlayerOnReadyEvent): void;
 	onStateChange(event: YTPlayerOnStateChangeEvent): void;
 	onPlaybackQualityChange(event: YTPlayerOnPlaybackQualityChangeEvent): void;
 	onPlaybackRateChange(event: YTPlayerOnPlaybackRateChangeEvent): void;
 	onError(event: YTPlayerOnErrorEvent): void;
-	onApiChange(events: unknown): void; // TODO: to implement corrent type
+	onApiChange(events: YTPlayerOnApiChangeEvent): void;
 };
 
 export type YTPlayerOptions = {
@@ -142,6 +148,17 @@ export type SetSphericalPropertiesParams = SphericalObject & {
 	enableOrientationSensor?: boolean;
 };
 
+export type OptionModuleCaptions = 'captions';
+type OptionModuleCaptionsOptionObject = {
+	fontSize: -1 | 0 | 1 | 2 | 3;
+	reload: boolean;
+};
+type OptionModuleCaptionsOption = {
+	[k in OptionModuleCaptions]: OptionModuleCaptionsOptionObject;
+};
+
+type GetOptionsModules = OptionModuleCaptionsOption;
+
 export interface YTPlayer {
 	cueVideoById(videoId: string, startSeconds?: number): void;
 	cueVideoById(params: CueVideoByIDParams): void;
@@ -169,7 +186,7 @@ export interface YTPlayer {
 	isMuted(): boolean;
 	setVolume(volume: number): void;
 	getVolume(): number;
-	setSize(width: number, height: number): object; // TODO: to implement corrent type
+	setSize(width: number, height: number): YTPlayer;
 	getPlaybackRate(): YTPlaybackRate;
 	setPlaybackRate(suggestedRate: number): void;
 	getAvailablePlaybackRates(): YTPlaybackRate[];
@@ -183,10 +200,27 @@ export interface YTPlayer {
 	getVideoEmbedCode(): string;
 	getPlaylist(): string[];
 	getPlaylistIndex(): number;
-	addEventListener(event: string, listener: string | AnyFunction): void; // TODO: to impelment corrent type for `AnyFunction`
-	removeEventListener(event: string, listener: string | AnyFunction): void; // TODO: to impelment corrent type for `AnyFunction`
+	addEventListener<E extends keyof YTPlayerEvents>(event: E, listener: YTPlayerEvents[E]): void;
+	removeEventListener<E extends keyof YTPlayerEvents>(event: E, listener: AnyFunction): void;
 	getIframe(): HTMLIFrameElement;
 	destroy(): void;
+	getOptions<TModule extends keyof GetOptionsModules>(module?: TModule): unknown;
+	getOption<
+		TModule extends keyof GetOptionsModules,
+		TOptions extends keyof GetOptionsModules[TModule]
+	>(
+		module?: TModule,
+		option?: TOptions
+	): unknown;
+	setOption<
+		TModule extends keyof GetOptionsModules,
+		TOptions extends keyof GetOptionsModules[TModule],
+		TValue extends GetOptionsModules[TModule][TOptions]
+	>(
+		module?: TModule,
+		option?: TOptions,
+		value?: TValue
+	): unknown;
 }
 
 export interface YTPlayerConstructor {
@@ -197,12 +231,6 @@ export type YT = {
 	Player: YTPlayerConstructor;
 	PlayerState: YTPlayerState;
 	loaded: BooleanNumber;
-	loading: BooleanNumber;
-	ready: AnyFunction; // TODO: to impelment corrent type
-	scan: AnyFunction; // TODO: to impelment corrent type
-	setConfig: AnyFunction; // TODO: to impelment corrent type
-	subscribe: AnyFunction; // TODO: to impelment corrent type
-	unsubscribe: AnyFunction; // TODO: to impelment corrent type
 };
 
 export type YTSDKReady = 'onYouTubeIframeAPIReady';

@@ -35,14 +35,8 @@ const PLAYER_STATE = {
 
 const YOUTUBE_SDK: YT = {
 	loaded: 1,
-	loading: 0,
 	Player: YouTubePlayerMock,
-	PlayerState: PLAYER_STATE,
-	ready: utils.noop,
-	setConfig: utils.noop,
-	scan: utils.noop,
-	subscribe: utils.noop,
-	unsubscribe: utils.noop
+	PlayerState: PLAYER_STATE
 };
 
 beforeAll(function () {

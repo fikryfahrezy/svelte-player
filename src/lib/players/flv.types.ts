@@ -1,6 +1,8 @@
 // Ref:
 // https://github.com/bilibili/flv.js/blob/master/d.ts/flv.d.ts
 
+import type { VoidFunction } from './utility.types';
+
 export type MediaSegment = {
 	duration: number;
 	filesize?: number;
@@ -24,8 +26,7 @@ export type MediaDataSource = {
 };
 
 export interface Player {
-	/* eslint-disable-next-line @typescript-eslint/no-explicit-any -- this is fine*/
-	on(event: string, listener: (...args: any[]) => void): void;
+	on(event: string, listener: VoidFunction): void;
 	attachMediaElement(mediaElement: HTMLMediaElement): void;
 	load(): void;
 }

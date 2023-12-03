@@ -21,6 +21,7 @@ import type {
 } from './global.types';
 import type { WistiaWQ } from './wistia.global.types';
 import type { PlayerUrl } from './types';
+import type { VoidFunction } from './utility.types';
 import loadScript from 'load-script';
 
 declare global {
@@ -114,10 +115,8 @@ function getGlobal<T extends GlobalSDKType>(key: T): GlobalSDK[T] | null {
 // Util function to load an external SDK
 // or return the SDK if it is already loaded
 type Request = {
-	/* eslint-disable-next-line @typescript-eslint/no-explicit-any -- this is fine*/
-	resolve: (value: any) => void;
-	/* eslint-disable-next-line @typescript-eslint/no-explicit-any -- this is fine*/
-	reject: (reason?: any) => void;
+	resolve: VoidFunction;
+	reject: (reason?: Error) => void;
 };
 
 const requests: Record<string, Request[] | null> = {};
@@ -164,32 +163,6 @@ export function getSDK<T extends GlobalSDKType>(
 		});
 	});
 }
-
-// export function callPlayer<TPlayer extends PlayerInstance>(player?: TPlayer) {
-// 	return function <
-// 		TObject extends ObjectMethods<Required<TPlayer>>,
-// 		TMethodKey extends keyof ObjectMethods<Required<TPlayer>>,
-// 		TMethod extends TObject[TMethodKey],
-// 		TParams extends MethodParameters<TMethod>,
-// 		TReturn extends MethodReturnType<TMethod>
-// 	>(method: TMethodKey, ...args: TParams) {
-// 		// Util method for calling a method on this.player
-// 		// but guard against errors and console.warn instead
-// 		if (!player || !player[method]) {
-// 			let message = `SveltePlayer: player could not call %c${String(method)}%c – `;
-// 			if (!player) {
-// 				message += 'The player was not available';
-// 			} else if (!player[method]) {
-// 				message += 'The method was not available';
-// 			}
-// 			console.warn(message, 'font-weight: bold', '');
-// 			return null;
-// 		}
-
-// 		type CurryFn = (...args: TParams) => TReturn;
-// 		return (player[method] as CurryFn)(...args);
-// 	};
-// }
 
 export function isMediaStream(url: PlayerUrl): url is MediaStream {
 	return (

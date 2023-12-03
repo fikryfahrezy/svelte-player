@@ -1,5 +1,3 @@
-import type { AnyFunction } from './utility.types';
-
 // https://developers.soundcloud.com/docs/api/html5-widget
 
 export type SoundCloudWidgetEvents = {
@@ -73,7 +71,6 @@ type SoundCloudUIOPEN_SHARE_PANELListener = {
 	[k in SoundCloudWidgetEvents['OPEN_SHARE_PANEL']]: SoundCloudUIOPEN_SHARE_PANELFn;
 };
 
-// TODO: Fix the unknown types
 type SoundCloudUIERRORFn = (e: unknown) => void;
 type SoundCloudUIERRORListener = {
 	[k in SoundCloudWidgetEvents['ERROR']]: SoundCloudUIERRORFn;
@@ -118,13 +115,13 @@ export type SoundCloudPlayer = {
 	next(): void;
 	prev(): void;
 	skip(soundIndex: number /* starting from 0 */): void;
-	getVolume(callback: AnyFunction): number /* range 0-100 */; // TODO: Change AnyFunction
-	getDuration(callback: AnyFunction): number /* in millisecond */; // TODO: Change AnyFunction
-	getPosition(callback: AnyFunction): number /* in millisecond */; // TODO: Change AnyFunction
-	getSounds(callback: AnyFunction): Record<string, never>[]; // TODO: Change AnyFunction
-	getCurrentSound(callback: AnyFunction): Record<string, never>; // TODO: Change AnyFunction
-	getCurrentSoundIndex(callback: AnyFunction): number /* index of current sound */; // TODO: Change AnyFunction
-	isPaused(callback: AnyFunction): boolean; // TODO: Change AnyFunction
+	getVolume(callback?: (volume: number /* range 0-100 */) => void): object;
+	getDuration(callback?: (duration: number /* in millisecond */) => void): object;
+	getPosition(callback?: (position: number /* in millisecond */) => void): object;
+	getSounds(callback?: (sounds: Record<string, never>[][]) => void): object;
+	getCurrentSound(callback?: (currentSound: Record<string, never>[]) => void): object;
+	getCurrentSoundIndex(callback?: (index: number /* index of current sound */) => void): object;
+	isPaused(callback?: (paused: boolean) => void): object;
 };
 
 export interface SoundCloudWidget {

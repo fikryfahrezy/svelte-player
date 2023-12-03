@@ -1,7 +1,7 @@
 import type { SpyInstance } from 'vitest';
 import type { SvelteComponent, ComponentProps } from 'svelte';
 import type { PlayerRef, PlayerInstance } from '../../lib/players/types';
-import type { Constructor, ObjectMethods } from '../../lib/players/utility.types';
+import type { Constructor, ObjectMethodKeys } from '../../lib/players/utility.types';
 
 import { vi, test, expect } from 'vitest';
 
@@ -10,7 +10,7 @@ type SvelteComponentOptions<C extends SvelteComponent> =
 	| { props: ComponentProps<C> };
 
 type Methods<TPlayer extends PlayerInstance> = {
-	[k in keyof Partial<Omit<PlayerRef, 'load'>>]: keyof ObjectMethods<TPlayer> | null;
+	[k in keyof Partial<Omit<PlayerRef, 'load'>>]: ObjectMethodKeys<TPlayer> | null;
 };
 
 export default function <TComponent extends SvelteComponent, TPlayer extends PlayerInstance>(
@@ -27,16 +27,13 @@ export default function <TComponent extends SvelteComponent, TPlayer extends Pla
 			});
 			t.expect(instance[method]).toBeTruthy();
 			instance._setPlayer(player);
-			const playerMethod = methods[method as keyof Methods<TPlayer>];
+			const playerMethod = methods[method as keyof typeof methods];
 
 			let methodSpy: SpyInstance | undefined = undefined;
 			if (playerMethod) {
-				methodSpy = vi
-					/* eslint-disable-next-line @typescript-eslint/no-explicit-any -- TODO: fix type and async implementation */
-					.spyOn(player as any, playerMethod as string)
-					.mockImplementation(async function () {
-						return vi.fn();
-					});
+				methodSpy = vi.spyOn(player, playerMethod).mockImplementation(async function () {
+					return vi.fn();
+				});
 			}
 
 			instance[method]();
